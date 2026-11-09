@@ -55,54 +55,48 @@ class _DonutCollage extends StatelessWidget {
   final double height;
   final bool tiles;
 
-  static const _peach = Color(0xFFF8DED2);
-  static const _powderBlue = Color(0xFFB9DDED);
-  static const _aqua = Color(0xFF49D2E8);
-  static const _lavender = Color(0xFFE5DFF8);
-  static const _honey = Color(0xFFFFD491);
-
   static const List<_Placement> _circles = [
     (
       x: -.08,
       y: .12,
       widthFraction: .56,
       photo: DonutPhotos.chocolate,
-      backdrop: _aqua,
+      backdrop: AppColors.artAqua,
     ),
     (
       x: .53,
       y: .43,
       widthFraction: .55,
       photo: DonutPhotos.pink,
-      backdrop: _peach,
+      backdrop: AppColors.artPeach,
     ),
     (
       x: 1.10,
       y: .16,
       widthFraction: .52,
       photo: DonutPhotos.chocolateDrizzle,
-      backdrop: _lavender,
+      backdrop: AppColors.artLavender,
     ),
     (
       x: -.08,
       y: .72,
       widthFraction: .56,
       photo: DonutPhotos.blue,
-      backdrop: _powderBlue,
+      backdrop: AppColors.artPowderBlue,
     ),
     (
       x: 1.10,
       y: .68,
       widthFraction: .50,
       photo: DonutPhotos.blue,
-      backdrop: _powderBlue,
+      backdrop: AppColors.artPowderBlue,
     ),
     (
       x: .52,
       y: 1.06,
       widthFraction: .53,
       photo: DonutPhotos.chocolateDrizzle,
-      backdrop: _honey,
+      backdrop: AppColors.artHoney,
     ),
   ];
 
@@ -112,28 +106,28 @@ class _DonutCollage extends StatelessWidget {
       y: .24,
       widthFraction: .48,
       photo: DonutPhotos.blue,
-      backdrop: _powderBlue,
+      backdrop: AppColors.artPowderBlue,
     ),
     (
       x: .78,
       y: .34,
       widthFraction: .48,
       photo: DonutPhotos.chocolateDrizzle,
-      backdrop: _lavender,
+      backdrop: AppColors.artLavender,
     ),
     (
       x: .22,
       y: .73,
       widthFraction: .48,
       photo: DonutPhotos.pink,
-      backdrop: _peach,
+      backdrop: AppColors.artPeach,
     ),
     (
       x: .78,
       y: .83,
       widthFraction: .48,
       photo: DonutPhotos.chocolate,
-      backdrop: _honey,
+      backdrop: AppColors.artHoney,
     ),
   ];
 

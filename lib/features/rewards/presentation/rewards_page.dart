@@ -40,37 +40,57 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
       if (previous?.value == false && next.value == true) _reload();
     });
     return Scaffold(
-      backgroundColor: AppColors.catalogSurface,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         bottom: false,
-        child: RefreshIndicator(
-          onRefresh: _refresh,
-          child: ListView(
-            key: const Key('rewardsScroll'),
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              if (online.value == false)
-                OfflineBanner(label: strings.offlineMessage),
-              _overview(),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md,
-                  AppSpacing.sm,
-                  AppSpacing.md,
-                  AppSpacing.md,
-                ),
-                child: RewardsTabs(
-                  gift: _gift,
-                  onChanged: (value) => setState(() => _gift = value),
-                ),
-              ),
-              _content(strings),
-            ],
+        child: ColoredBox(
+          color: AppColors.catalogSurface,
+          child: RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView(
+              key: const Key('rewardsScroll'),
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                if (online.value == false)
+                  OfflineBanner(label: strings.offlineMessage),
+                _overview(),
+                _tabs(),
+                _content(strings),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  Widget _tabs() => DecoratedBox(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [AppColors.white, AppColors.catalogSurface],
+        stops: [.42, .42],
+      ),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.md,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 300),
+          child: RewardsTabs(
+            gift: _gift,
+            onChanged: (value) => setState(() => _gift = value),
+          ),
+        ),
+      ),
+    ),
+  );
 
   void _reload() {
     ref.invalidate(memberProfileProvider);

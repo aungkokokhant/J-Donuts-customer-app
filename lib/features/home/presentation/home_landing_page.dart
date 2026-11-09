@@ -49,22 +49,25 @@ class _HomeLandingPageState extends ConsumerState<HomeLandingPage> {
       if (previous?.value == false && next.value == true) _refreshCatalog();
     });
     return Scaffold(
-      backgroundColor: AppColors.catalogSurface,
+      backgroundColor: AppColors.warm,
       body: SafeArea(
         bottom: false,
-        child: RefreshIndicator(
-          onRefresh: _refresh,
-          child: ListView(
-            key: const Key('homeScroll'),
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              if (online.value == false)
-                OfflineBanner(label: strings.offlineMessage),
-              _header(),
-              _sections(),
-              const SizedBox(height: AppSpacing.lg),
-              _shops(),
-            ],
+        child: ColoredBox(
+          color: AppColors.catalogSurface,
+          child: RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView(
+              key: const Key('homeScroll'),
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                if (online.value == false)
+                  OfflineBanner(label: strings.offlineMessage),
+                _header(),
+                _sections(),
+                const SizedBox(height: AppSpacing.lg),
+                _shops(),
+              ],
+            ),
           ),
         ),
       ),

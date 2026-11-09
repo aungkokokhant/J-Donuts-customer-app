@@ -97,23 +97,36 @@ class _AppNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.sm,
-          AppSpacing.xs,
-          AppSpacing.sm,
-          AppSpacing.xs,
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.catalogSurface, AppColors.pink],
+          stops: [.62, .62],
         ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Material(
           color: AppColors.sky,
-          shape: const StadiumBorder(),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xs),
-            child: LayoutBuilder(
-              builder: (context, constraints) =>
-                  _layout(context, strings, constraints.maxWidth),
+          shape: const RoundedRectangleBorder(
+            side: BorderSide(color: AppColors.white),
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(AppSpacing.lg),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xs,
+                vertical: AppSpacing.sm,
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) =>
+                    _layout(context, strings, constraints.maxWidth),
+              ),
             ),
           ),
         ),

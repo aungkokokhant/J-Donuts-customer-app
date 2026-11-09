@@ -17,7 +17,24 @@ class HomeMemberHeader extends StatelessWidget {
   final String name;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Stack(
+    children: [
+      PositionedDirectional(
+        end: -AppSpacing.lg,
+        top: AppSpacing.xs,
+        child: ExcludeSemantics(
+          child: Icon(
+            Icons.shield_outlined,
+            size: 132,
+            color: AppColors.white.withValues(alpha: .65),
+          ),
+        ),
+      ),
+      _details(context),
+    ],
+  );
+
+  Widget _details(BuildContext context) {
     final strings = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Padding(
@@ -110,12 +127,11 @@ class _NotificationCount extends StatelessWidget {
               size: 19,
             ),
             const SizedBox(width: AppSpacing.xs),
-            Text(
-              formatNumber(context, count),
-              style: const TextStyle(
-                color: AppColors.white,
-                fontWeight: FontWeight.w800,
-              ),
+            CircleAvatar(
+              radius: 9,
+              backgroundColor: AppColors.white,
+              foregroundColor: AppColors.ink,
+              child: FittedBox(child: Text(formatNumber(context, count))),
             ),
           ],
         ),
@@ -133,7 +149,7 @@ class HomeBannerCarousel extends StatefulWidget {
 }
 
 class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
-  final _controller = PageController(viewportFraction: .86);
+  final _controller = PageController(viewportFraction: .80);
   Timer? _timer;
   var _page = 0;
 
@@ -147,7 +163,9 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   void didUpdateWidget(covariant HomeBannerCarousel oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.banners.length != widget.banners.length) {
-      _page = _page.clamp(0, widget.banners.length - 1);
+      _page = widget.banners.isEmpty
+          ? 0
+          : _page.clamp(0, widget.banners.length - 1);
       _schedule();
     }
   }
@@ -183,13 +201,17 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: 174,
-    child: PageView.builder(
-      controller: _controller,
-      onPageChanged: (index) => _page = index,
-      itemCount: widget.banners.length,
-      itemBuilder: (context, index) =>
-          _BannerCard(banner: widget.banners[index], alternate: index.isOdd),
+    height: 134 + MediaQuery.textScalerOf(context).scale(36),
+    child: Padding(
+      padding: const EdgeInsets.only(left: AppSpacing.md),
+      child: PageView.builder(
+        controller: _controller,
+        padEnds: false,
+        onPageChanged: (index) => _page = index,
+        itemCount: widget.banners.length,
+        itemBuilder: (context, index) =>
+            _BannerCard(banner: widget.banners[index], alternate: index.isOdd),
+      ),
     ),
   );
 }
@@ -204,41 +226,67 @@ class _BannerCard extends StatelessWidget {
     padding: const EdgeInsets.only(right: AppSpacing.sm),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          ColoredBox(color: alternate ? AppColors.orange : AppColors.violet),
-          Positioned.fill(
-            top: 72,
-            child: CatalogImage(source: banner.imageKey, fit: BoxFit.cover),
+      child: ColoredBox(
+        color: alternate ? AppColors.sky : AppColors.violet,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.sm,
+            AppSpacing.sm,
+            AppSpacing.sm,
+            0,
           ),
-          Positioned(
-            left: AppSpacing.md,
-            right: AppSpacing.md,
-            top: AppSpacing.sm,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  banner.label,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w600,
+          child: Column(
+            children: [
+              _label(context),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                banner.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w800,
+                  height: 1.15,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppSpacing.fieldRadius),
+                  ),
+                  child: SizedBox.expand(
+                    child: CatalogImage(
+                      source: banner.imageKey,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                Text(
-                  banner.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _label(BuildContext context) => DecoratedBox(
+    decoration: const ShapeDecoration(
+      color: AppColors.orange,
+      shape: StadiumBorder(),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      child: Text(
+        banner.label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w700),
       ),
     ),
   );

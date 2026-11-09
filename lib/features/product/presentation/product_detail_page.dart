@@ -87,7 +87,7 @@ class _ProductBodyState extends State<_ProductBody> {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             children: [
               _ProductCard(product: product, heroTag: widget.heroTag),
               Transform.translate(
@@ -109,9 +109,9 @@ class _ProductBodyState extends State<_ProductBody> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
+            AppSpacing.lg,
             0,
-            AppSpacing.md,
+            AppSpacing.lg,
             AppSpacing.md,
           ),
           child: AuthButton(
@@ -156,12 +156,7 @@ class _ProductCard extends StatelessWidget {
               if (product.isNew) _NewBadge(),
             ],
           ),
-          Text(
-            product.name,
-            style: textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
-          ),
+          Text(product.name, style: textTheme.headlineSmall),
           Text(
             formatMmk(context, product.priceMmk),
             style: const TextStyle(fontWeight: FontWeight.w800),
@@ -171,11 +166,15 @@ class _ProductCard extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 360),
               child: AspectRatio(
-                aspectRatio: 1.14,
-                child:
-                    heroTag == null || MediaQuery.disableAnimationsOf(context)
-                    ? image
-                    : Hero(tag: heroTag!, child: image),
+                aspectRatio: 1.07,
+                child: FractionallySizedBox(
+                  widthFactor: .66,
+                  heightFactor: .80,
+                  child:
+                      heroTag == null || MediaQuery.disableAnimationsOf(context)
+                      ? image
+                      : Hero(tag: heroTag!, child: image),
+                ),
               ),
             ),
           ),
@@ -268,19 +267,27 @@ class _Description extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      const Icon(Icons.help_outline, size: 18, color: AppColors.muted),
-      const SizedBox(width: AppSpacing.sm),
-      Expanded(
+      SizedBox(
+        width: MediaQuery.textScalerOf(context).scale(67),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Icon(Icons.help_outline, size: 18, color: AppColors.muted),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               AppLocalizations.of(context).whatsThis,
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(text),
           ],
+        ),
+      ),
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.only(left: AppSpacing.sm),
+          decoration: const BoxDecoration(
+            border: Border(left: BorderSide(color: AppColors.white)),
+          ),
+          child: Text(text, style: const TextStyle(color: AppColors.muted)),
         ),
       ),
     ],

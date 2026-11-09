@@ -31,8 +31,13 @@ class _ProductRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSeasonal = section.id == 'seasonal';
-    final width = isSeasonal ? 166.0 : 124.0;
-    final imageHeight = isSeasonal ? 112.0 : 136.0;
+    final viewport = MediaQuery.sizeOf(context).width;
+    final width = isSeasonal ? viewport * .62 : viewport * .41;
+    final imageHeight = isSeasonal
+        ? width * .67
+        : section.id == 'popular'
+        ? width * 1.48
+        : width;
     final labelHeight = MediaQuery.textScalerOf(context).scale(14) * 2.6;
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.lg),
@@ -83,6 +88,7 @@ class _ProductRail extends StatelessWidget {
                   sectionId: section.id,
                   width: width,
                   imageHeight: imageHeight,
+                  cover: isSeasonal,
                 ),
               ),
             ),
@@ -98,11 +104,13 @@ class _ProductCard extends StatelessWidget {
     required this.sectionId,
     required this.width,
     required this.imageHeight,
+    required this.cover,
   });
   final CatalogProduct product;
   final String sectionId;
   final double width;
   final double imageHeight;
+  final bool cover;
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +143,15 @@ class _ProductCard extends StatelessWidget {
                         borderRadius: radius,
                         child: ColoredBox(
                           color: AppColors.white,
-                          child: CatalogImage(source: product.imageKey),
+                          child: Padding(
+                            padding: cover
+                                ? EdgeInsets.zero
+                                : const EdgeInsets.all(AppSpacing.sm),
+                            child: CatalogImage(
+                              source: product.imageKey,
+                              fit: cover ? BoxFit.cover : BoxFit.contain,
+                            ),
+                          ),
                         ),
                       ),
                     ),

@@ -23,8 +23,8 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 - [ ] Flutter project နဲ့ Git ignore rules ပြင်ပါ။ PDF၊ design screenshots၊ build outputs နဲ့ local secrets တွေ staging/history ထဲ မပါကြောင်း စစ်ပါ။ လုပ်ဆောင်ချက်အလိုက် commit အသေးတွေ ခွဲပါ။
 - [ ] Starter app ကို Android emulator နဲ့ iOS Simulator နှစ်ခုလုံးမှာ launch စမ်းပါ။ Android release APK နဲ့ iOS Simulator app build လုပ်ပုံကို Day 1 မှာ စမ်းထားပါ။
   - စစ်ပြီးသား: `flutter doctor -v` က Android SDK နဲ့ Xcode အတွက် issue မပြပါ။ Starter ကို installed Flutter 3.44.5 / Dart 3.12.2 နဲ့ ဆောက်ထားပြီး stable update ကို ထပ်စစ်ရန် ကျန်ပါသေးတယ်။
-  - စစ်ပြီးသား: Android release APK build အောင်မြင်ပါတယ်။ iPhone 17 Pro Simulator မှာ `flutter run` နဲ့ starter launch အောင်မြင်ပါတယ်။ Xcode 27.2 အတွက် iOS deployment target 15.0 သတ်မှတ်ထားပါတယ်။
-  - စစ်ရန်ကျန်: Android emulator မှာ APK ကို install/launch စမ်းပါ။ Generic `flutter build ios --simulator` မှာ architecture verification error ကို ဖြေရှင်းပြီး export build ကို ထပ်စမ်းပါ။
+  - စစ်ပြီးသား: Android release APK ကို Pixel 10 Pro emulator မှာ build၊ install၊ launch လုပ်ပြီးပါပြီ။ iPhone 17 Pro Simulator မှာ `flutter run` နဲ့ starter launch အောင်မြင်ပါတယ်။ Xcode 27.2 အတွက် iOS deployment target 15.0 သတ်မှတ်ထားပါတယ်။
+  - စစ်ရန်ကျန်: Generic `flutter build ios --simulator` မှာ architecture verification error ကို ဖြေရှင်းပြီး export build ကို ထပ်စမ်းပါ။
 - [ ] Donut၊ coffee၊ banner၊ shop နဲ့ profile ပုံတွေကို app ထဲ bundle လုပ်ပြီး public repo မှာ သုံးခွင့်ရှိကြောင်း စစ်ပါ။
 
 ### 2. Architecture၊ database နဲ့ offline behavior

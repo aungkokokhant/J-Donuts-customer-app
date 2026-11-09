@@ -1,17 +1,34 @@
-# jdonuts_customer_app
+# J’Donuts Customer App
 
-A new Flutter project.
+Flutter take-home project for Android and iOS. The current milestone is the starter app and platform setup.
 
-## Getting Started
+## Development setup
 
-This project is a starting point for a Flutter application.
+Use Flutter **3.47.9** with Dart **3.13.7**. Install the Android SDK and an Android emulator for Android, or Xcode and an iOS Simulator runtime for iOS.
 
-A few resources to get you started if this is your first Flutter project:
+```sh
+flutter --version
+flutter doctor -v
+flutter pub get
+flutter devices
+flutter run -d DEVICE_ID
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Replace `DEVICE_ID` with the emulator or simulator ID from `flutter devices`.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Build and check
+
+```sh
+flutter analyze
+flutter test
+flutter build apk --release
+flutter build ios --simulator --debug
+```
+
+The Android APK is at `build/app/outputs/flutter-apk/app-release.apk`. The iOS Simulator bundle is at `build/ios/iphonesimulator/Runner.app`. On macOS, package the simulator bundle with:
+
+```sh
+ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app build/ios/JDonuts-Simulator.zip
+```
+
+See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance checks.

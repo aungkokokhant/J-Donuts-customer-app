@@ -19,12 +19,13 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 
 - [x] PDF requirements၊ နှစ်ရက်စာ plan နဲ့ acceptance checklist ကို ဒီဖိုင်ထဲ မှတ်တမ်းတင်ပါ။
 - [x] Project remote ကို HTTPS နဲ့ စစ်ပြီး `origin` ချိတ်ထားပါပြီ။ `https://github.com/aungkokokhant/J-Donuts-customer-app.git` မှာ စစ်ဆေးချိန် Git refs မရှိသေးပါ။
-- [ ] `flutter doctor -v`၊ `flutter --version` နဲ့ Android SDK၊ Xcode၊ simulator runtime စစ်ပါ။ သုံးထားတဲ့ versions ကို မှတ်ပါ။
-- [ ] Flutter project နဲ့ Git ignore rules ပြင်ပါ။ PDF၊ design screenshots၊ build outputs နဲ့ local secrets တွေ staging/history ထဲ မပါကြောင်း စစ်ပါ။ လုပ်ဆောင်ချက်အလိုက် commit အသေးတွေ ခွဲပါ။
-- [ ] Starter app ကို Android emulator နဲ့ iOS Simulator နှစ်ခုလုံးမှာ launch စမ်းပါ။ Android release APK နဲ့ iOS Simulator app build လုပ်ပုံကို Day 1 မှာ စမ်းထားပါ။
-  - စစ်ပြီးသား: `flutter doctor -v` က Android SDK နဲ့ Xcode အတွက် issue မပြပါ။ Starter ကို installed Flutter 3.44.5 / Dart 3.12.2 နဲ့ ဆောက်ထားပြီး stable update ကို ထပ်စစ်ရန် ကျန်ပါသေးတယ်။
-  - စစ်ပြီးသား: Android release APK ကို Pixel 10 Pro emulator မှာ build၊ install၊ launch လုပ်ပြီးပါပြီ။ iPhone 17 Pro Simulator မှာ `flutter run` နဲ့ starter launch အောင်မြင်ပါတယ်။ Xcode 27.2 အတွက် iOS deployment target 15.0 သတ်မှတ်ထားပါတယ်။
-  - စစ်ရန်ကျန်: Generic `flutter build ios --simulator` မှာ architecture verification error ကို ဖြေရှင်းပြီး export build ကို ထပ်စမ်းပါ။
+- [x] `flutter doctor -v`၊ `flutter --version` နဲ့ Android SDK၊ Xcode၊ simulator runtime စစ်ပါ။ သုံးထားတဲ့ versions ကို မှတ်ပါ။
+  - Official stable release Flutter 3.47.9 / Dart 3.13.7 ကို project အတွက် သီးသန့် SDK အဖြစ် သုံးပါတယ်။ Android SDK 37.0.0 နဲ့ Xcode 27.2 စစ်ပြီးပါပြီ။ iOS minimum deployment target က 15.0 ပါ။
+- [x] Flutter project နဲ့ Git ignore rules ပြင်ပါ။ PDF၊ design screenshots၊ build outputs နဲ့ local secrets တွေ staging/history ထဲ မပါကြောင်း စစ်ပါ။ လုပ်ဆောင်ချက်အလိုက် commit အသေးတွေ ခွဲပါ။
+- [x] Starter app ကို Android emulator နဲ့ iOS Simulator နှစ်ခုလုံးမှာ launch စမ်းပါ။ Android release APK နဲ့ iOS Simulator app build လုပ်ပုံကို Day 1 မှာ စမ်းထားပါ။
+  - Android release APK ကို Flutter 3.44.5 နဲ့ build ပြီး Pixel 10 Pro emulator မှာ install/launch အောင်မြင်ပါတယ်။ Final APK ကို Flutter 3.47.9 နဲ့ ပြန် build/install စစ်ပါမယ်။
+  - Flutter 3.47.9 နဲ့ `flutter build ios --simulator --debug` အောင်မြင်ပါတယ်။ Bundle မှာ arm64 နဲ့ x86_64 ပါပါတယ်။ Zip ဖြည်ပြီး iPhone 17 Pro Simulator မှာ install/launch စစ်ပြီးပါပြီ။
+  - Flutter 3.47.9 နဲ့ analyzer clean ဖြစ်ပြီး starter smoke test pass ပါတယ်။
 - [ ] Donut၊ coffee၊ banner၊ shop နဲ့ profile ပုံတွေကို app ထဲ bundle လုပ်ပြီး public repo မှာ သုံးခွင့်ရှိကြောင်း စစ်ပါ။
 
 ### 2. Architecture၊ database နဲ့ offline behavior

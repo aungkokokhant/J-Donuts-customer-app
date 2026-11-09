@@ -1,9 +1,8 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
+import '../../../core/presentation/donut_photos.dart';
 
 class DonutArt extends StatelessWidget {
   const DonutArt({super.key, required this.height, this.tiles = false});
@@ -12,159 +11,220 @@ class DonutArt extends StatelessWidget {
   final bool tiles;
 
   @override
-  Widget build(BuildContext context) {
-    final total = AppMotion.entrance + AppMotion.stagger * 4;
-    return SizedBox(
-      height: height,
-      width: double.infinity,
-      child: ShaderMask(
-        blendMode: BlendMode.dstIn,
-        shaderCallback: (bounds) => LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: const [AppColors.white, AppColors.white, Colors.transparent],
-          stops: [0, tiles ? .78 : .68, 1],
-        ).createShader(bounds),
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0, end: 1),
-          duration: AppMotion.duration(context, total),
-          builder: (context, value, _) =>
-              CustomPaint(painter: _DonutPainter(value, tiles: tiles)),
+  Widget build(BuildContext context) => SizedBox(
+    height: height,
+    width: double.infinity,
+    child: ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (bounds) => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: const [AppColors.white, AppColors.white, Colors.transparent],
+        stops: [0, tiles ? .78 : .68, .95],
+      ).createShader(bounds),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+        child: LayoutBuilder(
+          builder: (context, limits) => _DonutCollage(
+            width: limits.maxWidth,
+            height: limits.maxHeight,
+            tiles: tiles,
+          ),
         ),
+      ),
+    ),
+  );
+}
+
+typedef _Placement = ({
+  double x,
+  double y,
+  double widthFraction,
+  String photo,
+  Color backdrop,
+});
+
+class _DonutCollage extends StatelessWidget {
+  const _DonutCollage({
+    required this.width,
+    required this.height,
+    required this.tiles,
+  });
+
+  final double width;
+  final double height;
+  final bool tiles;
+
+  static const _peach = Color(0xFFF8DED2);
+  static const _powderBlue = Color(0xFFB9DDED);
+  static const _aqua = Color(0xFF49D2E8);
+  static const _lavender = Color(0xFFE5DFF8);
+  static const _honey = Color(0xFFFFD491);
+
+  static const List<_Placement> _circles = [
+    (
+      x: -.08,
+      y: .12,
+      widthFraction: .56,
+      photo: DonutPhotos.chocolate,
+      backdrop: _aqua,
+    ),
+    (
+      x: .53,
+      y: .43,
+      widthFraction: .55,
+      photo: DonutPhotos.pink,
+      backdrop: _peach,
+    ),
+    (
+      x: 1.10,
+      y: .16,
+      widthFraction: .52,
+      photo: DonutPhotos.chocolateDrizzle,
+      backdrop: _lavender,
+    ),
+    (
+      x: -.08,
+      y: .72,
+      widthFraction: .56,
+      photo: DonutPhotos.blue,
+      backdrop: _powderBlue,
+    ),
+    (
+      x: 1.10,
+      y: .68,
+      widthFraction: .50,
+      photo: DonutPhotos.blue,
+      backdrop: _powderBlue,
+    ),
+    (
+      x: .52,
+      y: 1.06,
+      widthFraction: .53,
+      photo: DonutPhotos.chocolateDrizzle,
+      backdrop: _honey,
+    ),
+  ];
+
+  static const List<_Placement> _tiles = [
+    (
+      x: .22,
+      y: .24,
+      widthFraction: .48,
+      photo: DonutPhotos.blue,
+      backdrop: _powderBlue,
+    ),
+    (
+      x: .78,
+      y: .34,
+      widthFraction: .48,
+      photo: DonutPhotos.chocolateDrizzle,
+      backdrop: _lavender,
+    ),
+    (
+      x: .22,
+      y: .73,
+      widthFraction: .48,
+      photo: DonutPhotos.pink,
+      backdrop: _peach,
+    ),
+    (
+      x: .78,
+      y: .83,
+      widthFraction: .48,
+      photo: DonutPhotos.chocolate,
+      backdrop: _honey,
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    fit: StackFit.expand,
+    children: [
+      for (final (index, item) in (tiles ? _tiles : _circles).indexed)
+        _place(item, index),
+    ],
+  );
+
+  Widget _place(_Placement item, int index) {
+    final edge = (width * item.widthFraction).clamp(0.0, height * .56);
+    return Positioned(
+      width: edge,
+      height: edge,
+      left: width * item.x - edge / 2,
+      top: height * item.y - edge / 2,
+      child: _DonutEntrance(
+        index: index,
+        child: _PhotoTile(item: item, rounded: tiles, edge: edge),
       ),
     );
   }
 }
 
-class _DonutPainter extends CustomPainter {
-  const _DonutPainter(this.progress, {required this.tiles});
+class _PhotoTile extends StatelessWidget {
+  const _PhotoTile({
+    required this.item,
+    required this.rounded,
+    required this.edge,
+  });
 
-  final double progress;
-  final bool tiles;
-
-  static const _dough = Color(0xFFB66B36);
-  static const _strawberry = Color(0xFFFF77A9);
-  static const _raspberry = Color(0xFFD74283);
-  static const _purple = Color(0xFF9C74E6);
-  static const _chocolate = Color(0xFF763C36);
-  static const _gold = Color(0xFFFFD08C);
-  static const _peach = Color(0xFFF9DAD0);
-  static const _lavender = Color(0xFFDCD7FA);
-  static const _blue = Color(0xFFC5EAF8);
-  static const _sprinkles = [
-    AppColors.white,
-    AppColors.sky,
-    _chocolate,
-    _gold,
-    _purple,
-  ];
+  final _Placement item;
+  final bool rounded;
+  final double edge;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    canvas.clipRect(Offset.zero & size);
-    if (tiles) {
-      final radius = math.min(w * .23, h * .22);
-      _tile(canvas, Offset(w * .24, h * .26), radius, _blue, _purple, 0);
-      _tile(canvas, Offset(w * .76, h * .34), radius, _lavender, _chocolate, 1);
-      _tile(canvas, Offset(w * .24, h * .73), radius, _peach, _strawberry, 2);
-      _tile(canvas, Offset(w * .76, h * .81), radius, _gold, _raspberry, 3);
-      return;
-    }
-    final radius = math.min(w * .28, h * .26);
-    _tile(canvas, Offset(-w * .07, h * .09), radius * .91, _blue, _purple, 0);
-    _tile(canvas, Offset(w * .53, h * .43), radius, _peach, _strawberry, 1);
-    _tile(
-      canvas,
-      Offset(w * 1.07, h * .11),
-      radius * .9,
-      _lavender,
-      _chocolate,
-      2,
-    );
-    _tile(canvas, Offset(w * 1.09, h * .72), radius, _blue, _raspberry, 3);
-    _tile(canvas, Offset(w * .51, h * 1.03), radius, _gold, _purple, 4);
-  }
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      shape: rounded ? BoxShape.rectangle : BoxShape.circle,
+      borderRadius: rounded ? BorderRadius.circular(AppSpacing.lg) : null,
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          item.backdrop,
+          Color.lerp(item.backdrop, AppColors.landingPink, .34)!,
+        ],
+      ),
+    ),
+    child: FractionallySizedBox(
+      widthFactor: .76,
+      heightFactor: .76,
+      child: Image.asset(
+        item.photo,
+        fit: BoxFit.contain,
+        cacheWidth: (edge * MediaQuery.devicePixelRatioOf(context)).round(),
+        excludeFromSemantics: true,
+      ),
+    ),
+  );
+}
 
-  void _tile(
-    Canvas canvas,
-    Offset restingCenter,
-    double radius,
-    Color bg,
-    Color icing,
-    int index,
-  ) {
-    final delay = AppMotion.stagger.inMilliseconds * index;
-    final elapsed =
-        progress * (AppMotion.entrance + AppMotion.stagger * 4).inMilliseconds;
-    final phase = ((elapsed - delay) / AppMotion.entrance.inMilliseconds).clamp(
-      0.0,
-      1.0,
-    );
-    if (phase == 0) return;
-    final remaining = 1 - AppMotion.curve.transform(phase);
-    final center = restingCenter.translate(
-      (index.isEven ? -1 : 1) * 42 * remaining,
-      26 * remaining,
-    );
-    final paint = Paint()..color = bg;
-    if (tiles) {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCircle(center: center, radius: radius),
-          const Radius.circular(20),
-        ),
-        paint,
-      );
-    } else {
-      canvas.drawCircle(center, radius, paint);
-    }
-    final donut = center.translate(0, -3);
-    final outer = radius * .66;
-    final inner = outer * .36;
-    final dough = _ring(donut.translate(0, 5), outer, inner);
-    canvas.drawShadow(dough, _chocolate, 7, false);
-    canvas.drawPath(dough, Paint()..color = _dough);
-    final glaze = _ring(donut, outer * .95, inner * 1.12);
-    canvas.drawPath(
-      glaze,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color.lerp(icing, AppColors.white, .22)!, icing],
-        ).createShader(Rect.fromCircle(center: donut, radius: outer)),
-    );
-    _scatter(canvas, donut, outer);
-  }
+class _DonutEntrance extends StatelessWidget {
+  const _DonutEntrance({required this.index, required this.child});
 
-  Path _ring(Offset center, double outer, double inner) => Path()
-    ..fillType = PathFillType.evenOdd
-    ..addOval(Rect.fromCircle(center: center, radius: outer))
-    ..addOval(Rect.fromCircle(center: center, radius: inner));
-
-  void _scatter(Canvas canvas, Offset center, double radius) {
-    final random = math.Random(51);
-    final paint = Paint()
-      ..strokeWidth = 2.6
-      ..strokeCap = StrokeCap.round;
-    for (var index = 0; index < 29; index++) {
-      final angle = index * math.pi * 2 / 29;
-      final distance = radius * (.52 + random.nextDouble() * .33);
-      final start =
-          center + Offset(math.cos(angle), math.sin(angle)) * distance;
-      final direction = angle + random.nextDouble() * 3;
-      final end = start + Offset(math.cos(direction), math.sin(direction)) * 5;
-      canvas.drawLine(
-        start,
-        end,
-        paint..color = _sprinkles[index % _sprinkles.length],
-      );
-    }
-  }
+  final int index;
+  final Widget child;
 
   @override
-  bool shouldRepaint(_DonutPainter oldDelegate) =>
-      oldDelegate.progress != progress || oldDelegate.tiles != tiles;
+  Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    final delay = AppMotion.stagger * index;
+    final total = AppMotion.entrance + delay;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: total,
+      curve: Interval(delay.inMilliseconds / total.inMilliseconds, 1),
+      child: child,
+      builder: (context, value, child) {
+        final remaining = 1 - AppMotion.curve.transform(value);
+        return Transform.translate(
+          offset: Offset(
+            (index.isEven ? -1 : 1) * 42 * remaining,
+            26 * remaining,
+          ),
+          child: Opacity(opacity: 1 - remaining, child: child),
+        );
+      },
+    );
+  }
 }

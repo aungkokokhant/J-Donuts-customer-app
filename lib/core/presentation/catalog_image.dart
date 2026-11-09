@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../app/design/app_theme.dart';
+import 'donut_photos.dart';
 
 class CatalogImage extends StatelessWidget {
   const CatalogImage({
@@ -14,6 +15,19 @@ class CatalogImage extends StatelessWidget {
   final String source;
   final BoxFit fit;
 
+  static const _photoSources = {
+    'coconut_donut': DonutPhotos.chocolateDrizzle,
+    'strawberry_donut': DonutPhotos.pink,
+    'challenge_donut': DonutPhotos.pink,
+    'challenge_coffee': 'assets/images/catalog/iced-coffee.webp',
+    'dalgona_coffee': 'assets/images/catalog/iced-coffee.webp',
+    'central_boulevard': 'assets/images/catalog/bakery.webp',
+    'donut_shop': 'assets/images/catalog/bakery.webp',
+    'holiday_specials': 'assets/images/catalog/donut-assortment.webp',
+    'mistletoe_box': 'assets/images/catalog/donut-assortment.webp',
+    'member_avatar': 'assets/images/catalog/member.webp',
+  };
+
   @override
   Widget build(BuildContext context) {
     if (source.startsWith('https://') || source.startsWith('http://')) {
@@ -22,6 +36,18 @@ class CatalogImage extends StatelessWidget {
         fit: fit,
         placeholder: (_, _) => const _ImageFallback(),
         errorWidget: (_, _, _) => const _ImageFallback(failed: true),
+      );
+    }
+    final photo = _photoSources[source];
+    if (photo != null) {
+      return Image.asset(
+        photo,
+        fit: fit,
+        frameBuilder: (_, child, frame, loadedSynchronously) =>
+            loadedSynchronously || frame != null
+            ? child
+            : const _ImageFallback(),
+        errorBuilder: (_, _, _) => const _ImageFallback(failed: true),
       );
     }
     return SvgPicture.asset(

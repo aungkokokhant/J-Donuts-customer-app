@@ -7,6 +7,8 @@ abstract final class AppColors {
   static const muted = Color(0xFF626C78);
   static const blush = Color(0xFFFCEAF2);
   static const canvas = Color(0xFFFFFAFC);
+  static const landingWhite = Color(0xFFFEFBFC);
+  static const landingPink = Color(0xFFFBF1F5);
   static const error = Color(0xFFB72445);
   static const white = Colors.white;
   static const catalogSurface = Color(0xFFEFF0F1);

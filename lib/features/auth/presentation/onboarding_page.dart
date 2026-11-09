@@ -10,51 +10,70 @@ import 'donut_art.dart';
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
 
+  static const _background = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      AppColors.landingWhite,
+      AppColors.landingWhite,
+      AppColors.landingPink,
+      AppColors.landingPink,
+    ],
+    stops: [0, .34, .52, 1],
+  );
+
   @override
-  Widget build(BuildContext context) {
-    final strings = AppLocalizations.of(context);
-    return AuthBackground(
-      child: LayoutBuilder(
-        builder: (context, limits) => SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: limits.maxHeight),
-            child: IntrinsicHeight(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  DonutArt(height: (limits.maxHeight * .51).clamp(215, 440)),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AuthLayout.pageInset,
-                      AppSpacing.sm,
-                      AuthLayout.pageInset,
-                      AppSpacing.sm,
-                    ),
-                    child: _OnboardingActions(strings: strings),
-                  ),
-                  const Spacer(),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.sm,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                    ),
-                    child: AuthLegal(),
-                  ),
-                ],
+  Widget build(BuildContext context) => AuthBackground(
+    gradient: _background,
+    safeTop: false,
+    child: LayoutBuilder(
+      builder: (context, limits) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: limits.maxHeight),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _mainContent(context, limits),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                ),
+                child: AuthLegal(),
               ),
-            ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+
+  Widget _mainContent(BuildContext context, BoxConstraints limits) => Column(
+    children: [
+      DonutArt(height: (limits.maxHeight * .54).clamp(210, 490)),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AuthLayout.pageInset,
+          AppSpacing.lg,
+          AuthLayout.pageInset,
+          AppSpacing.sm,
+        ),
+        child: _OnboardingActions(
+          strings: AppLocalizations.of(context),
+          headingSize: (limits.maxWidth * .095).clamp(30, 40),
+        ),
+      ),
+    ],
+  );
 }
 
 class _OnboardingActions extends StatelessWidget {
-  const _OnboardingActions({required this.strings});
+  const _OnboardingActions({required this.strings, required this.headingSize});
   final AppLocalizations strings;
+  final double headingSize;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -64,7 +83,12 @@ class _OnboardingActions extends StatelessWidget {
         child: Text(
           strings.onboardingTitle,
           textAlign: TextAlign.center,
-          style: AuthLayout.heading(context),
+          style: AuthLayout.heading(context)?.copyWith(
+            fontSize: headingSize,
+            height: 1.10,
+            fontWeight: FontWeight.w800,
+            fontVariations: const [FontVariation('wght', 800)],
+          ),
         ),
       ),
       const SizedBox(height: AppSpacing.lg),
@@ -72,6 +96,10 @@ class _OnboardingActions extends StatelessWidget {
         index: 2,
         child: AuthButton(
           label: strings.getStarted,
+          labelStyle: const TextStyle(
+            fontFamily: 'Nunito',
+            fontVariations: [FontVariation('wght', 900)],
+          ),
           onPressed: () => context.push('/auth?mode=register'),
         ),
       ),
@@ -84,6 +112,10 @@ class _OnboardingActions extends StatelessWidget {
             Text(strings.haveAccount),
             TextButton(
               onPressed: () => context.push('/auth?mode=login'),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+                textStyle: const TextStyle(fontWeight: FontWeight.w800),
+              ),
               child: Text(strings.logIn),
             ),
           ],
@@ -99,11 +131,13 @@ class _OnboardingActions extends StatelessWidget {
               icon: const _GoogleMark(),
               onPressed: () => showAuthPlaceholder(context),
             ),
+            const SizedBox(width: AppSpacing.lg),
             IconButton(
               tooltip: strings.apple,
               icon: const Icon(Icons.apple, color: AppColors.ink),
               onPressed: () => showAuthPlaceholder(context),
             ),
+            const SizedBox(width: AppSpacing.lg),
             IconButton(
               tooltip: strings.facebook,
               icon: const Icon(Icons.facebook, color: AppColors.socialBlue),

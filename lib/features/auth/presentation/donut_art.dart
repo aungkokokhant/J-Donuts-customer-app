@@ -19,11 +19,11 @@ class DonutArt extends StatelessWidget {
       width: double.infinity,
       child: ShaderMask(
         blendMode: BlendMode.dstIn,
-        shaderCallback: (bounds) => const LinearGradient(
+        shaderCallback: (bounds) => LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.white, AppColors.white, Colors.transparent],
-          stops: [0, .78, 1],
+          colors: const [AppColors.white, AppColors.white, Colors.transparent],
+          stops: [0, tiles ? .78 : .68, 1],
         ).createShader(bounds),
         child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: 1),

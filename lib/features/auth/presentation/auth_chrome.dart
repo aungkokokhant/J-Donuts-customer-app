@@ -25,21 +25,29 @@ abstract final class AuthLayout {
 }
 
 class AuthBackground extends StatelessWidget {
-  const AuthBackground({super.key, required this.child});
+  const AuthBackground({
+    super.key,
+    required this.child,
+    this.gradient = _authGradient,
+    this.safeTop = true,
+  });
+
+  static const _authGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [AppColors.blush, AppColors.canvas, AppColors.blush],
+  );
+
   final Widget child;
+  final Gradient gradient;
+  final bool safeTop;
 
   @override
   Widget build(BuildContext context) => Scaffold(
     body: SizedBox.expand(
       child: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.blush, AppColors.canvas, AppColors.blush],
-          ),
-        ),
-        child: SafeArea(child: child),
+        decoration: BoxDecoration(gradient: gradient),
+        child: SafeArea(top: safeTop, child: child),
       ),
     ),
   );
@@ -93,10 +101,12 @@ class AuthButton extends StatefulWidget {
     required this.label,
     this.onPressed,
     this.busy = false,
+    this.labelStyle,
   });
   final String label;
   final VoidCallback? onPressed;
   final bool busy;
+  final TextStyle? labelStyle;
 
   @override
   State<AuthButton> createState() => _AuthButtonState();
@@ -125,7 +135,7 @@ class _AuthButtonState extends State<AuthButton> {
               textStyle: const TextStyle(
                 fontWeight: FontWeight.w900,
                 letterSpacing: .75,
-              ),
+              ).merge(widget.labelStyle),
             ),
             child: AnimatedSwitcher(
               duration: duration,

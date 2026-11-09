@@ -91,14 +91,22 @@ Future<void> _openCoconut(WidgetTester tester) async {
     of: find.byKey(const ValueKey('rail-popular')),
     matching: find.byType(Scrollable),
   );
+  await Scrollable.ensureVisible(tester.element(rail), alignment: .35);
+  await tester.pumpAndSettle();
   final coconut = find.byKey(const ValueKey('product:popular:p_coconut'));
   await tester.scrollUntilVisible(coconut, 95, scrollable: rail);
-  await _tap(tester, coconut);
+  await Scrollable.ensureVisible(tester.element(coconut), alignment: .5);
+  await tester.pumpAndSettle();
+  await tester.tap(coconut);
+  await tester.pumpAndSettle();
   expect(find.text('Coconut Donut'), findsOneWidget);
   expect(find.byKey(const Key('navigationPill')), findsNothing);
   expect(find.text('JD022123'), findsOneWidget);
   expect(find.text('3,200 MMK'), findsOneWidget);
   expect(find.byIcon(Icons.broken_image_outlined), findsNothing);
+  final decrease = find.byTooltip('Decrease quantity');
+  await tester.scrollUntilVisible(decrease, 80);
+  await tester.pumpAndSettle();
   expect(
     tester
         .widget<IconButton>(
@@ -113,7 +121,7 @@ Future<void> _openCoconut(WidgetTester tester) async {
 
   await _tap(tester, find.byTooltip('Increase quantity'));
   expect(find.textContaining('6,400 MMK'), findsOneWidget);
-  await _tap(tester, find.byTooltip('Decrease quantity'));
+  await _tap(tester, decrease);
   expect(find.textContaining('ADD TO CART'), findsOneWidget);
   await _tap(tester, find.byType(BackButton));
 }
@@ -126,21 +134,33 @@ Future<void> _openRewards(WidgetTester tester) async {
   expect(find.text('J’ Donuts Rewards'), findsOneWidget);
   expect(find.text('680,000'), findsOneWidget);
   expect(find.text('500 pts remaining to become Gold'), findsOneWidget);
+  if (const bool.fromEnvironment('EXPECT_OFFLINE')) {
+    await _waitForOfflineBanner(tester);
+  }
+  final scroll = find.descendant(
+    of: find.byKey(const Key('rewardsScroll')),
+    matching: find.byType(Scrollable),
+  );
+  await tester.scrollUntilVisible(find.text('4/4'), 100, scrollable: scroll);
+  await tester.pumpAndSettle();
   expect(find.text('4/4'), findsOneWidget);
   expect(find.text('1/4'), findsOneWidget);
   expect(find.text('9/12'), findsOneWidget);
   expect(find.byIcon(Icons.broken_image_outlined), findsNothing);
-  if (const bool.fromEnvironment('EXPECT_OFFLINE')) {
-    await _waitForOfflineBanner(tester);
-  }
   final earn = tester.widgetList<FilledButton>(
     find.widgetWithText(FilledButton, 'EARN'),
   );
   expect(earn.map((button) => button.onPressed != null), [true, false, false]);
   await _tap(tester, find.text('Gift'));
+  await tester.scrollUntilVisible(
+    find.text('Gifts will appear here.'),
+    100,
+    scrollable: scroll,
+  );
   expect(find.text('Gifts will appear here.'), findsOneWidget);
   expect(find.text('9/12'), findsNothing);
   await _tap(tester, find.text('Eat more earn more'));
+  await tester.scrollUntilVisible(find.text('9/12'), 100, scrollable: scroll);
   expect(find.text('9/12'), findsOneWidget);
   await _tap(tester, find.byTooltip('Home'));
   expect(tester.getTopLeft(pill).dx, homeX);

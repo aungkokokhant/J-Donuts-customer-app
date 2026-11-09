@@ -35,9 +35,9 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 **ရွေးချယ်ထားတာ** — Riverpod ကို state နဲ့ DI နှစ်ခုလုံးအတွက်၊ Drift/SQLite ကို database အတွက်၊ `go_router` ကို navigation အတွက် သုံးမယ်။ Member tier ကို Rewards reference အတိုင်း **Silver၊ Gold ရောက်ဖို့ 500 points** လို့ seed လုပ်ပြီး Home နဲ့ Rewards နှစ်ခုလုံးမှာ တူညီအောင် ပြမယ်။ အခြေခံ scope မှာ mock server မထည့်ဘဲ refresh က database ကို ပြန်ဖတ်မယ်။
 
 - [ ] `auth`, `home`, `product`, `rewards` feature တစ်ခုစီကို `presentation`, `domain`, `data` ခွဲပါ။ Domain မှာ Flutter imports မသုံးပါ။ Data layer က domain repository interfaces ကို implement လုပ်ပါ။
-  - ပြီးပြီးသား: Home၊ Product၊ Rewards အတွက် pure Dart interfaces နဲ့ local implementations ရှိပါတယ်။ Auth နဲ့ screen တွေ ချိတ်ရန် ကျန်ပါတယ်။
+  - ပြီးပြီးသား: Home၊ Product၊ Rewards အတွက် pure Dart interfaces နဲ့ local implementations ရှိပါတယ်။ Auth မှာ domain/data/presentation ခွဲပြီး route ချိတ်ထားပါတယ်။ Home၊ Product နဲ့ Rewards screen implementation ကျန်ပါတယ်။
 - [ ] Riverpod providers ကနေ dependencies ထည့်ပါ။ Widgets ထဲမှာ services မဆောက်ပါ။ Auth redirect guard နဲ့ `/product/:id` route ထည့်ပါ။
-  - ပြီးပြီးသား: Riverpod က database နဲ့ repository instances ပေးပါတယ်။ Router နဲ့ auth guard ကို auth flow နဲ့အတူ ချိတ်ပါမယ်။
+  - ပြီးပြီးသား: Riverpod က database နဲ့ repository instances ပေးပါတယ်။ Router နဲ့ auth guard ကို auth flow နဲ့ ချိတ်ပြီးပါပြီ။ Product route ကျန်ပါတယ်။
 - [ ] Immutable models အတွက် Freezed + `json_serializable` သို့မဟုတ် PDF မှာ လက်ခံထားတဲ့ Dart 3 sealed classes/records ကို သုံးပါ။ Typed `Result` failures သုံးပြီး error တွေကို UI သို့ ပြန်ပို့ပါ။
   - ပြီးပြီးသား: Catalog repositories မှာ Dart records နဲ့ sealed `Result` သုံးထားပါတယ်။ Screen error states ချိတ်ရန် ကျန်ပါတယ်။
 - [ ] Products၊ banners၊ sections၊ shops၊ member နဲ့ challenges ကို bundled JSON ကနေ ပထမ launch မှာ versioned Drift database ထဲ seed လုပ်ပါ။ Seed ထပ်မပွားခြင်းနဲ့ schema migrations ကို စစ်ပါ။ UI က repository မှတစ်ဆင့် database ကို ဖတ်ပါ။
@@ -50,23 +50,25 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 
 **PDF စည်းကမ်း (pp. 2–5, 12–14)** — Fake auth ဖြစ်ပေမယ့် validation၊ session၊ input ပြန်ထိန်းပေးခြင်းနဲ့ form loading အားလုံး အလုပ်လုပ်ရမယ်။
 
-- [ ] Onboarding မှာ Let’s get started နဲ့ Log in entry points ထည့်ပါ။ Google၊ Apple၊ Facebook၊ Terms of Use နဲ့ Privacy Policy အတွက် placeholder sheet သို့မဟုတ် snackbar ပြပါ။
-- [ ] `AuthRepository` interface နောက်မှာ ~၁ စက္ကန့် ကြာတဲ့ fake implementation ထားပြီး registered users ကို local store ထဲ သိမ်းပါ။ Session ကို `flutter_secure_storage` နဲ့ သိမ်းပါ။
-- [ ] Register flow ကို Phone → OTP → Name → Date of birth → Welcome → Home အတိုင်း၊ Login flow ကို Phone → OTP → Home အတိုင်း ချိတ်ပါ။ မမှတ်ပုံတင်ရသေးတဲ့ ဖုန်းနံပါတ်အတွက် inline error နဲ့ Register link ပြပါ။
-- [ ] Back နှိပ်ရင် အရင် input တွေ ကျန်ပါစေ။ Continue က fake call လုပ်နေချိန် loading ပြပြီး double tap တစ်ခါမှာ request တစ်ခုသာ သွားပါစေ။
-- [ ] **Phone** — `+95` နောက်က spaces၊ dashes နဲ့ leading zero တစ်လုံး ဖယ်ပါ။ ကျန်တာက `9` နဲ့စပြီး နောက်ထပ် ဂဏန်း ၇–၉ လုံး ဖြစ်ရမယ်။ `09254135592` → `+959254135592` ကို စစ်ပါ။ Invalid input မှာ Continue ပိတ်ပြီး focus ဆုံးရှုံးချိန် inline error ပြပါ။
+- [x] Onboarding မှာ Let’s get started နဲ့ Log in entry points ထည့်ပါ။ Google၊ Apple၊ Facebook၊ Terms of Use နဲ့ Privacy Policy အတွက် placeholder sheet သို့မဟုတ် snackbar ပြပါ။
+- [x] `AuthRepository` interface နောက်မှာ ~၁ စက္ကန့် ကြာတဲ့ fake implementation ထားပြီး registered users ကို local store ထဲ သိမ်းပါ။ Session ကို `flutter_secure_storage` နဲ့ သိမ်းပါ။
+- [x] Register flow ကို Phone → OTP → Name → Date of birth → Welcome → Home အတိုင်း၊ Login flow ကို Phone → OTP → Home အတိုင်း ချိတ်ပါ။ မမှတ်ပုံတင်ရသေးတဲ့ ဖုန်းနံပါတ်အတွက် inline error နဲ့ Register link ပြပါ။
+- [x] Back နှိပ်ရင် အရင် input တွေ ကျန်ပါစေ။ Continue က fake call လုပ်နေချိန် loading ပြပြီး double tap တစ်ခါမှာ request တစ်ခုသာ သွားပါစေ။
+- [x] **Phone** — `+95` နောက်က spaces၊ dashes နဲ့ leading zero တစ်လုံး ဖယ်ပါ။ ကျန်တာက `9` နဲ့စပြီး နောက်ထပ် ဂဏန်း ၇–၉ လုံး ဖြစ်ရမယ်။ `09254135592` → `+959254135592` ကို စစ်ပါ။ Invalid input မှာ Continue ပိတ်ပြီး focus ဆုံးရှုံးချိန် inline error ပြပါ။
 - [ ] **OTP** — Numeric keyboard နဲ့ SMS autofill hint ထည့်ပါ။ Digit တစ်လုံးစီ auto-advance၊ backspace နဲ့ နောက်ပြန်ရွှေ့ခြင်း၊ ၆ လုံး paste တို့ အလုပ်လုပ်ပါစေ။ `123456` ကိုပဲ လက်ခံပါ။ Wrong code မှာ boxes လှုပ်၊ code ရှင်း၊ error ပြပါ။
-- [ ] **OTP lock / Resend** — သုံးခါမှားရင် Resend နှိပ်သည်အထိ entry ပိတ်ပါ။ Timer က 5:00 မှ 0:00 အထိ ဆင်းပြီး 0:00 မှာ Resend ဖွင့်ပါ။ Resend နှိပ်ရင် lock ဖြေပြီး timer ပြန်စပါ။
-- [ ] **Name** — Trim လုပ်ပြီး first name ၁–၅၀ characters၊ last name optional ဖြစ်ရမယ်။ ဖြည့်ထားရင် တူညီတဲ့ စည်းကမ်းသုံးပါ။ မြန်မာစာအပါအဝင် letters နဲ့ spaces လက်ခံပြီး ဂဏန်းပါရင် inline error ပြပါ။
-- [ ] **မွေးသက္ကရာဇ်** — Month/day/year သုံးပြီး တကယ်ရှိတဲ့ ရက်စွဲ၊ leap day၊ အနာဂတ်ရက်နဲ့ အသက် ၁၃ နှစ်ပြည့်မပြည့် စစ်ပါ။ Minimum age ကို named constant ထားပါ။ Invalid ရင် inline error နဲ့ disabled Continue ပြပါ။
-- [ ] Logged-in relaunch → Home၊ logged-out relaunch → Onboarding စမ်းပါ။ Settings မှာ Log out row ထည့်ပါ။
+- [x] **OTP lock / Resend** — သုံးခါမှားရင် Resend နှိပ်သည်အထိ entry ပိတ်ပါ။ Timer က 5:00 မှ 0:00 အထိ ဆင်းပြီး 0:00 မှာ Resend ဖွင့်ပါ။ Resend နှိပ်ရင် lock ဖြေပြီး timer ပြန်စပါ။
+- [x] **Name** — Trim လုပ်ပြီး first name ၁–၅၀ characters၊ last name optional ဖြစ်ရမယ်။ ဖြည့်ထားရင် တူညီတဲ့ စည်းကမ်းသုံးပါ။ မြန်မာစာအပါအဝင် letters နဲ့ spaces လက်ခံပြီး ဂဏန်းပါရင် inline error ပြပါ။
+- [x] **မွေးသက္ကရာဇ်** — Month/day/year သုံးပြီး တကယ်ရှိတဲ့ ရက်စွဲ၊ leap day၊ အနာဂတ်ရက်နဲ့ အသက် ၁၃ နှစ်ပြည့်မပြည့် စစ်ပါ။ Minimum age ကို named constant ထားပါ။ Invalid ရင် inline error နဲ့ disabled Continue ပြပါ။
+- [x] Logged-in relaunch → Home၊ logged-out relaunch → Onboarding စမ်းပါ။ Settings မှာ Log out row ထည့်ပါ။
 - [ ] Domain pure validators နဲ့ use cases အတွက် unit tests၊ Login/Register validation အတွက် widget tests ရေးပါ။ Test names ကို စမ်းတဲ့ behavior အတိုင်း ပေးပါ။
+
+**Milestone evidence** — Phone/OTP form၊ Name၊ DOB နဲ့ Welcome ကို app routes နဲ့ ချိတ်ထားပါတယ်။ iPhone 17 Pro Simulator မှာ real SQLite/secure storage နဲ့ Register → Home → Log out → Log in → Home integration test pass ပါတယ်။ OTP autofill hint၊ sequential input နဲ့ shake ထည့်ထားပြီး keyboard/autofill ကို final device check မှာ ပြန်တိုက်စစ်ပါမယ်။ Home က auth အတွက် အခြေခံ landing page ဖြစ်ပြီး full catalog UI ကျန်ပါတယ်။
 
 ### 4. Welcome၊ Home၊ Product Detail နဲ့ Rewards data
 
 **PDF စည်းကမ်း (pp. 2, 6–11, 14)** — Home နဲ့ Reward tabs အလုပ်လုပ်ရမယ်။ ကျန် icon သုံးခု placeholder ဖြစ်လို့ရပြီး Settings မှာ Log out ပါရမယ်။ Screen တစ်ခုစီမှာ သက်ဆိုင်ရာ loading/error/empty states ပါရမယ်။
 
-- [ ] Welcome မှာ donut tiles နဲ့ Let’s explore ကို ပြပြီး Home သို့ ချိတ်ပါ။
+- [x] Welcome မှာ donut tiles နဲ့ Let’s explore ကို ပြပြီး Home သို့ ချိတ်ပါ။
 - [ ] Home header မှာ member name၊ photo၊ tier၊ next-tier points နဲ့ notification count ပြပါ။ Banner carousel နဲ့ Seasonal specials၊ Popular၊ Order again horizontal lists ထည့်ပြီး discount badges ကို data ကနေ ဖတ်ပါ။
 - [ ] Nearby shop cards နဲ့ shop count ပြပါ။ Explore now နဲ့ Order online အတွက် display ပဲ လိုပါတယ်။ Home loading မှာ skeleton သုံးပြီး section တစ်ခုချင်းစီမှာ empty/error states ထည့်ပါ။
 - [ ] Product tile တိုင်းက သက်ဆိုင်ရာ detail ကို ဖွင့်ပါစေ။ Coconut Donut reference အတိုင်း code၊ name၊ image၊ `3,200 MMK` ပုံစံ၊ data အရ New badge နဲ့ What’s this? description ပြပါ။

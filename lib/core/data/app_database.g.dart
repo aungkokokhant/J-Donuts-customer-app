@@ -2902,6 +2902,322 @@ class ChallengesCompanion extends UpdateCompanion<Challenge> {
   }
 }
 
+class RegisteredUsers extends Table
+    with TableInfo<RegisteredUsers, RegisteredUser> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  RegisteredUsers(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+    'phone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  static const VerificationMeta _firstNameMeta = const VerificationMeta(
+    'firstName',
+  );
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+    'first_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _lastNameMeta = const VerificationMeta(
+    'lastName',
+  );
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+    'last_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _birthDateMeta = const VerificationMeta(
+    'birthDate',
+  );
+  late final GeneratedColumn<DateTime> birthDate = GeneratedColumn<DateTime>(
+    'birth_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [phone, firstName, lastName, birthDate];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'registered_users';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RegisteredUser> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('phone')) {
+      context.handle(
+        _phoneMeta,
+        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_phoneMeta);
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(
+        _firstNameMeta,
+        firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firstNameMeta);
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(
+        _lastNameMeta,
+        lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_lastNameMeta);
+    }
+    if (data.containsKey('birth_date')) {
+      context.handle(
+        _birthDateMeta,
+        birthDate.isAcceptableOrUnknown(data['birth_date']!, _birthDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_birthDateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {phone};
+  @override
+  RegisteredUser map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RegisteredUser(
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      )!,
+      firstName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name'],
+      )!,
+      lastName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_name'],
+      )!,
+      birthDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}birth_date'],
+      )!,
+    );
+  }
+
+  @override
+  RegisteredUsers createAlias(String alias) {
+    return RegisteredUsers(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class RegisteredUser extends DataClass implements Insertable<RegisteredUser> {
+  final String phone;
+  final String firstName;
+  final String lastName;
+  final DateTime birthDate;
+  const RegisteredUser({
+    required this.phone,
+    required this.firstName,
+    required this.lastName,
+    required this.birthDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['phone'] = Variable<String>(phone);
+    map['first_name'] = Variable<String>(firstName);
+    map['last_name'] = Variable<String>(lastName);
+    map['birth_date'] = Variable<DateTime>(birthDate);
+    return map;
+  }
+
+  RegisteredUsersCompanion toCompanion(bool nullToAbsent) {
+    return RegisteredUsersCompanion(
+      phone: Value(phone),
+      firstName: Value(firstName),
+      lastName: Value(lastName),
+      birthDate: Value(birthDate),
+    );
+  }
+
+  factory RegisteredUser.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RegisteredUser(
+      phone: serializer.fromJson<String>(json['phone']),
+      firstName: serializer.fromJson<String>(json['first_name']),
+      lastName: serializer.fromJson<String>(json['last_name']),
+      birthDate: serializer.fromJson<DateTime>(json['birth_date']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'phone': serializer.toJson<String>(phone),
+      'first_name': serializer.toJson<String>(firstName),
+      'last_name': serializer.toJson<String>(lastName),
+      'birth_date': serializer.toJson<DateTime>(birthDate),
+    };
+  }
+
+  RegisteredUser copyWith({
+    String? phone,
+    String? firstName,
+    String? lastName,
+    DateTime? birthDate,
+  }) => RegisteredUser(
+    phone: phone ?? this.phone,
+    firstName: firstName ?? this.firstName,
+    lastName: lastName ?? this.lastName,
+    birthDate: birthDate ?? this.birthDate,
+  );
+  RegisteredUser copyWithCompanion(RegisteredUsersCompanion data) {
+    return RegisteredUser(
+      phone: data.phone.present ? data.phone.value : this.phone,
+      firstName: data.firstName.present ? data.firstName.value : this.firstName,
+      lastName: data.lastName.present ? data.lastName.value : this.lastName,
+      birthDate: data.birthDate.present ? data.birthDate.value : this.birthDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RegisteredUser(')
+          ..write('phone: $phone, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('birthDate: $birthDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(phone, firstName, lastName, birthDate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RegisteredUser &&
+          other.phone == this.phone &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName &&
+          other.birthDate == this.birthDate);
+}
+
+class RegisteredUsersCompanion extends UpdateCompanion<RegisteredUser> {
+  final Value<String> phone;
+  final Value<String> firstName;
+  final Value<String> lastName;
+  final Value<DateTime> birthDate;
+  final Value<int> rowid;
+  const RegisteredUsersCompanion({
+    this.phone = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.birthDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RegisteredUsersCompanion.insert({
+    required String phone,
+    required String firstName,
+    required String lastName,
+    required DateTime birthDate,
+    this.rowid = const Value.absent(),
+  }) : phone = Value(phone),
+       firstName = Value(firstName),
+       lastName = Value(lastName),
+       birthDate = Value(birthDate);
+  static Insertable<RegisteredUser> custom({
+    Expression<String>? phone,
+    Expression<String>? firstName,
+    Expression<String>? lastName,
+    Expression<DateTime>? birthDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (phone != null) 'phone': phone,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
+      if (birthDate != null) 'birth_date': birthDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RegisteredUsersCompanion copyWith({
+    Value<String>? phone,
+    Value<String>? firstName,
+    Value<String>? lastName,
+    Value<DateTime>? birthDate,
+    Value<int>? rowid,
+  }) {
+    return RegisteredUsersCompanion(
+      phone: phone ?? this.phone,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      birthDate: birthDate ?? this.birthDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String>(firstName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String>(lastName.value);
+    }
+    if (birthDate.present) {
+      map['birth_date'] = Variable<DateTime>(birthDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RegisteredUsersCompanion(')
+          ..write('phone: $phone, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('birthDate: $birthDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2912,6 +3228,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Shops shops = Shops(this);
   late final Members members = Members(this);
   late final Challenges challenges = Challenges(this);
+  late final RegisteredUsers registeredUsers = RegisteredUsers(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2924,6 +3241,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     shops,
     members,
     challenges,
+    registeredUsers,
   ];
 }
 
@@ -5066,6 +5384,196 @@ typedef $ChallengesProcessedTableManager =
       Challenge,
       PrefetchHooks Function({bool memberId})
     >;
+typedef $RegisteredUsersCreateCompanionBuilder =
+    RegisteredUsersCompanion Function({
+      required String phone,
+      required String firstName,
+      required String lastName,
+      required DateTime birthDate,
+      Value<int> rowid,
+    });
+typedef $RegisteredUsersUpdateCompanionBuilder =
+    RegisteredUsersCompanion Function({
+      Value<String> phone,
+      Value<String> firstName,
+      Value<String> lastName,
+      Value<DateTime> birthDate,
+      Value<int> rowid,
+    });
+
+class $RegisteredUsersFilterComposer
+    extends Composer<_$AppDatabase, RegisteredUsers> {
+  $RegisteredUsersFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get birthDate => $composableBuilder(
+    column: $table.birthDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $RegisteredUsersOrderingComposer
+    extends Composer<_$AppDatabase, RegisteredUsers> {
+  $RegisteredUsersOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get birthDate => $composableBuilder(
+    column: $table.birthDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $RegisteredUsersAnnotationComposer
+    extends Composer<_$AppDatabase, RegisteredUsers> {
+  $RegisteredUsersAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get birthDate =>
+      $composableBuilder(column: $table.birthDate, builder: (column) => column);
+}
+
+class $RegisteredUsersTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          RegisteredUsers,
+          RegisteredUser,
+          $RegisteredUsersFilterComposer,
+          $RegisteredUsersOrderingComposer,
+          $RegisteredUsersAnnotationComposer,
+          $RegisteredUsersCreateCompanionBuilder,
+          $RegisteredUsersUpdateCompanionBuilder,
+          (
+            RegisteredUser,
+            BaseReferences<_$AppDatabase, RegisteredUsers, RegisteredUser>,
+          ),
+          RegisteredUser,
+          PrefetchHooks Function()
+        > {
+  $RegisteredUsersTableManager(_$AppDatabase db, RegisteredUsers table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $RegisteredUsersFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $RegisteredUsersOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $RegisteredUsersAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> phone = const Value.absent(),
+                Value<String> firstName = const Value.absent(),
+                Value<String> lastName = const Value.absent(),
+                Value<DateTime> birthDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RegisteredUsersCompanion(
+                phone: phone,
+                firstName: firstName,
+                lastName: lastName,
+                birthDate: birthDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String phone,
+                required String firstName,
+                required String lastName,
+                required DateTime birthDate,
+                Value<int> rowid = const Value.absent(),
+              }) => RegisteredUsersCompanion.insert(
+                phone: phone,
+                firstName: firstName,
+                lastName: lastName,
+                birthDate: birthDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<RegisteredUsers, RegisteredUser>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    RegisteredUsers,
+                    RegisteredUser
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $RegisteredUsersProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      RegisteredUsers,
+      RegisteredUser,
+      $RegisteredUsersFilterComposer,
+      $RegisteredUsersOrderingComposer,
+      $RegisteredUsersAnnotationComposer,
+      $RegisteredUsersCreateCompanionBuilder,
+      $RegisteredUsersUpdateCompanionBuilder,
+      (
+        RegisteredUser,
+        BaseReferences<_$AppDatabase, RegisteredUsers, RegisteredUser>,
+      ),
+      RegisteredUser,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5081,4 +5589,6 @@ class $AppDatabaseManager {
   $MembersTableManager get members => $MembersTableManager(_db, _db.members);
   $ChallengesTableManager get challenges =>
       $ChallengesTableManager(_db, _db.challenges);
+  $RegisteredUsersTableManager get registeredUsers =>
+      $RegisteredUsersTableManager(_db, _db.registeredUsers);
 }

@@ -1,6 +1,6 @@
 # J’Donuts Customer App
 
-Flutter take-home project for Android and iOS. The current milestone is the local catalog and rewards data layer.
+Flutter take-home project for Android and iOS. The current milestone includes offline catalog storage and the local registration and login flow.
 
 ## Development setup
 
@@ -36,5 +36,11 @@ ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app build/ios/JDonuts-
 Drift creates the SQLite schema and seeds it from `assets/data/catalog.json` on first open. Catalog, Home, and Rewards repositories read SQLite. Home and Rewards read the same member record. Riverpod provides the database and repositories so tests can use a separate database.
 
 After changing the Drift schema, regenerate the checked-in Dart file with `dart run build_runner build`.
+
+## Demo authentication
+
+Register with a Myanmar mobile number and use **123456** for the OTP. The demo saves users in SQLite and the current session in platform secure storage. Use **Settings → Log out** to try the returning user flow.
+
+Run the device auth flow test with `flutter test integration_test/app_flow_test.dart -d DEVICE_ID`.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance checks.

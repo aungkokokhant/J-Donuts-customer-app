@@ -12,7 +12,7 @@ class AppDatabase extends _$AppDatabase {
   final Future<String> Function() loadSeed;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -23,6 +23,9 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createAll();
         await _insertSeed(this, seed);
       });
+    },
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) await migrator.createTable(registeredUsers);
     },
     beforeOpen: (_) => customStatement('PRAGMA foreign_keys = ON'),
   );

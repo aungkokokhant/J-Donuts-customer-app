@@ -1,0 +1,149 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'J’Donuts';
+
+  @override
+  String get onboardingTitle => 'Round food for\nevery mood';
+
+  @override
+  String get getStarted => 'Let’s get started';
+
+  @override
+  String get haveAccount => 'Already have an account?';
+
+  @override
+  String get logIn => 'Log in';
+
+  @override
+  String get google => 'Google';
+
+  @override
+  String get apple => 'Apple';
+
+  @override
+  String get facebook => 'Facebook';
+
+  @override
+  String get notAvailable => 'This option is not available in the demo.';
+
+  @override
+  String get legalPrefix =>
+      'By continuing, you acknowledge that you have read and agree to our';
+
+  @override
+  String get terms => 'Terms of Use';
+
+  @override
+  String get andWord => 'and';
+
+  @override
+  String get privacy => 'Privacy Policy';
+
+  @override
+  String get phoneTitle => 'Enter your phone number';
+
+  @override
+  String get phoneLabel => 'Phone number';
+
+  @override
+  String get invalidPhone => 'Enter a valid Myanmar phone number.';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get verifyTitle => 'Verify your number';
+
+  @override
+  String verifyMessage(String phone) {
+    return 'We’ve sent a 6-digit OTP to $phone';
+  }
+
+  @override
+  String get otpLabel => 'Verification code';
+
+  @override
+  String get otpWrong => 'That code is incorrect. Try again.';
+
+  @override
+  String get otpLocked =>
+      'Too many attempts. Wait until you can resend the code.';
+
+  @override
+  String get otpMissing => 'Didn’t receive the code?';
+
+  @override
+  String resendIn(String remaining) {
+    return 'Resend in $remaining';
+  }
+
+  @override
+  String get resend => 'Resend';
+
+  @override
+  String get unknownPhone => 'This number hasn’t registered yet.';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get alreadyRegistered => 'This number is already registered.';
+
+  @override
+  String get authError => 'Something went wrong. Please try again.';
+
+  @override
+  String get nameTitle => 'What’s your name?';
+
+  @override
+  String get firstName => 'First name';
+
+  @override
+  String get lastName => 'Last name';
+
+  @override
+  String get invalidName => 'Use 1–50 letters and spaces.';
+
+  @override
+  String get birthTitle => 'What’s your date of birth?';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get day => 'Day';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get invalidBirthDate => 'Enter a valid date. You must be at least 13.';
+
+  @override
+  String get welcomeTitle => 'Welcome to the\nworld of J’Donuts';
+
+  @override
+  String get explore => 'Let’s explore';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get logOut => 'Log out';
+
+  @override
+  String get productUnavailable => 'This product is unavailable.';
+}

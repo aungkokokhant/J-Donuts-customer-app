@@ -15,6 +15,8 @@ flutter run -d DEVICE_ID
 ```
 
 Replace `DEVICE_ID` with the emulator or simulator ID from `flutter devices`.
+In Android Studio, point the Flutter plugin at the same SDK directory so it uses
+the bundled Dart version.
 
 ## Build and check
 
@@ -31,9 +33,24 @@ The Android APK is at `build/app/outputs/flutter-apk/app-release.apk`. The iOS S
 ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app build/ios/JDonuts-Simulator.zip
 ```
 
+## Architecture
+
+| Folder | Responsibility |
+| --- | --- |
+| `lib/app/` | Router and session guard, Riverpod providers, reachability, shared theme and motion |
+| `lib/features/{auth,home,product,rewards}/presentation/` | Screens, interactions and feature state |
+| `lib/features/{auth,home,product,rewards}/domain/` | Pure Dart models, validation and repository contracts |
+| `lib/features/{auth,home,product,rewards}/data/` | Local implementations of the domain contracts |
+| `lib/core/` | Shared Drift database, typed results, member model and catalog widgets |
+| `assets/data/` and `lib/l10n/` | Catalog seed and English UI strings |
+
+Riverpod provides feature state and dependency injection. The screens watch
+independent async providers for catalog sections, while tests override repository
+providers to exercise the same UI with controlled data.
+
 ## Local data
 
-Drift creates the SQLite schema and seeds it from `assets/data/catalog.json` on first open. Catalog, Home, and Rewards repositories read SQLite. Home and Rewards read the same member record. Riverpod provides the database and repositories so tests can use a separate database. Product images are bundled illustrations. For remote images the image widget uses a disk cache. Home uses an HTTPS reachability probe for its offline banner and refreshes from SQLite when connectivity returns or the user pulls to refresh.
+Drift creates the SQLite schema and seeds it from `assets/data/catalog.json` on first open. Catalog, Home, and Rewards repositories read SQLite. Home and Rewards read the same member record. Riverpod provides the database and repositories so tests can use a separate database. Donut cutouts and other catalog artwork are bundled as local assets. For remote images the image widget uses a disk cache. Home uses an HTTPS reachability probe for its offline banner and refreshes from SQLite when connectivity returns or the user pulls to refresh.
 
 After changing the Drift schema, regenerate the checked-in Dart file with `dart run build_runner build`.
 
@@ -41,12 +58,30 @@ After changing the Drift schema, regenerate the checked-in Dart file with `dart 
 
 Register with a Myanmar mobile number and use **123456** for the OTP. The demo saves users in SQLite and the current session in platform secure storage. Use **Settings → Log out** to try the returning user flow.
 
-Run the device registration, product, and rewards flow test with `flutter test integration_test/app_flow_test.dart -d DEVICE_ID`.
+Run the device registration, product, and rewards flow test with `flutter test integration_test/app_flow_test.dart -d DEVICE_ID`. For Android offline verification, enable airplane mode, turn Wi-Fi off and add `--dart-define=EXPECT_OFFLINE=true`.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance checks.
 
 ## Motion
 
-The app uses Flutter transitions and custom painters for the onboarding steps, catalog loading and carousel, product image Hero, Rewards points ring and challenge artwork. The Rewards tab shows SQLite points and progress shared with Home. Reduce Motion shortens or skips entrance and transition animations.
+The app uses staggered onboarding and Welcome entrances, slide transitions and
+an animated registration ring, press and loading feedback, and an OTP shake.
+Home uses shimmer and an autoplaying carousel. Product detail uses an image
+Hero and an animated quantity. Rewards uses a painted points ring with a count-up,
+tier reveal, challenge progress artwork, sliding tabs and a sliding navigation
+pill. Reduce Motion shortens or skips these effects and stops carousel autoplay.
 
 The app bundles Comfortaa Regular for headlines and Montserrat for body text and buttons. Both fonts are distributed under the SIL Open Font License. See [Comfortaa-OFL.txt](assets/fonts/Comfortaa-OFL.txt) and [Montserrat-OFL.txt](assets/fonts/Montserrat-OFL.txt).
+
+Donut, coffee, bakery, assortment and member photographs are original
+AI-generated demo assets bundled for offline display. The member portrait is fictional.
+
+## Scope and time spent
+
+- Authentication and OTP are local demo flows. Checkout, the extra navigation
+  items and social sign-in show demo feedback.
+- Catalog refresh reads local data. The app has no mock server or persistent cart.
+- Motion was checked on emulators and the iOS Simulator. Frame timing on a
+  physical mid-range Android phone is pending.
+- Approximately 2.5 hours of active implementation and verification across the
+  recorded work sessions, excluding breaks.

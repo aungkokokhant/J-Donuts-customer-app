@@ -299,6 +299,25 @@ void main() {
     await tester.tap(find.text('Log in'));
     await tester.pumpAndSettle();
     await _sendPhone(tester);
+    final otp = find.byKey(_otpInput);
+    final input = tester.widget<TextField>(otp);
+    expect(input.keyboardType, TextInputType.number);
+    expect(input.autofillHints, contains(AutofillHints.oneTimeCode));
+    await tester.enterText(otp, '12');
+    await tester.pump();
+    expect(find.text('2'), findsOneWidget);
+    tester.testTextInput.updateEditingValue(
+      const TextEditingValue(
+        text: '1',
+        selection: TextSelection.collapsed(offset: 1),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('2'), findsNothing);
+    expect(
+      find.byWidgetPredicate((widget) => widget is Text && widget.data == '1'),
+      findsOneWidget,
+    );
     await tester.enterText(find.byKey(_otpInput), fakeOtp);
     await tester.pumpAndSettle();
 

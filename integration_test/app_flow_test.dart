@@ -65,7 +65,9 @@ Future<void> _logOut(WidgetTester tester) async {
 }
 
 Future<void> _tap(WidgetTester tester, Finder target) async {
-  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
+  await Scrollable.ensureVisible(tester.element(target), alignment: .5);
+  await tester.pumpAndSettle();
   await tester.tap(target);
   await tester.pumpAndSettle();
 }
@@ -151,7 +153,9 @@ Future<void> _openRewards(WidgetTester tester) async {
     find.widgetWithText(FilledButton, 'EARN'),
   );
   expect(earn.map((button) => button.onPressed != null), [true, false, false]);
-  await _tap(tester, find.text('Gift'));
+  final gift = find.text('Gift');
+  await tester.scrollUntilVisible(gift, -100, scrollable: scroll);
+  await _tap(tester, gift);
   await tester.scrollUntilVisible(
     find.text('Gifts will appear here.'),
     100,
@@ -159,7 +163,9 @@ Future<void> _openRewards(WidgetTester tester) async {
   );
   expect(find.text('Gifts will appear here.'), findsOneWidget);
   expect(find.text('9/12'), findsNothing);
-  await _tap(tester, find.text('Eat more earn more'));
+  final challenges = find.text('Eat more earn more');
+  await tester.scrollUntilVisible(challenges, -100, scrollable: scroll);
+  await _tap(tester, challenges);
   await tester.scrollUntilVisible(find.text('9/12'), 100, scrollable: scroll);
   expect(find.text('9/12'), findsOneWidget);
   await _tap(tester, find.byTooltip('Home'));

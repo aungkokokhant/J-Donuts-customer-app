@@ -11,6 +11,8 @@ import '../features/auth/presentation/auth_flow_page.dart';
 import '../features/auth/presentation/onboarding_page.dart';
 import '../features/auth/presentation/session_controller.dart';
 import '../features/home/presentation/home_landing_page.dart';
+import '../features/product/presentation/product_detail_page.dart';
+import '../features/product/presentation/product_preview.dart';
 import '../l10n/app_localizations.dart';
 import 'repository_providers.dart';
 
@@ -48,6 +50,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/home',
         builder: (_, _) => HomeLandingPage(session: session),
       ),
+      GoRoute(
+        path: '/product/:id',
+        builder: (_, state) => ProductDetailPage(
+          id: state.pathParameters['id']!,
+          preview: state.extra is ProductPreview
+              ? state.extra as ProductPreview
+              : null,
+        ),
+      ),
     ],
   );
   ref.onDispose(() {
@@ -64,7 +75,10 @@ String? _redirect(GoRouterState state, SessionController session) {
     return location == '/session' ? null : '/session';
   }
   if (location == '/session') return session.user == null ? '/' : '/home';
-  if (location == '/home' && session.user == null) return '/';
+  if ((location == '/home' || location == '/product/:id') &&
+      session.user == null) {
+    return '/';
+  }
   if ((location == '/' || location == '/auth') && session.user != null) {
     return '/home';
   }

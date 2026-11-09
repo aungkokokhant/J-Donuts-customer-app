@@ -9,6 +9,11 @@ abstract final class AppColors {
   static const canvas = Color(0xFFFFFAFC);
   static const error = Color(0xFFB72445);
   static const white = Colors.white;
+  static const catalogSurface = Color(0xFFEFF0F1);
+  static const warm = Color(0xFFFFECD9);
+  static const orange = Color(0xFFF57924);
+  static const violet = Color(0xFF6658A6);
+  static const skeleton = Color(0xFFDCE0E3);
 }
 
 abstract final class AppSpacing {

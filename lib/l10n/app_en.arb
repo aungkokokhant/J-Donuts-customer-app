@@ -19,13 +19,25 @@
   "continueLabel": "Continue",
   "verifyTitle": "Verify your number",
   "verifyMessage": "We’ve sent a 6-digit OTP to {phone}",
-  "@verifyMessage": {"placeholders": {"phone": {"type": "String"}}},
+  "@verifyMessage": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "otpLabel": "Verification code",
   "otpWrong": "That code is incorrect. Try again.",
   "otpLocked": "Too many attempts. Wait until you can resend the code.",
   "otpMissing": "Didn’t receive the code?",
   "resendIn": "Resend in {remaining}",
-  "@resendIn": {"placeholders": {"remaining": {"type": "String"}}},
+  "@resendIn": {
+    "placeholders": {
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
   "resend": "Resend",
   "unknownPhone": "This number hasn’t registered yet.",
   "register": "Register",
@@ -45,5 +57,64 @@
   "home": "Home",
   "settings": "Settings",
   "logOut": "Log out",
-  "productUnavailable": "This product is unavailable."
+  "productUnavailable": "This product is unavailable.",
+  "memberTier": "{tier} member",
+  "@memberTier": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsToTier": "{points} points left to become {tier}",
+  "@pointsToTier": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "notifications": "Notifications",
+  "rewards": "Reward",
+  "menu": "Menu",
+  "wallet": "Wallet",
+  "offlineMessage": "You’re offline. Showing saved data.",
+  "nearbyShops": "{count, plural, one{There is 1 J’Donut shop near you.} other{There are {count} J’Donut shops near you.}}",
+  "@nearbyShops": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exploreNow": "Explore now",
+  "orderOnline": "Order online",
+  "newLabel": "New",
+  "discountLabel": "{percent}% off",
+  "@discountLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "priceMmk": "{price} MMK",
+  "@priceMmk": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsThis": "What’s this?",
+  "addToCart": "Add to cart",
+  "addedToCart": "Added to cart",
+  "decreaseQuantity": "Decrease quantity",
+  "increaseQuantity": "Increase quantity",
+  "dataError": "Couldn’t load this section.",
+  "emptySection": "Nothing to show here yet.",
+  "retry": "Retry"
 }

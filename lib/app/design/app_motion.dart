@@ -5,6 +5,8 @@ abstract final class AppMotion {
   static const step = Duration(milliseconds: 280);
   static const entrance = Duration(milliseconds: 460);
   static const stagger = Duration(milliseconds: 85);
+  static const carouselInterval = Duration(seconds: 5);
+  static const shimmer = Duration(milliseconds: 1100);
   static const shake = Duration(milliseconds: 390);
   static const curve = Curves.easeOutCubic;
 

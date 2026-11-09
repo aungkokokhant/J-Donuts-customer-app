@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jdonuts_customer_app/app/app_router.dart';
+import 'package:jdonuts_customer_app/app/network_status.dart';
+import 'package:jdonuts_customer_app/app/repository_providers.dart';
+import 'package:jdonuts_customer_app/core/domain/member_profile.dart';
 import 'package:jdonuts_customer_app/core/domain/result.dart';
 import 'package:jdonuts_customer_app/features/auth/domain/auth_repository.dart';
 import 'package:jdonuts_customer_app/features/auth/domain/auth_validation.dart';
+import 'package:jdonuts_customer_app/features/home/domain/home_repository.dart';
 import 'package:jdonuts_customer_app/main.dart';
 
 class _FakeAuth implements AuthRepository {
@@ -53,13 +57,42 @@ class _FakeAuth implements AuthRepository {
   }
 }
 
+class _FakeHome implements HomeRepository {
+  @override
+  Future<Result<MemberProfile?>> loadMember(String id) async => Success((
+    id: id,
+    name: 'Hania',
+    imageKey: 'member_avatar',
+    tier: 'Silver',
+    nextTier: 'Gold',
+    pointsToNextTier: 500,
+    totalPoints: 680000,
+    notificationCount: 2,
+    availableRewards: 3,
+  ));
+
+  @override
+  Future<Result<List<HomeBanner>>> loadBanners() async => const Success([]);
+
+  @override
+  Future<Result<List<ProductSection>>> loadSections() async =>
+      const Success([]);
+
+  @override
+  Future<Result<List<NearbyShop>>> loadShops() async => const Success([]);
+}
+
 const _phoneInput = Key('phoneInput');
 const _otpInput = Key('otpInput');
 
 Future<void> _start(WidgetTester tester, _FakeAuth auth) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [authRepositoryProvider.overrideWithValue(auth)],
+      overrides: [
+        authRepositoryProvider.overrideWithValue(auth),
+        homeRepositoryProvider.overrideWithValue(_FakeHome()),
+        networkOnlineProvider.overrideWith((ref) => Stream.value(false)),
+      ],
       child: const JDonutsApp(),
     ),
   );

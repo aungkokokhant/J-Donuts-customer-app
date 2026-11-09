@@ -146,4 +146,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productUnavailable => 'This product is unavailable.';
+
+  @override
+  String memberTier(String tier) {
+    return '$tier member';
+  }
+
+  @override
+  String pointsToTier(String points, String tier) {
+    return '$points points left to become $tier';
+  }
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get rewards => 'Reward';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get wallet => 'Wallet';
+
+  @override
+  String get offlineMessage => 'You’re offline. Showing saved data.';
+
+  @override
+  String nearbyShops(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'There are $count J’Donut shops near you.',
+      one: 'There is 1 J’Donut shop near you.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get exploreNow => 'Explore now';
+
+  @override
+  String get orderOnline => 'Order online';
+
+  @override
+  String get newLabel => 'New';
+
+  @override
+  String discountLabel(int percent) {
+    return '$percent% off';
+  }
+
+  @override
+  String priceMmk(String price) {
+    return '$price MMK';
+  }
+
+  @override
+  String get whatsThis => 'What’s this?';
+
+  @override
+  String get addToCart => 'Add to cart';
+
+  @override
+  String get addedToCart => 'Added to cart';
+
+  @override
+  String get decreaseQuantity => 'Decrease quantity';
+
+  @override
+  String get increaseQuantity => 'Increase quantity';
+
+  @override
+  String get dataError => 'Couldn’t load this section.';
+
+  @override
+  String get emptySection => 'Nothing to show here yet.';
+
+  @override
+  String get retry => 'Retry';
 }

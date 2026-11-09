@@ -357,6 +357,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This product is unavailable.'**
   String get productUnavailable;
+
+  /// No description provided for @memberTier.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} member'**
+  String memberTier(String tier);
+
+  /// No description provided for @pointsToTier.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} points left to become {tier}'**
+  String pointsToTier(String points, String tier);
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward'**
+  String get rewards;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get wallet;
+
+  /// No description provided for @offlineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re offline. Showing saved data.'**
+  String get offlineMessage;
+
+  /// No description provided for @nearbyShops.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{There is 1 J’Donut shop near you.} other{There are {count} J’Donut shops near you.}}'**
+  String nearbyShops(int count);
+
+  /// No description provided for @exploreNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore now'**
+  String get exploreNow;
+
+  /// No description provided for @orderOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Order online'**
+  String get orderOnline;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newLabel;
+
+  /// No description provided for @discountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off'**
+  String discountLabel(int percent);
+
+  /// No description provided for @priceMmk.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} MMK'**
+  String priceMmk(String price);
+
+  /// No description provided for @whatsThis.
+  ///
+  /// In en, this message translates to:
+  /// **'What’s this?'**
+  String get whatsThis;
+
+  /// No description provided for @addToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to cart'**
+  String get addToCart;
+
+  /// No description provided for @addedToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to cart'**
+  String get addedToCart;
+
+  /// No description provided for @decreaseQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease quantity'**
+  String get decreaseQuantity;
+
+  /// No description provided for @increaseQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase quantity'**
+  String get increaseQuantity;
+
+  /// No description provided for @dataError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load this section.'**
+  String get dataError;
+
+  /// No description provided for @emptySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to show here yet.'**
+  String get emptySection;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate

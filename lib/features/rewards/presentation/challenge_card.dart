@@ -8,6 +8,7 @@ import '../../../core/presentation/catalog_image.dart';
 import '../../../core/presentation/catalog_price.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/rewards_repository.dart';
+import 'rewards_style.dart';
 
 class ChallengeCard extends StatelessWidget {
   const ChallengeCard({super.key, required this.challenge});
@@ -25,11 +26,17 @@ class ChallengeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.lg),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.all(AppSpacing.md + AppSpacing.xs),
         child: Row(
           children: [
-            Expanded(flex: 5, child: _ChallengeArt(challenge: challenge)),
-            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              flex: 5,
+              child: FractionallySizedBox(
+                widthFactor: .89,
+                child: _ChallengeArt(challenge: challenge),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               flex: 6,
               child: Column(
@@ -38,19 +45,23 @@ class ChallengeCard extends StatelessWidget {
                   Text(
                     challenge.title,
                     style: theme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
+                      fontSize: RewardsTextSize.challengeTitle,
+                      fontWeight: AppTypography.strongWeight,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     strings.challengeProgress(
                       challenge.completed,
                       challenge.target,
                     ),
+                    style: theme.bodyMedium?.copyWith(
+                      fontSize: RewardsTextSize.challengeDetail,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.sm),
+                  const SizedBox(height: AppSpacing.md),
                   Wrap(
-                    spacing: AppSpacing.sm,
+                    spacing: AppSpacing.md,
                     runSpacing: AppSpacing.xs,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
@@ -61,6 +72,9 @@ class ChallengeCard extends StatelessWidget {
                       Text(
                         strings.rewardPoints(
                           formatNumber(context, challenge.points),
+                        ),
+                        style: theme.bodyMedium?.copyWith(
+                          fontSize: RewardsTextSize.challengeDetail,
                         ),
                       ),
                     ],
@@ -84,9 +98,11 @@ class _EarnButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final button = FilledButton(
       style: FilledButton.styleFrom(
-        minimumSize: const Size(70, 40),
+        minimumSize: const Size(72, 49),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-        disabledBackgroundColor: AppColors.skeleton,
+        foregroundColor: AppColors.white,
+        disabledBackgroundColor: AppColors.rewardInactive,
+        disabledForegroundColor: AppColors.white,
       ),
       onPressed: active ? () {} : null,
       child: Text(label.toUpperCase()),
@@ -108,22 +124,22 @@ class _ChallengeArt extends StatelessWidget {
   const _ChallengeArt({required this.challenge});
   final RewardChallenge challenge;
 
-  static const _gray = ColorFilter.matrix(<double>[
-    .2126,
-    .7152,
-    .0722,
+  static const _frosted = ColorFilter.matrix(<double>[
+    .0680,
+    .2289,
+    .0231,
     0,
+    166,
+    .0680,
+    .2289,
+    .0231,
     0,
-    .2126,
-    .7152,
-    .0722,
+    166,
+    .0680,
+    .2289,
+    .0231,
     0,
-    0,
-    .2126,
-    .7152,
-    .0722,
-    0,
-    0,
+    166,
     0,
     0,
     0,
@@ -145,17 +161,19 @@ class _ChallengeArt extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             if (isDonut) ...[
-              ColorFiltered(colorFilter: _gray, child: image),
+              ColorFiltered(colorFilter: _frosted, child: image),
               ClipPath(clipper: _DonutSector(value), child: image),
-            ] else
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: AppSpacing.sm,
-                  bottom: AppSpacing.xs,
+            ] else ...[
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: FractionallySizedBox(
+                  widthFactor: .74,
+                  heightFactor: .74,
+                  child: image,
                 ),
-                child: image,
               ),
-            CustomPaint(painter: _ChallengeProgress(value, donut: isDonut)),
+              CustomPaint(painter: _CoffeeProgress(value)),
+            ],
           ],
         ),
       ),
@@ -170,7 +188,7 @@ class _DonutSector extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     if (fill >= 1) return Path()..addRect(Offset.zero & size);
-    final center = Offset(size.width / 2, size.height * .48);
+    final center = size.center(Offset.zero);
     return Path()
       ..moveTo(center.dx, center.dy)
       ..arcTo(
@@ -186,38 +204,34 @@ class _DonutSector extends CustomClipper<Path> {
   bool shouldReclip(_DonutSector oldClipper) => fill != oldClipper.fill;
 }
 
-class _ChallengeProgress extends CustomPainter {
-  const _ChallengeProgress(this.fill, {required this.donut});
+class _CoffeeProgress extends CustomPainter {
+  const _CoffeeProgress(this.fill);
   final double fill;
-  final bool donut;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height * (donut ? .48 : .63));
+    final center = Offset(size.width / 2, size.height * .60);
     final ring = Rect.fromCircle(
       center: center,
-      radius: size.shortestSide * (donut ? .34 : .43),
+      radius: size.shortestSide * .43,
     );
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = donut ? 2 : 5
+      ..strokeWidth = size.shortestSide * .087
       ..color = AppColors.catalogSurface;
-    final start = donut ? -math.pi / 2 : math.pi;
-    final turn = donut ? math.pi * 2 : math.pi;
-    canvas.drawArc(ring, start, turn, false, paint);
+    canvas.drawArc(ring, math.pi, math.pi, false, paint);
     if (fill > 0) {
       canvas.drawArc(
         ring,
-        start,
-        turn * fill,
+        math.pi,
+        math.pi * fill,
         false,
-        paint..color = donut ? AppColors.pink : AppColors.orange,
+        paint..color = AppColors.orange,
       );
     }
   }
 
   @override
-  bool shouldRepaint(_ChallengeProgress oldDelegate) =>
-      fill != oldDelegate.fill || donut != oldDelegate.donut;
+  bool shouldRepaint(_CoffeeProgress oldDelegate) => fill != oldDelegate.fill;
 }

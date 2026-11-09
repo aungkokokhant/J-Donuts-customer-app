@@ -12,8 +12,13 @@ abstract final class AppColors {
   static const artPeach = Color(0xFFF8DED2);
   static const artPowderBlue = Color(0xFFB9DDED);
   static const artAqua = Color(0xFF49D2E8);
-  static const artLavender = Color(0xFFE5DFF8);
   static const artHoney = Color(0xFFFFD491);
+  static const artAquaDeep = Color(0xFF20BFD9);
+  static const artPetal = Color(0xFFF4AFD0);
+  static const artIce = Color(0xFFD7EAF7);
+  static const artSkyShade = Color(0xFF91B7DF);
+  static const artMint = Color(0xFF85D8EA);
+  static const artHoneyLight = Color(0xFFFFE5A3);
   static const error = Color(0xFFB72445);
   static const white = Colors.white;
   static const catalogSurface = Color(0xFFEFF0F1);
@@ -22,15 +27,19 @@ abstract final class AppColors {
   static const violet = Color(0xFF6658A6);
   static const rewardHighlight = Color(0xFFFF9ECD);
   static const rewardShadow = Color(0xFFE04491);
+  static const rewardInactive = Color(0xFFE5E5E5);
   static const medalSilver = Color(0xFFD1D5DB);
   static const medalGold = Color(0xFFFFDE8B);
   static const medalPlatinum = Color(0xFF9DDFEE);
+  static const medalBronze = Color(0xFFE49757);
+  static const medalSilverAccent = Color(0xFFA2A8B4);
+  static const medalGoldAccent = Color(0xFFD7983A);
+  static const memberBadgeFace = Color(0xFFEFDAC5);
+  static const memberBadgeStar = Color(0xFFAE9986);
   static const skeleton = Color(0xFFDCE0E3);
   static const socialBlue = Color(0xFF1877F2);
-  static const googleRed = Color(0xFFEA4335);
-  static const googleYellow = Color(0xFFFBBC05);
-  static const googleGreen = Color(0xFF34A853);
-  static const googleBlue = Color(0xFF4285F4);
+  static const helpGreen = Color(0xFF72A742);
+  static const descriptionFadeMask = Color(0xABFFFFFF);
 }
 
 abstract final class AppSpacing {
@@ -45,21 +54,33 @@ abstract final class AppSpacing {
 }
 
 abstract final class AppTypography {
-  static const headlineFamily = 'Comfortaa';
-  static const bodyFamily = 'Montserrat';
-
-  static const button = TextStyle(
-    fontFamily: bodyFamily,
-    fontSize: 15,
-    fontWeight: FontWeight.w700,
-    fontVariations: [FontVariation('wght', 700)],
+  static const _localFamily = String.fromEnvironment(
+    'JDONUTS_LOCAL_FONT_FAMILY',
   );
+  static const usesLocalFamily = _localFamily != '';
+  static const adlamFamily = 'ADLaMDisplay';
+  static const abelFamily = 'Abel';
+  static const headlineFamily = usesLocalFamily ? _localFamily : adlamFamily;
+  static const bodyFamily = usesLocalFamily ? _localFamily : abelFamily;
+  static const descriptionWeight = FontWeight.w300;
+  static const labelWeight = FontWeight.w500;
+  static const strongWeight = FontWeight.w700;
+  static const _displayWeight = usesLocalFamily
+      ? strongWeight
+      : FontWeight.w400;
 
-  static TextStyle? headline(TextStyle? style) => style?.copyWith(
+  static const textButton = TextStyle(
     fontFamily: headlineFamily,
-    fontWeight: FontWeight.w400,
-    fontVariations: const [FontVariation('wght', 400)],
+    fontSize: 15,
+    fontWeight: _displayWeight,
   );
+
+  static final primaryButton = textButton.copyWith(
+    fontWeight: usesLocalFamily ? FontWeight.w900 : _displayWeight,
+  );
+
+  static TextStyle? headline(TextStyle? style) =>
+      style?.copyWith(fontFamily: headlineFamily, fontWeight: _displayWeight);
 }
 
 ThemeData appTheme() {
@@ -80,7 +101,10 @@ ThemeData appTheme() {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.white,
-      labelStyle: const TextStyle(color: AppColors.muted),
+      labelStyle: const TextStyle(
+        color: AppColors.muted,
+        fontWeight: AppTypography.labelWeight,
+      ),
       contentPadding: const EdgeInsets.all(AppSpacing.md),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
@@ -100,7 +124,7 @@ ThemeData appTheme() {
         backgroundColor: AppColors.sky,
         foregroundColor: AppColors.ink,
         minimumSize: const Size(0, AppSpacing.buttonHeight),
-        textStyle: AppTypography.button,
+        textStyle: AppTypography.primaryButton,
       ),
     ),
   );
@@ -114,9 +138,24 @@ ThemeData appTheme() {
       headlineLarge: AppTypography.headline(text.headlineLarge),
       headlineMedium: AppTypography.headline(text.headlineMedium),
       headlineSmall: AppTypography.headline(text.headlineSmall),
+      titleLarge: text.titleLarge?.copyWith(
+        fontWeight: AppTypography.strongWeight,
+      ),
+      titleMedium: text.titleMedium?.copyWith(
+        fontWeight: AppTypography.strongWeight,
+      ),
+      bodyLarge: text.bodyLarge?.copyWith(
+        fontWeight: AppTypography.labelWeight,
+      ),
+      bodyMedium: text.bodyMedium?.copyWith(
+        fontWeight: AppTypography.labelWeight,
+      ),
+      bodySmall: text.bodySmall?.copyWith(
+        fontWeight: AppTypography.descriptionWeight,
+      ),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(textStyle: AppTypography.button),
+      style: TextButton.styleFrom(textStyle: AppTypography.textButton),
     ),
   );
 }

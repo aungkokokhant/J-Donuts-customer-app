@@ -14,6 +14,7 @@ import '../../../l10n/app_localizations.dart';
 import '../domain/rewards_repository.dart';
 import 'challenge_card.dart';
 import 'rewards_overview.dart';
+import 'rewards_style.dart';
 import 'rewards_tabs.dart';
 
 final rewardChallengesProvider =
@@ -82,7 +83,7 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 300),
+          constraints: const BoxConstraints(maxWidth: 248),
           child: RewardsTabs(
             gift: _gift,
             onChanged: (value) => setState(() => _gift = value),
@@ -109,12 +110,7 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
   Widget _overview() => ColoredBox(
     color: AppColors.white,
     child: Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        AppSpacing.md,
-        AppSpacing.md,
-        AppSpacing.sm,
-      ),
+      padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xl),
       child: CatalogState(
         value: ref.watch(memberProfileProvider),
         isEmpty: (member) => member == null,
@@ -123,7 +119,7 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
         buildData: (member) => Column(
           children: [
             _RewardsHeader(count: member!.availableRewards),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.xl + AppSpacing.sm),
             RewardsOverview(member: member),
           ],
         ),
@@ -132,12 +128,9 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
   );
 
   Widget _content(AppLocalizations strings) => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      AppSpacing.md,
-      0,
-      AppSpacing.md,
-      AppSpacing.lg,
-    ),
+    padding: EdgeInsets.symmetric(
+      horizontal: (MediaQuery.sizeOf(context).width * .064).clamp(20.0, 32.0),
+    ).copyWith(bottom: AppSpacing.lg),
     child: AnimatedSwitcher(
       duration: AppMotion.duration(context, AppMotion.step),
       transitionBuilder: (child, animation) => FadeTransition(
@@ -187,25 +180,38 @@ class _RewardsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            strings.rewardsTitle,
-            style: Theme.of(context).textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w900),
-          ),
+    return ClipRect(
+      child: Padding(
+        padding: const EdgeInsets.only(left: AppSpacing.lg + AppSpacing.xs),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                strings.rewardsTitle,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: RewardsTextSize.heading,
+                  fontWeight: AppTypography.strongWeight,
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: AppMotion.duration(context, AppMotion.step),
+              curve: AppMotion.pop,
+              builder: (_, value, child) => FractionalTranslation(
+                translation: Offset((1 - value).clamp(0.0, 1.0), 0),
+                child: Transform.scale(
+                  alignment: Alignment.centerRight,
+                  scale: .76 + .24 * value,
+                  child: child,
+                ),
+              ),
+              child: _RewardBadge(label: strings.rewardsBadge, count: count),
+            ),
+          ],
         ),
-        const SizedBox(width: AppSpacing.sm),
-        TweenAnimationBuilder<double>(
-          tween: Tween(begin: .62, end: 1),
-          duration: AppMotion.duration(context, AppMotion.step),
-          curve: AppMotion.pop,
-          builder: (_, value, child) =>
-              Transform.scale(scale: value, child: child),
-          child: _RewardBadge(label: strings.rewardsBadge, count: count),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -214,19 +220,17 @@ class _RewardBadge extends StatelessWidget {
   const _RewardBadge({required this.label, required this.count});
   final String label;
   final int count;
+  static const _radius = BorderRadius.horizontal(left: Radius.circular(30));
 
   @override
   Widget build(BuildContext context) => Material(
     color: AppColors.orange,
-    shape: const StadiumBorder(),
+    shape: const RoundedRectangleBorder(borderRadius: _radius),
     child: InkWell(
-      borderRadius: BorderRadius.circular(AppSpacing.xl),
+      borderRadius: _radius,
       onTap: () {},
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.sm,
-        ),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.md, 10, 12, 10),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -234,15 +238,24 @@ class _RewardBadge extends StatelessWidget {
               label,
               style: const TextStyle(
                 color: AppColors.white,
-                fontWeight: FontWeight.w900,
+                fontSize: RewardsTextSize.label,
+                fontWeight: AppTypography.strongWeight,
               ),
             ),
             const SizedBox(width: AppSpacing.xs),
             CircleAvatar(
-              radius: 11,
+              radius: 9,
               backgroundColor: AppColors.white,
               foregroundColor: AppColors.ink,
-              child: FittedBox(child: Text(formatNumber(context, count))),
+              child: FittedBox(
+                child: Text(
+                  formatNumber(context, count),
+                  style: const TextStyle(
+                    fontSize: RewardsTextSize.body,
+                    fontWeight: AppTypography.strongWeight,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

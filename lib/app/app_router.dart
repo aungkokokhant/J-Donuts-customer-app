@@ -56,7 +56,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/home',
             pageBuilder: (_, state) => NoTransitionPage(
               key: state.pageKey,
-              child: HomeLandingPage(session: session),
+              child: HomeLandingPage(memberName: session.user?.firstName),
             ),
           ),
           GoRoute(

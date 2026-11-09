@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
+import '../../../core/presentation/primary_action_button.dart';
+import '../../../core/presentation/unavailable_message.dart';
 import '../../../l10n/app_localizations.dart';
 import 'auth_chrome.dart';
 import 'donut_art.dart';
@@ -74,6 +77,8 @@ class _OnboardingActions extends StatelessWidget {
   const _OnboardingActions({required this.strings, required this.headingSize});
   final AppLocalizations strings;
   final double headingSize;
+  static const _accountFontSize = 16.0;
+  static const _socialIconSize = 30.0;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -90,7 +95,7 @@ class _OnboardingActions extends StatelessWidget {
       const SizedBox(height: AppSpacing.lg),
       EnterMotion(
         index: 2,
-        child: AuthButton(
+        child: PrimaryActionButton(
           label: strings.getStarted,
           onPressed: () => context.push('/auth?mode=register'),
         ),
@@ -101,18 +106,26 @@ class _OnboardingActions extends StatelessWidget {
           alignment: WrapAlignment.center,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Text(strings.haveAccount),
+            Text(
+              strings.haveAccount,
+              style: const TextStyle(fontSize: _accountFontSize),
+            ),
             TextButton(
               onPressed: () => context.push('/auth?mode=login'),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-                textStyle: AppTypography.button,
+                textStyle: const TextStyle(
+                  fontFamily: AppTypography.bodyFamily,
+                  fontSize: _accountFontSize,
+                  fontWeight: AppTypography.strongWeight,
+                ),
               ),
               child: Text(strings.logIn),
             ),
           ],
         ),
       ),
+      const SizedBox(height: AppSpacing.sm),
       EnterMotion(
         index: 4,
         child: Row(
@@ -120,47 +133,31 @@ class _OnboardingActions extends StatelessWidget {
           children: [
             IconButton(
               tooltip: strings.google,
-              icon: const _GoogleMark(),
-              onPressed: () => showAuthPlaceholder(context),
+              icon: SvgPicture.asset(
+                'assets/images/google_sign_in.svg',
+                width: AppSpacing.lg,
+                height: AppSpacing.lg,
+                excludeFromSemantics: true,
+              ),
+              onPressed: () => showUnavailableMessage(context),
             ),
             const SizedBox(width: AppSpacing.lg),
             IconButton(
               tooltip: strings.apple,
+              iconSize: _socialIconSize,
               icon: const Icon(Icons.apple, color: AppColors.ink),
-              onPressed: () => showAuthPlaceholder(context),
+              onPressed: () => showUnavailableMessage(context),
             ),
             const SizedBox(width: AppSpacing.lg),
             IconButton(
               tooltip: strings.facebook,
+              iconSize: _socialIconSize,
               icon: const Icon(Icons.facebook, color: AppColors.socialBlue),
-              onPressed: () => showAuthPlaceholder(context),
+              onPressed: () => showUnavailableMessage(context),
             ),
           ],
         ),
       ),
     ],
-  );
-}
-
-class _GoogleMark extends StatelessWidget {
-  const _GoogleMark();
-
-  @override
-  Widget build(BuildContext context) => ShaderMask(
-    blendMode: BlendMode.srcIn,
-    shaderCallback: (bounds) => const SweepGradient(
-      colors: [
-        AppColors.googleBlue,
-        AppColors.googleGreen,
-        AppColors.googleYellow,
-        AppColors.googleRed,
-        AppColors.googleBlue,
-      ],
-      stops: [0, .25, .42, .65, 1],
-    ).createShader(bounds),
-    child: const Text(
-      'G',
-      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 21),
-    ),
   );
 }

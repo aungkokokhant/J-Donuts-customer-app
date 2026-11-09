@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
+import '../../../core/presentation/unavailable_message.dart';
 import '../../../l10n/app_localizations.dart';
 
 abstract final class AuthLayout {
@@ -50,6 +51,8 @@ class AuthBackground extends StatelessWidget {
 class AuthLegal extends StatelessWidget {
   const AuthLegal({super.key});
 
+  static const _fontSize = 14.0;
+
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
@@ -64,82 +67,29 @@ class AuthLegal extends StatelessWidget {
         ],
       ),
       textAlign: TextAlign.center,
-      style: const TextStyle(fontSize: 12, height: 1.4, color: AppColors.muted),
+      style: const TextStyle(
+        fontSize: _fontSize,
+        height: 1.4,
+        color: AppColors.muted,
+        fontWeight: AppTypography.labelWeight,
+      ),
     );
   }
 
   WidgetSpan _link(BuildContext context, String label) => WidgetSpan(
     alignment: PlaceholderAlignment.middle,
     child: GestureDetector(
-      onTap: () => showAuthPlaceholder(context),
+      onTap: () => showUnavailableMessage(context),
       child: Text(
         label,
         style: const TextStyle(
-          fontSize: 12,
+          fontSize: _fontSize,
           color: AppColors.pink,
-          fontWeight: FontWeight.w700,
+          fontWeight: AppTypography.labelWeight,
         ),
       ),
     ),
   );
-}
-
-void showAuthPlaceholder(BuildContext context) => ScaffoldMessenger.of(context)
-    .showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).notAvailable)),
-    );
-
-class AuthButton extends StatefulWidget {
-  const AuthButton({
-    super.key,
-    required this.label,
-    this.onPressed,
-    this.busy = false,
-  });
-  final String label;
-  final VoidCallback? onPressed;
-  final bool busy;
-
-  @override
-  State<AuthButton> createState() => _AuthButtonState();
-}
-
-class _AuthButtonState extends State<AuthButton> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final enabled = widget.onPressed != null && !widget.busy;
-    final duration = AppMotion.duration(context, AppMotion.quick);
-    return Listener(
-      onPointerDown: enabled ? (_) => setState(() => _pressed = true) : null,
-      onPointerUp: (_) => setState(() => _pressed = false),
-      onPointerCancel: (_) => setState(() => _pressed = false),
-      child: AnimatedScale(
-        duration: duration,
-        scale: _pressed && enabled && duration != Duration.zero ? .97 : 1,
-        child: SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: enabled ? widget.onPressed : null,
-            style: FilledButton.styleFrom(
-              foregroundColor: AppColors.white,
-              textStyle: AppTypography.button.copyWith(letterSpacing: .75),
-            ),
-            child: AnimatedSwitcher(
-              duration: duration,
-              child: widget.busy
-                  ? const SizedBox.square(
-                      dimension: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(widget.label.toUpperCase()),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class RegistrationRing extends StatelessWidget {
@@ -153,7 +103,7 @@ class RegistrationRing extends StatelessWidget {
     curve: AppMotion.curve,
     builder: (context, value, child) => CustomPaint(
       painter: _RingPainter(value),
-      child: const SizedBox.square(dimension: 28),
+      child: const SizedBox.square(dimension: 30),
     ),
   );
 }
@@ -161,16 +111,19 @@ class RegistrationRing extends StatelessWidget {
 class _RingPainter extends CustomPainter {
   const _RingPainter(this.progress);
   final double progress;
+  static const _strokeWidth = 6.5;
+  static const _edgeInset = 1.0;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = size.shortestSide / 2 - 3;
+    final outerRadius = size.shortestSide / 2 - _edgeInset;
+    final radius = outerRadius - _strokeWidth / 2;
     final paint = Paint()
-      ..color = AppColors.pink
-      ..strokeWidth = 4;
-    paint.style = PaintingStyle.stroke;
-    canvas.drawCircle(center, radius, paint..color = AppColors.sky);
+      ..color = AppColors.sky
+      ..strokeWidth = _strokeWidth
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, radius, paint);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       -math.pi / 2,
@@ -179,7 +132,7 @@ class _RingPainter extends CustomPainter {
       paint..color = AppColors.pink,
     );
     final complete = ((progress - .90) / .10).clamp(0.0, 1.0);
-    if (complete > 0) _drawCheck(canvas, center, radius + 2, complete);
+    if (complete > 0) _drawCheck(canvas, center, outerRadius, complete);
   }
 
   void _drawCheck(Canvas canvas, Offset center, double radius, double phase) {

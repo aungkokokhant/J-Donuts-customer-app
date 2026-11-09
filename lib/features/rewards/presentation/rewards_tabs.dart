@@ -3,97 +3,113 @@ import 'package:flutter/material.dart';
 import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import 'rewards_style.dart';
 
 class RewardsTabs extends StatelessWidget {
   const RewardsTabs({super.key, required this.gift, required this.onChanged});
   final bool gift;
   final ValueChanged<bool> onChanged;
 
-  static const _earnFlex = 2;
-  static const _giftFlex = 1;
+  static const _gap = AppSpacing.sm;
+  static const _shape = StadiumBorder(
+    side: BorderSide(color: AppColors.white, width: 2),
+  );
 
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
-    return Material(
-      color: AppColors.white,
-      shape: const StadiumBorder(),
-      child: SizedBox(
-        height: 54,
-        child: LayoutBuilder(
-          builder: (context, space) {
-            final unit = space.maxWidth / (_earnFlex + _giftFlex);
-            return Stack(
-              children: [
-                AnimatedPositioned(
-                  key: const Key('rewardsTabIndicator'),
-                  duration: AppMotion.duration(context, AppMotion.step),
-                  curve: AppMotion.curve,
-                  left: gift ? unit * _earnFlex : 0,
-                  width: unit * (gift ? _giftFlex : _earnFlex),
-                  top: AppSpacing.xs,
-                  bottom: AppSpacing.xs,
-                  child: const DecoratedBox(
-                    decoration: ShapeDecoration(
-                      color: AppColors.sky,
-                      shape: StadiumBorder(),
-                    ),
+    return SizedBox(
+      height: 46,
+      child: LayoutBuilder(
+        builder: (context, space) {
+          final available = space.maxWidth - _gap;
+          final earnWidth = available * .72;
+          final giftWidth = available - earnWidth;
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Row(
+                children: [
+                  _track(earnWidth),
+                  const SizedBox(width: _gap),
+                  _track(giftWidth),
+                ],
+              ),
+              AnimatedPositioned(
+                key: const Key('rewardsTabIndicator'),
+                duration: AppMotion.duration(context, AppMotion.step),
+                curve: AppMotion.curve,
+                left: gift ? earnWidth + _gap : 0,
+                width: gift ? giftWidth : earnWidth,
+                top: 0,
+                bottom: 0,
+                child: const DecoratedBox(
+                  decoration: ShapeDecoration(
+                    color: AppColors.sky,
+                    shape: _shape,
                   ),
                 ),
-                Positioned.fill(
-                  child: Row(
-                    children: [
-                      _tab(
-                        strings.earnTab,
-                        _earnFlex,
-                        selected: !gift,
-                        isGift: false,
-                      ),
-                      _tab(
-                        strings.giftTab,
-                        _giftFlex,
-                        selected: gift,
-                        isGift: true,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+              ),
+              Row(
+                children: [
+                  _tab(strings.earnTab, earnWidth, isGift: false),
+                  const SizedBox(width: _gap),
+                  _tab(strings.giftTab, giftWidth, isGift: true),
+                ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _tab(
-    String text,
-    int flex, {
-    required bool selected,
-    required bool isGift,
-  }) => Expanded(
-    flex: flex,
-    child: Semantics(
-      button: true,
-      selected: selected,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppSpacing.xl),
-        onTap: () => onChanged(isGift),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: Center(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: TextStyle(
-                color: selected ? AppColors.ink : AppColors.muted,
-                fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
+  Widget _track(double width) => SizedBox(
+    width: width,
+    height: double.infinity,
+    child: const DecoratedBox(
+      decoration: ShapeDecoration(
+        color: AppColors.catalogSurface,
+        shape: _shape,
+      ),
+    ),
+  );
+
+  Widget _tab(String text, double width, {required bool isGift}) {
+    final selected = gift == isGift;
+    return SizedBox(
+      width: width,
+      height: double.infinity,
+      child: Semantics(
+        button: true,
+        selected: selected,
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            customBorder: const StadiumBorder(),
+            onTap: () => onChanged(isGift),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    text,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: selected ? AppColors.white : AppColors.ink,
+                      fontSize: RewardsTextSize.label,
+                      fontWeight: selected
+                          ? AppTypography.strongWeight
+                          : AppTypography.labelWeight,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

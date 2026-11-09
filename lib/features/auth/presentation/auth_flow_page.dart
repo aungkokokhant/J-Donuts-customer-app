@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../core/domain/result.dart';
+import '../../../core/presentation/primary_action_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/auth_repository.dart';
 import '../domain/auth_validation.dart';
@@ -141,7 +142,7 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
   Widget _footer(AppLocalizations strings) => Column(
     children: [
       if (_step != _Step.otp)
-        AuthButton(
+        PrimaryActionButton(
           label: strings.continueLabel,
           busy: _busy,
           onPressed: _canContinue ? _submit : null,

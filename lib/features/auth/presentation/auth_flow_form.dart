@@ -163,43 +163,36 @@ extension _AuthFlowForm on _AuthFlowPageState {
   );
 
   Widget _welcome(AppLocalizations strings) => AuthBackground(
+    safeTop: false,
+    gradient: const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [AppColors.landingWhite, AppColors.landingPink],
+      stops: [.53, .77],
+    ),
     child: LayoutBuilder(
       builder: (context, limits) => SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
           children: [
-            DonutArt(
-              height: (limits.maxHeight * .68).clamp(245, 570),
-              tiles: true,
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: DonutArt(height: limits.maxHeight * .82, tiles: true),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(
+              padding: EdgeInsets.fromLTRB(
                 AuthLayout.pageInset,
-                0,
+                limits.maxHeight * .75,
                 AuthLayout.pageInset,
                 AppSpacing.lg,
               ),
-              child: Column(
-                children: [
-                  EnterMotion(
-                    index: 1,
-                    child: Text(
-                      strings.welcomeTitle,
-                      style: AuthLayout.heading(context),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  EnterMotion(
-                    index: 2,
-                    child: AuthButton(
-                      label: strings.explore,
-                      onPressed: _submit,
-                      busy: _busy,
-                    ),
-                  ),
-                  _feedback(strings),
-                ],
+              child: _welcomeActions(
+                strings,
+                gap: (limits.maxHeight * .05).clamp(
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
+                ),
               ),
             ),
           ],
@@ -207,4 +200,28 @@ extension _AuthFlowForm on _AuthFlowPageState {
       ),
     ),
   );
+
+  Widget _welcomeActions(AppLocalizations strings, {required double gap}) =>
+      Column(
+        children: [
+          EnterMotion(
+            index: 1,
+            child: Text(
+              strings.welcomeTitle,
+              style: AuthLayout.heading(context),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SizedBox(height: gap),
+          EnterMotion(
+            index: 2,
+            child: PrimaryActionButton(
+              label: strings.explore,
+              onPressed: _submit,
+              busy: _busy,
+            ),
+          ),
+          _feedback(strings),
+        ],
+      );
 }

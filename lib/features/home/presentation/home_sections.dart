@@ -24,53 +24,67 @@ class HomeProductSections extends StatelessWidget {
   );
 }
 
+enum _RailStyle {
+  seasonal(.625, 2 / 3, .48, 1, 1),
+  popular(.417, 1.5, .88, .90, .78),
+  orderAgain(.417, 1, .88, .82, .83);
+
+  const _RailStyle(
+    this.cardWidthFactor,
+    this.imageHeightFactor,
+    this.labelWidth,
+    this.photoWidth,
+    this.photoHeight,
+  );
+
+  final double cardWidthFactor;
+  final double imageHeightFactor;
+  final double labelWidth;
+  final double photoWidth;
+  final double photoHeight;
+}
+
+const _productLabelSize = 16.0;
+const _productLabelLineHeight = 1.3;
+const _productLabelLines = 2;
+
 class _ProductRail extends StatelessWidget {
   const _ProductRail({required this.section});
   final ProductSection section;
 
   @override
   Widget build(BuildContext context) {
-    final isSeasonal = section.id == 'seasonal';
+    final style = switch (section.id) {
+      'seasonal' => _RailStyle.seasonal,
+      'popular' => _RailStyle.popular,
+      _ => _RailStyle.orderAgain,
+    };
     final viewport = MediaQuery.sizeOf(context).width;
-    final width = isSeasonal ? viewport * .62 : viewport * .41;
-    final imageHeight = isSeasonal
-        ? width * .67
-        : section.id == 'popular'
-        ? width * 1.48
-        : width;
-    final labelHeight = MediaQuery.textScalerOf(context).scale(14) * 2.6;
+    final inset = (viewport * .064).clamp(20.0, 32.0);
+    final gap = (viewport * .043).clamp(12.0, 22.0);
+    final width = viewport * style.cardWidthFactor;
+    final imageHeight = width * style.imageHeightFactor;
+    final labelStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+      fontSize: _productLabelSize,
+      height: _productLabelLineHeight,
+      fontWeight: AppTypography.strongWeight,
+    );
+    final labelHeight = _labelHeight(context, labelStyle);
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.lg),
+      padding: EdgeInsets.only(
+        top: style == _RailStyle.seasonal ? AppSpacing.lg : AppSpacing.xxl,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    section.title,
-                    style: Theme.of(context).textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w900),
-                  ),
-                ),
-                const CircleAvatar(
-                  radius: 12,
-                  backgroundColor: AppColors.white,
-                  child: Icon(
-                    Icons.chevron_right,
-                    size: 17,
-                    color: AppColors.ink,
-                  ),
-                ),
-              ],
-            ),
+            padding: EdgeInsets.symmetric(horizontal: inset + AppSpacing.xs),
+            child: _title(context, hot: style == _RailStyle.popular),
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.md),
           if (section.products.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              padding: EdgeInsets.symmetric(horizontal: inset),
               child: Text(AppLocalizations.of(context).emptySection),
             )
           else
@@ -78,22 +92,56 @@ class _ProductRail extends StatelessWidget {
               height: imageHeight + labelHeight + AppSpacing.sm,
               child: ListView.separated(
                 key: ValueKey('rail-${section.id}'),
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                padding: EdgeInsets.symmetric(horizontal: inset),
                 scrollDirection: Axis.horizontal,
                 itemCount: section.products.length,
-                separatorBuilder: (_, _) =>
-                    const SizedBox(width: AppSpacing.sm),
+                separatorBuilder: (_, _) => SizedBox(width: gap),
                 itemBuilder: (context, index) => _ProductCard(
                   product: section.products[index],
                   sectionId: section.id,
                   width: width,
                   imageHeight: imageHeight,
-                  cover: isSeasonal,
+                  style: style,
+                  labelStyle: labelStyle,
                 ),
               ),
             ),
         ],
       ),
+    );
+  }
+
+  double _labelHeight(BuildContext context, TextStyle style) {
+    final painter = TextPainter(
+      text: TextSpan(style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    );
+    final height = painter.preferredLineHeight * _productLabelLines;
+    painter.dispose();
+    return height.ceilToDouble();
+  }
+
+  Widget _title(BuildContext context, {required bool hot}) {
+    final titleStyle = Theme.of(context).textTheme.headlineSmall;
+    return Row(
+      children: [
+        Expanded(
+          child: Wrap(
+            spacing: AppSpacing.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(section.title, style: titleStyle),
+              if (hot) ExcludeSemantics(child: Text('🔥', style: titleStyle)),
+            ],
+          ),
+        ),
+        const CircleAvatar(
+          radius: 15,
+          backgroundColor: AppColors.white,
+          child: Icon(Icons.chevron_right, size: 20, color: AppColors.ink),
+        ),
+      ],
     );
   }
 }
@@ -104,18 +152,20 @@ class _ProductCard extends StatelessWidget {
     required this.sectionId,
     required this.width,
     required this.imageHeight,
-    required this.cover,
+    required this.style,
+    required this.labelStyle,
   });
   final CatalogProduct product;
   final String sectionId;
   final double width;
   final double imageHeight;
-  final bool cover;
+  final _RailStyle style;
+  final TextStyle labelStyle;
 
   @override
   Widget build(BuildContext context) {
     final heroTag = 'product:$sectionId:${product.id}';
-    final radius = BorderRadius.circular(AppSpacing.fieldRadius);
+    final radius = BorderRadius.circular(AppSpacing.md);
     final discount = product.discountPercent;
     return SizedBox(
       width: width,
@@ -137,47 +187,58 @@ class _ProductCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Hero(
-                      tag: heroTag,
-                      child: ClipRRect(
-                        borderRadius: radius,
-                        child: ColoredBox(
-                          color: AppColors.white,
-                          child: Padding(
-                            padding: cover
-                                ? EdgeInsets.zero
-                                : const EdgeInsets.all(AppSpacing.sm),
-                            child: CatalogImage(
-                              source: product.imageKey,
-                              fit: cover ? BoxFit.cover : BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    _photo(context, heroTag, radius),
                     if (discount != null)
                       Positioned(
-                        right: AppSpacing.xs,
-                        bottom: AppSpacing.xs,
+                        right: AppSpacing.sm,
+                        bottom: AppSpacing.sm,
                         child: _DiscountBadge(discount: discount),
                       ),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                product.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
-              ),
+              const SizedBox(height: AppSpacing.sm),
+              _label(),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _photo(BuildContext context, String heroTag, BorderRadius radius) {
+    final photo = ClipRRect(
+      borderRadius: radius,
+      child: ColoredBox(
+        color: AppColors.white,
+        child: FractionallySizedBox(
+          widthFactor: style.photoWidth,
+          heightFactor: style.photoHeight,
+          child: CatalogImage(
+            source: product.imageKey,
+            fit: style == _RailStyle.seasonal ? BoxFit.cover : BoxFit.contain,
+          ),
+        ),
+      ),
+    );
+    return MediaQuery.disableAnimationsOf(context)
+        ? photo
+        : Hero(tag: heroTag, child: photo);
+  }
+
+  Widget _label() => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+    child: FractionallySizedBox(
+      alignment: Alignment.centerLeft,
+      widthFactor: style.labelWidth,
+      child: Text(
+        product.name,
+        maxLines: _productLabelLines,
+        overflow: TextOverflow.ellipsis,
+        style: labelStyle,
+      ),
+    ),
+  );
 }
 
 class _DiscountBadge extends StatelessWidget {
@@ -188,116 +249,15 @@ class _DiscountBadge extends StatelessWidget {
   Widget build(BuildContext context) => DecoratedBox(
     decoration: const ShapeDecoration(
       color: AppColors.orange,
-      shape: StadiumBorder(),
+      shape: StadiumBorder(side: BorderSide(color: AppColors.white)),
     ),
     child: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Text(
         AppLocalizations.of(context).discountLabel(discount),
-        style: Theme.of(context).textTheme.labelSmall
-            ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w900),
-      ),
-    ),
-  );
-}
-
-class NearbyShops extends StatelessWidget {
-  const NearbyShops({super.key, required this.shops});
-  final List<NearbyShop> shops;
-
-  @override
-  Widget build(BuildContext context) {
-    final strings = AppLocalizations.of(context);
-    return ColoredBox(
-      color: AppColors.sky,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    strings.nearbyShops(shops.length),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.white,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Chip(label: Text(strings.exploreNow)),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            SizedBox(
-              height: 220 + MediaQuery.textScalerOf(context).scale(32),
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                scrollDirection: Axis.horizontal,
-                itemCount: shops.length,
-                separatorBuilder: (_, _) =>
-                    const SizedBox(width: AppSpacing.sm),
-                itemBuilder: (context, index) => _ShopCard(shop: shops[index]),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ShopCard extends StatelessWidget {
-  const _ShopCard({required this.shop});
-  final NearbyShop shop;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 228,
-    child: Card(
-      color: AppColors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppSpacing.sm),
-              child: SizedBox(
-                height: 111,
-                width: double.infinity,
-                child: CatalogImage(source: shop.imageKey, fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              shop.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w800),
-            ),
-            Text(
-              shop.address,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              AppLocalizations.of(context).orderOnline,
-              style: const TextStyle(
-                color: AppColors.pink,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: AppColors.white,
+          fontWeight: AppTypography.strongWeight,
         ),
       ),
     ),

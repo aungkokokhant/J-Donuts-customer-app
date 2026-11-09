@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../features/auth/presentation/auth_chrome.dart';
+import '../core/presentation/unavailable_message.dart';
 import '../features/auth/presentation/session_controller.dart';
 import '../l10n/app_localizations.dart';
 import 'design/app_motion.dart';
@@ -50,6 +51,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     final isRewards = widget.location == '/rewards';
     return Scaffold(
       backgroundColor: AppColors.catalogSurface,
+      extendBody: isHome,
       body: widget.child,
       bottomNavigationBar: isHome || isRewards
           ? _AppNavigation(
@@ -90,20 +92,24 @@ class _AppNavigation extends StatelessWidget {
   final bool showRewards;
   final VoidCallback onSettings;
 
-  static const _tabFlex = 2;
-  static const _totalFlex = _tabFlex * 2 + 3;
+  static const _selectedWidthFraction = .30;
+  static const _inactiveIconSize = 21.0;
+  static const _activeIconSize = 25.0;
   static const _height = 49.0;
 
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
     return DecoratedBox(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.catalogSurface, AppColors.pink],
-          stops: [.62, .62],
+          colors: [
+            showRewards ? AppColors.catalogSurface : Colors.transparent,
+            AppColors.pink,
+          ],
+          stops: const [.5, .5],
         ),
       ),
       child: Padding(
@@ -135,56 +141,89 @@ class _AppNavigation extends StatelessWidget {
   }
 
   Widget _layout(BuildContext context, AppLocalizations strings, double width) {
-    final tabWidth = width * _tabFlex / _totalFlex;
-    return SizedBox(
-      height: _height,
-      child: Stack(
-        children: [
-          AnimatedPositioned(
-            key: const Key('navigationPill'),
-            duration: AppMotion.duration(context, AppMotion.step),
-            curve: AppMotion.curve,
-            left: showRewards ? tabWidth : 0,
-            top: AppSpacing.xs,
-            bottom: AppSpacing.xs,
-            width: tabWidth,
-            child: const DecoratedBox(
-              decoration: ShapeDecoration(
-                color: AppColors.pink,
-                shape: StadiumBorder(side: BorderSide(color: AppColors.white)),
+    final selectedWidth = width * _selectedWidthFraction;
+    final idleWidth = (width - selectedWidth) / 4;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(end: showRewards ? 1.0 : 0.0),
+      duration: AppMotion.duration(context, AppMotion.step),
+      curve: AppMotion.curve,
+      builder: (context, progress, _) => SizedBox(
+        height: _height,
+        child: Stack(
+          children: [
+            _pill(left: idleWidth * progress, width: selectedWidth),
+            Positioned.fill(
+              child: _buttons(
+                context,
+                strings,
+                progress,
+                idleWidth,
+                selectedWidth,
               ),
             ),
-          ),
-          Positioned.fill(child: _buttons(context, strings)),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buttons(BuildContext context, AppLocalizations strings) => Row(
+  Widget _pill({required double left, required double width}) => Positioned(
+    key: const Key('navigationPill'),
+    left: left,
+    top: AppSpacing.xs,
+    bottom: AppSpacing.xs,
+    width: width,
+    child: const DecoratedBox(
+      decoration: ShapeDecoration(
+        color: AppColors.pink,
+        shape: StadiumBorder(side: BorderSide(color: AppColors.white)),
+      ),
+    ),
+  );
+
+  Widget _buttons(
+    BuildContext context,
+    AppLocalizations strings,
+    double progress,
+    double idleWidth,
+    double selectedWidth,
+  ) => Row(
     children: [
       _navItem(
         context,
         strings.home,
         Icons.home_outlined,
+        width: lerpDouble(selectedWidth, idleWidth, progress)!,
         selected: !showRewards,
-        flex: _tabFlex,
+        reveal: 1 - progress,
         onTap: () => context.go('/home'),
       ),
       _navItem(
         context,
         strings.rewards,
         Icons.emoji_events_outlined,
+        width: lerpDouble(idleWidth, selectedWidth, progress)!,
         selected: showRewards,
-        flex: _tabFlex,
+        reveal: progress,
         onTap: () => context.go('/rewards'),
       ),
-      _navItem(context, strings.menu, Icons.donut_small_outlined),
-      _navItem(context, strings.wallet, Icons.account_balance_wallet_outlined),
+      _navItem(
+        context,
+        strings.menu,
+        Icons.donut_small_outlined,
+        width: idleWidth,
+      ),
+      _navItem(
+        context,
+        strings.wallet,
+        Icons.account_balance_wallet_outlined,
+        width: idleWidth,
+      ),
       _navItem(
         context,
         strings.settings,
         Icons.settings_outlined,
+        width: idleWidth,
         onTap: onSettings,
       ),
     ],
@@ -194,11 +233,12 @@ class _AppNavigation extends StatelessWidget {
     BuildContext context,
     String label,
     IconData icon, {
+    required double width,
     bool selected = false,
-    int flex = 1,
+    double reveal = 0,
     VoidCallback? onTap,
-  }) => Expanded(
-    flex: flex,
+  }) => SizedBox(
+    width: width,
     child: Tooltip(
       message: label,
       child: Semantics(
@@ -207,28 +247,47 @@ class _AppNavigation extends StatelessWidget {
         label: label,
         child: InkWell(
           borderRadius: BorderRadius.circular(_height),
-          onTap: onTap ?? () => showAuthPlaceholder(context),
+          onTap: onTap ?? () => showUnavailableMessage(context),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 21, color: AppColors.white),
-                if (selected) ...[
-                  const SizedBox(width: AppSpacing.xs),
-                  Flexible(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
+                Icon(
+                  icon,
+                  size: lerpDouble(_inactiveIconSize, _activeIconSize, reveal),
+                  color: AppColors.white,
+                ),
+                if (reveal > 0) ...[
+                  SizedBox(width: AppSpacing.xs * reveal),
+                  Flexible(child: _label(label, reveal)),
                 ],
               ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _label(String label, double reveal) => ExcludeSemantics(
+    child: Opacity(
+      opacity: reveal,
+      child: ClipRect(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          widthFactor: reveal,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              label,
+              maxLines: 1,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ),

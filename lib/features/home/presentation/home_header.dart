@@ -1,14 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
-import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../core/domain/member_profile.dart';
 import '../../../core/presentation/catalog_image.dart';
 import '../../../core/presentation/catalog_price.dart';
 import '../../../l10n/app_localizations.dart';
-import '../domain/home_repository.dart';
 
 class HomeMemberHeader extends StatelessWidget {
   const HomeMemberHeader({super.key, required this.member, required this.name});
@@ -17,88 +13,132 @@ class HomeMemberHeader extends StatelessWidget {
   final String name;
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      PositionedDirectional(
-        end: -AppSpacing.lg,
-        top: AppSpacing.xs,
-        child: ExcludeSemantics(
-          child: Icon(
-            Icons.shield_outlined,
-            size: 132,
-            color: AppColors.white.withValues(alpha: .65),
-          ),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      AppSpacing.lg,
+      AppSpacing.lg,
+      0,
+      AppSpacing.md,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _profileRow(context),
+        const SizedBox(height: AppSpacing.sm),
+        Padding(
+          padding: const EdgeInsets.only(right: AppSpacing.lg),
+          child: _PointsToTier(member: member),
         ),
-      ),
-      _details(context),
-    ],
+      ],
+    ),
   );
 
-  Widget _details(BuildContext context) {
+  Widget _profileRow(BuildContext context) {
     final strings = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipOval(
-                child: SizedBox.square(
-                  dimension: 49,
-                  child: CatalogImage(
-                    source: member.imageKey,
-                    fit: BoxFit.cover,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _MemberAvatar(member: member),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.sm),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    Text(
-                      strings.memberTier(member.tier),
-                      style: textTheme.bodySmall,
-                    ),
-                  ],
+                Text(
+                  strings.memberTier(member.tier),
+                  style: textTheme.bodyMedium,
                 ),
-              ),
-              _NotificationCount(count: member.notificationCount),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          DecoratedBox(
-            decoration: const ShapeDecoration(
-              color: AppColors.white,
-              shape: StadiumBorder(),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
-              ),
-              child: Text(
-                strings.pointsToTier(
-                  formatNumber(context, member.pointsToNextTier),
-                  member.nextTier,
-                ),
-                style: textTheme.bodySmall,
-              ),
+              ],
             ),
           ),
-        ],
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.xs),
+          child: _NotificationCount(count: member.notificationCount),
+        ),
+      ],
+    );
+  }
+}
+
+class _MemberAvatar extends StatelessWidget {
+  const _MemberAvatar({required this.member});
+
+  final MemberProfile member;
+
+  @override
+  Widget build(BuildContext context) {
+    final (fill, color) = switch (member.tier.toLowerCase()) {
+      'bronze' => (.18, AppColors.medalBronze),
+      'silver' => (.30, AppColors.medalSilverAccent),
+      'gold' => (.65, AppColors.medalGoldAccent),
+      'platinum' => (1.0, AppColors.sky),
+      _ => (member.tierProgress, AppColors.medalSilverAccent),
+    };
+    return ExcludeSemantics(
+      child: SizedBox.square(
+        dimension: 66,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            CircularProgressIndicator(
+              value: fill,
+              color: color,
+              backgroundColor: AppColors.white.withValues(alpha: .55),
+              strokeWidth: 5,
+              strokeCap: StrokeCap.round,
+              padding: EdgeInsets.zero,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ClipOval(
+                child: CatalogImage(source: member.imageKey, fit: BoxFit.cover),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+class _PointsToTier extends StatelessWidget {
+  const _PointsToTier({required this.member});
+
+  final MemberProfile member;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: const ShapeDecoration(
+      color: AppColors.white,
+      shape: StadiumBorder(),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: 6,
+      ),
+      child: Text(
+        AppLocalizations.of(context).pointsToTier(
+          formatNumber(context, member.pointsToNextTier),
+          member.nextTier,
+        ),
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    ),
+  );
 }
 
 class _NotificationCount extends StatelessWidget {
@@ -109,14 +149,19 @@ class _NotificationCount extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     label: AppLocalizations.of(context).notifications,
     child: DecoratedBox(
-      decoration: const ShapeDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.orange,
-        shape: StadiumBorder(),
+        borderRadius: BorderRadius.horizontal(
+          left: Radius.circular(AppSpacing.lg),
+        ),
+        border: Border.fromBorderSide(BorderSide(color: AppColors.white)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.xs,
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.sm,
+          AppSpacing.sm,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -124,7 +169,7 @@ class _NotificationCount extends StatelessWidget {
             const Icon(
               Icons.notifications_outlined,
               color: AppColors.white,
-              size: 19,
+              size: 22,
             ),
             const SizedBox(width: AppSpacing.xs),
             CircleAvatar(
@@ -140,154 +185,70 @@ class _NotificationCount extends StatelessWidget {
   );
 }
 
-class HomeBannerCarousel extends StatefulWidget {
-  const HomeBannerCarousel({super.key, required this.banners});
-  final List<HomeBanner> banners;
+class HomeMemberBackdrop extends StatelessWidget {
+  const HomeMemberBackdrop({super.key});
 
   @override
-  State<HomeBannerCarousel> createState() => _HomeBannerCarouselState();
-}
-
-class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
-  final _controller = PageController(viewportFraction: .80);
-  Timer? _timer;
-  var _page = 0;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _schedule();
-  }
-
-  @override
-  void didUpdateWidget(covariant HomeBannerCarousel oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.banners.length != widget.banners.length) {
-      _page = widget.banners.isEmpty
-          ? 0
-          : _page.clamp(0, widget.banners.length - 1);
-      _schedule();
-    }
-  }
-
-  void _schedule() {
-    _timer?.cancel();
-    if (widget.banners.length < 2 || MediaQuery.disableAnimationsOf(context)) {
-      return;
-    }
-    _timer = Timer.periodic(AppMotion.carouselInterval, (_) {
-      if (!_controller.hasClients ||
-          ModalRoute.of(context)?.isCurrent != true) {
-        return;
-      }
-      if (_controller.position.isScrollingNotifier.value) return;
-      final next = (_page + 1) % widget.banners.length;
-      unawaited(
-        _controller.animateToPage(
-          next,
-          duration: AppMotion.step,
-          curve: AppMotion.curve,
-        ),
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    height: 134 + MediaQuery.textScalerOf(context).scale(36),
-    child: Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.md),
-      child: PageView.builder(
-        controller: _controller,
-        padEnds: false,
-        onPageChanged: (index) => _page = index,
-        itemCount: widget.banners.length,
-        itemBuilder: (context, index) =>
-            _BannerCard(banner: widget.banners[index], alternate: index.isOdd),
-      ),
-    ),
-  );
-}
-
-class _BannerCard extends StatelessWidget {
-  const _BannerCard({required this.banner, required this.alternate});
-  final HomeBanner banner;
-  final bool alternate;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(right: AppSpacing.sm),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
-      child: ColoredBox(
-        color: alternate ? AppColors.sky : AppColors.violet,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.sm,
-            AppSpacing.sm,
-            AppSpacing.sm,
-            0,
-          ),
-          child: Column(
-            children: [
-              _label(context),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                banner.title,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.white,
-                  fontWeight: FontWeight.w800,
-                  height: 1.15,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(AppSpacing.fieldRadius),
-                  ),
-                  child: SizedBox.expand(
-                    child: CatalogImage(
-                      source: banner.imageKey,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+  Widget build(BuildContext context) => const ExcludeSemantics(
+    child: IgnorePointer(
+      child: CustomPaint(
+        painter: _MemberBadgePainter(),
+        child: Align(
+          alignment: Alignment(0, -.30),
+          child: Icon(
+            Icons.star_rounded,
+            color: AppColors.memberBadgeStar,
+            size: 52,
           ),
         ),
       ),
     ),
   );
+}
 
-  Widget _label(BuildContext context) => DecoratedBox(
-    decoration: const ShapeDecoration(
-      color: AppColors.orange,
-      shape: StadiumBorder(),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      child: Text(
-        banner.label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.labelSmall
-            ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w700),
-      ),
-    ),
+class _MemberBadgePainter extends CustomPainter {
+  const _MemberBadgePainter();
+
+  static const _bounds = Rect.fromLTWH(0, 0, 1, 1);
+  static final _badge = Path()
+    ..moveTo(.42, .04)
+    ..quadraticBezierTo(.5, 0, .58, .04)
+    ..lineTo(.9, .22)
+    ..quadraticBezierTo(.97, .26, .97, .34)
+    ..lineTo(.97, .66)
+    ..quadraticBezierTo(.97, .74, .9, .78)
+    ..lineTo(.58, .96)
+    ..quadraticBezierTo(.5, 1, .42, .96)
+    ..lineTo(.10, .78)
+    ..quadraticBezierTo(.03, .74, .03, .66)
+    ..lineTo(.03, .34)
+    ..quadraticBezierTo(.03, .26, .10, .22)
+    ..close();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.scale(size.width, size.height);
+    canvas.drawPath(_badge, Paint()..shader = _gradient.createShader(_bounds));
+    canvas.drawPath(
+      _badge,
+      Paint()
+        ..color = AppColors.white
+        ..strokeWidth = .017
+        ..style = PaintingStyle.stroke,
+    );
+    canvas.translate(.075, .075);
+    canvas.scale(.85);
+    canvas.drawPath(_badge, Paint()..color = AppColors.memberBadgeFace);
+    canvas.restore();
+  }
+
+  static const _gradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [AppColors.warm, AppColors.medalBronze],
   );
+
+  @override
+  bool shouldRepaint(_MemberBadgePainter oldDelegate) => false;
 }

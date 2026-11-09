@@ -6,12 +6,12 @@ import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../app/repository_providers.dart';
 import '../../../core/domain/result.dart';
-import '../../../core/presentation/catalog_image.dart';
 import '../../../core/presentation/catalog_price.dart';
 import '../../../core/presentation/catalog_state.dart';
+import '../../../core/presentation/primary_action_button.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../auth/presentation/auth_chrome.dart';
 import '../domain/product_repository.dart';
+import 'product_detail_card.dart';
 import 'product_preview.dart';
 
 final productDetailProvider = FutureProvider.autoDispose
@@ -39,6 +39,7 @@ class ProductDetailPage extends ConsumerWidget {
       backgroundColor: AppColors.catalogSurface,
       appBar: AppBar(
         backgroundColor: AppColors.catalogSurface,
+        leadingWidth: 72,
         leading: BackButton(
           onPressed: () =>
               context.canPop() ? context.pop() : context.go('/home'),
@@ -87,22 +88,35 @@ class _ProductBodyState extends State<_ProductBody> {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              AppSpacing.md,
+            ),
             children: [
-              _ProductCard(product: product, heroTag: widget.heroTag),
-              Transform.translate(
-                offset: const Offset(0, -AppSpacing.md),
-                child: Center(
-                  child: _QuantityStepper(
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: _QuantityStepper.height / 2,
+                    ),
+                    child: ProductDetailCard(
+                      product: product,
+                      heroTag: widget.heroTag,
+                    ),
+                  ),
+                  _QuantityStepper(
                     quantity: _quantity,
                     onDecrease: _quantity > _minimum
                         ? () => setState(() => _quantity--)
                         : null,
                     onIncrease: () => setState(() => _quantity++),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.xl + AppSpacing.xs),
               _Description(text: product.description),
             ],
           ),
@@ -114,7 +128,7 @@ class _ProductBodyState extends State<_ProductBody> {
             AppSpacing.lg,
             AppSpacing.md,
           ),
-          child: AuthButton(
+          child: PrimaryActionButton(
             label:
                 '${strings.addToCart}  |  ${formatMmk(context, product.priceMmk * _quantity)}',
             onPressed: () =>
@@ -127,86 +141,6 @@ class _ProductBodyState extends State<_ProductBody> {
   }
 }
 
-class _ProductCard extends StatelessWidget {
-  const _ProductCard({required this.product, required this.heroTag});
-  final CatalogProduct product;
-  final String? heroTag;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final image = CatalogImage(source: product.imageKey);
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppSpacing.fieldRadius * 1.6),
-        color: AppColors.white,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  product.code,
-                  style: textTheme.bodySmall?.copyWith(color: AppColors.muted),
-                ),
-              ),
-              if (product.isNew) _NewBadge(),
-            ],
-          ),
-          Text(product.name, style: textTheme.headlineSmall),
-          Text(
-            formatMmk(context, product.priceMmk),
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 360),
-              child: AspectRatio(
-                aspectRatio: 1.07,
-                child: FractionallySizedBox(
-                  widthFactor: .66,
-                  heightFactor: .80,
-                  child:
-                      heroTag == null || MediaQuery.disableAnimationsOf(context)
-                      ? image
-                      : Hero(tag: heroTag!, child: image),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NewBadge extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: AppColors.orange,
-      borderRadius: BorderRadius.circular(AppSpacing.sm),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      child: Text(
-        AppLocalizations.of(context).newLabel,
-        style: const TextStyle(
-          color: AppColors.white,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    ),
-  );
-}
-
 class _QuantityStepper extends StatelessWidget {
   const _QuantityStepper({
     required this.quantity,
@@ -217,36 +151,44 @@ class _QuantityStepper extends StatelessWidget {
   final VoidCallback onIncrease;
   final VoidCallback? onDecrease;
 
+  static const height = 64.0;
+
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
-    return DecoratedBox(
+    return Container(
+      height: height,
+      alignment: Alignment.center,
+      width: 176,
       decoration: const ShapeDecoration(
         color: AppColors.catalogSurface,
         shape: StadiumBorder(
           side: BorderSide(color: AppColors.white, width: 2),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _button(strings.decreaseQuantity, Icons.remove_circle, onDecrease),
-            AnimatedSwitcher(
-              duration: AppMotion.duration(context, AppMotion.quick),
-              transitionBuilder: (child, animation) =>
-                  ScaleTransition(scale: animation, child: child),
-              child: Text(
-                formatNumber(context, quantity),
-                key: ValueKey(quantity),
-                style: Theme.of(context).textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.w800),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _button(strings.decreaseQuantity, Icons.remove_circle, onDecrease),
+          SizedBox(
+            width: 60,
+            height: AppSpacing.xxl,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: AnimatedSwitcher(
+                duration: AppMotion.duration(context, AppMotion.quick),
+                transitionBuilder: (child, animation) =>
+                    ScaleTransition(scale: animation, child: child),
+                child: Text(
+                  formatNumber(context, quantity),
+                  key: ValueKey(quantity),
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
               ),
             ),
-            _button(strings.increaseQuantity, Icons.add_circle, onIncrease),
-          ],
-        ),
+          ),
+          _button(strings.increaseQuantity, Icons.add_circle, onIncrease),
+        ],
       ),
     );
   }
@@ -255,7 +197,8 @@ class _QuantityStepper extends StatelessWidget {
     tooltip: label,
     onPressed: tap,
     color: AppColors.sky,
-    icon: Icon(icon, size: 27),
+    disabledColor: AppColors.sky.withValues(alpha: .65),
+    icon: Icon(icon, size: 38),
   );
 }
 
@@ -264,32 +207,47 @@ class _Description extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      SizedBox(
-        width: MediaQuery.textScalerOf(context).scale(67),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(Icons.help_outline, size: 18, color: AppColors.muted),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              AppLocalizations.of(context).whatsThis,
-              style: const TextStyle(fontWeight: FontWeight.w900),
-            ),
-          ],
-        ),
-      ),
-      Expanded(
-        child: Container(
-          padding: const EdgeInsets.only(left: AppSpacing.sm),
-          decoration: const BoxDecoration(
-            border: Border(left: BorderSide(color: AppColors.white)),
+  Widget build(BuildContext context) => IntrinsicHeight(
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: MediaQuery.textScalerOf(context).scale(67),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.help, size: 18, color: AppColors.helpGreen),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                AppLocalizations.of(context).whatsThis,
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+            ],
           ),
-          child: Text(text, style: const TextStyle(color: AppColors.muted)),
         ),
-      ),
-    ],
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.only(left: AppSpacing.md),
+            decoration: const BoxDecoration(
+              border: Border(left: BorderSide(color: AppColors.white)),
+            ),
+            child: ShaderMask(
+              blendMode: BlendMode.dstIn,
+              shaderCallback: (bounds) => const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [AppColors.white, AppColors.descriptionFadeMask],
+                stops: [.22, 1],
+              ).createShader(bounds),
+              child: Text(
+                text,
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(height: 1.5, color: AppColors.ink),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 }

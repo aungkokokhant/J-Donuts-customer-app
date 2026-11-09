@@ -10,8 +10,8 @@ import 'l10n/app_localizations.dart';
 void main() {
   LicenseRegistry.addLicense(() async* {
     for (final family in [
-      AppTypography.headlineFamily,
-      AppTypography.bodyFamily,
+      AppTypography.adlamFamily,
+      AppTypography.abelFamily,
     ]) {
       final license = await rootBundle.loadString(
         'assets/fonts/$family-OFL.txt',

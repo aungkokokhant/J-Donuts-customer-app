@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../core/presentation/donut_photos.dart';
+import 'donut_backdrop.dart';
 
 class DonutArt extends StatelessWidget {
   const DonutArt({super.key, required this.height, this.tiles = false});
@@ -41,7 +42,7 @@ typedef _Placement = ({
   double y,
   double widthFraction,
   String photo,
-  Color backdrop,
+  DonutBackdropStyle backdrop,
 });
 
 class _DonutCollage extends StatelessWidget {
@@ -55,79 +56,87 @@ class _DonutCollage extends StatelessWidget {
   final double height;
   final bool tiles;
 
+  static const _tileHeightFraction = .45;
+  static const _tileWidthFraction = .535;
+  static const _leftTileVisibleFraction = .8;
+  static const _leftTileWidthFraction =
+      _tileWidthFraction / _leftTileVisibleFraction;
+  static const _leftTileCenter =
+      _tileWidthFraction - _leftTileWidthFraction / 2;
+
   static const List<_Placement> _circles = [
     (
       x: -.08,
       y: .12,
       widthFraction: .56,
       photo: DonutPhotos.chocolate,
-      backdrop: AppColors.artAqua,
+      backdrop: DonutBackdropStyle.aqua,
     ),
     (
       x: .53,
       y: .43,
       widthFraction: .55,
       photo: DonutPhotos.pink,
-      backdrop: AppColors.artPeach,
+      backdrop: DonutBackdropStyle.peach,
     ),
     (
       x: 1.10,
       y: .16,
       widthFraction: .52,
       photo: DonutPhotos.chocolateDrizzle,
-      backdrop: AppColors.artLavender,
+      backdrop: DonutBackdropStyle.ice,
     ),
     (
       x: -.08,
       y: .72,
       widthFraction: .56,
       photo: DonutPhotos.blue,
-      backdrop: AppColors.artPowderBlue,
+      backdrop: DonutBackdropStyle.sky,
     ),
     (
       x: 1.10,
       y: .68,
       widthFraction: .50,
       photo: DonutPhotos.blue,
-      backdrop: AppColors.artPowderBlue,
+      backdrop: DonutBackdropStyle.mint,
     ),
     (
       x: .52,
       y: 1.06,
       widthFraction: .53,
       photo: DonutPhotos.chocolateDrizzle,
-      backdrop: AppColors.artHoney,
+      backdrop: DonutBackdropStyle.honey,
     ),
   ];
 
   static const List<_Placement> _tiles = [
     (
-      x: .22,
-      y: .24,
-      widthFraction: .48,
+      x: _leftTileCenter,
+      y: .21,
+      widthFraction: _leftTileWidthFraction,
       photo: DonutPhotos.blue,
-      backdrop: AppColors.artPowderBlue,
+      backdrop: DonutBackdropStyle.sky,
     ),
     (
-      x: .78,
-      y: .34,
-      widthFraction: .48,
+      x: .8875,
+      y: .30,
+      widthFraction: _tileWidthFraction,
       photo: DonutPhotos.chocolateDrizzle,
-      backdrop: AppColors.artLavender,
+      backdrop: DonutBackdropStyle.ice,
     ),
     (
-      x: .22,
-      y: .73,
-      widthFraction: .48,
+      x: _leftTileCenter,
+      y: .71,
+      widthFraction: _leftTileWidthFraction,
       photo: DonutPhotos.pink,
-      backdrop: AppColors.artPeach,
+      backdrop: DonutBackdropStyle.peach,
     ),
     (
-      x: .78,
-      y: .83,
-      widthFraction: .48,
+      x: .8875,
+      y: .81,
+      widthFraction: _tileWidthFraction,
       photo: DonutPhotos.chocolate,
-      backdrop: AppColors.artHoney,
+      backdrop: DonutBackdropStyle.honey,
     ),
   ];
 
@@ -141,17 +150,29 @@ class _DonutCollage extends StatelessWidget {
   );
 
   Widget _place(_Placement item, int index) {
-    final edge = (width * item.widthFraction).clamp(0.0, height * .56);
+    final tileWidth = width * item.widthFraction;
+    final edge = tiles ? tileWidth : tileWidth.clamp(0.0, height * .56);
+    final tileHeight = tiles ? height * _tileHeightFraction : edge;
     return Positioned(
       width: edge,
-      height: edge,
+      height: tileHeight,
       left: width * item.x - edge / 2,
-      top: height * item.y - edge / 2,
+      top: height * item.y - tileHeight / 2,
       child: _DonutEntrance(
         index: index,
-        child: _PhotoTile(item: item, rounded: tiles, edge: edge),
+        child: _PhotoTile(
+          item: item,
+          rounded: tiles,
+          edge: edge,
+          photoWidthFactor: _photoWidthFactor(item),
+        ),
       ),
     );
+  }
+
+  double _photoWidthFactor(_Placement item) {
+    if (!tiles) return .76;
+    return item.x < .5 ? .84 * _leftTileVisibleFraction : .84;
   }
 }
 
@@ -160,36 +181,39 @@ class _PhotoTile extends StatelessWidget {
     required this.item,
     required this.rounded,
     required this.edge,
+    required this.photoWidthFactor,
   });
 
   final _Placement item;
   final bool rounded;
   final double edge;
+  final double photoWidthFactor;
+
+  static const _tileRadius = Radius.circular(AppSpacing.lg);
+
+  BorderRadius? get _borderRadius {
+    if (!rounded) return null;
+    return item.x < .5
+        ? const BorderRadius.horizontal(right: _tileRadius)
+        : const BorderRadius.all(_tileRadius);
+  }
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      shape: rounded ? BoxShape.rectangle : BoxShape.circle,
-      borderRadius: rounded ? BorderRadius.circular(AppSpacing.lg) : null,
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          item.backdrop,
-          Color.lerp(item.backdrop, AppColors.landingPink, .34)!,
-        ],
+  Widget build(BuildContext context) => Stack(
+    fit: StackFit.expand,
+    children: [
+      DonutBackdrop(style: item.backdrop, borderRadius: _borderRadius),
+      FractionallySizedBox(
+        widthFactor: photoWidthFactor,
+        heightFactor: .76,
+        child: Image.asset(
+          item.photo,
+          fit: BoxFit.contain,
+          cacheWidth: (edge * MediaQuery.devicePixelRatioOf(context)).round(),
+          excludeFromSemantics: true,
+        ),
       ),
-    ),
-    child: FractionallySizedBox(
-      widthFactor: .76,
-      heightFactor: .76,
-      child: Image.asset(
-        item.photo,
-        fit: BoxFit.contain,
-        cacheWidth: (edge * MediaQuery.devicePixelRatioOf(context)).round(),
-        excludeFromSemantics: true,
-      ),
-    ),
+    ],
   );
 }
 

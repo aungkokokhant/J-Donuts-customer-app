@@ -1,6 +1,6 @@
 {
   "products": [
-    {"id":"p_coconut","code":"JD022123","name":"Coconut Donut","price_mmk":3200,"is_new":true,"discount_percent":null,"image_key":"coconut_donut","description":"A soft donut with coconut and a chocolate drizzle."},
+    {"id":"p_coconut","code":"JD022123","name":"Coconut Donut","price_mmk":3200,"is_new":true,"discount_percent":null,"image_key":"coconut_donut","description":"A soft, fluffy donut with a hint of coconut and a smooth chocolate drizzle. Each bite brings together the light sweetness of coconut and the richer taste of chocolate for a satisfying treat."},
     {"id":"p_strawberry","code":"JD022124","name":"Strawberry Chocolate Donut","price_mmk":3400,"is_new":false,"discount_percent":20,"image_key":"strawberry_donut","description":"A strawberry glazed donut finished with chocolate."},
     {"id":"p_dalgona","code":"JD022125","name":"Dalgona Creamy Coffee","price_mmk":4800,"is_new":false,"discount_percent":20,"image_key":"dalgona_coffee","description":"Whipped coffee over chilled milk."},
     {"id":"p_mistletoe","code":"JD022126","name":"Mistletoe Romance Box","price_mmk":12500,"is_new":false,"discount_percent":50,"image_key":"mistletoe_box","description":"A festive assortment of donuts to share."},

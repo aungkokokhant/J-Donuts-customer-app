@@ -34,3 +34,21 @@ Future<void> _seedTierStarts(AppDatabase db, String raw) async {
     );
   }
 }
+
+Future<void> _refreshCoconutDescription(AppDatabase db, String raw) async {
+  const original = 'A soft donut with coconut and a chocolate drizzle.';
+  final json = jsonDecode(raw) as Map<String, Object?>;
+  for (final row
+      in (json['products'] as List<Object?>).cast<Map<String, dynamic>>()) {
+    if (row['id'] != 'p_coconut') continue;
+    await (db.update(db.products)..where(
+          (product) =>
+              product.id.equals('p_coconut') &
+              product.description.equals(original),
+        ))
+        .write(
+          ProductsCompanion(description: Value(row['description'] as String)),
+        );
+    return;
+  }
+}

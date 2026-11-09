@@ -42,7 +42,7 @@ void main() {
   });
 
   test(
-    'version 2 members keep their data when tier progress is added',
+    'upgrading version 2 preserves member data and refreshes the demo catalog',
     () async {
       final directory = await Directory.systemTemp.createTemp(
         'jdonuts_upgrade_',
@@ -61,6 +61,10 @@ void main() {
           'UPDATE members SET total_points = 679000 WHERE id = ?',
           [demoMemberId],
         );
+        await original.customStatement(
+          'UPDATE products SET description = ? WHERE id = ?',
+          ['A soft donut with coconut and a chocolate drizzle.', 'p_coconut'],
+        );
         await original.customStatement('PRAGMA user_version = 2');
       } finally {
         await original.close();
@@ -78,6 +82,10 @@ void main() {
       expect(profile.totalPoints, 679000);
       expect(profile.tierStartPoints, 678500);
       expect(profile.tierProgress, .5);
+      final coconut = valueOf(
+        await container.read(productRepositoryProvider).findById('p_coconut'),
+      )!;
+      expect(coconut.description, startsWith('A soft, fluffy donut'));
     },
   );
 

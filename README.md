@@ -49,4 +49,4 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance check
 
 The app uses Flutter transitions and custom painters for the onboarding steps, catalog loading and carousel, product image Hero, Rewards points ring and challenge artwork. The Rewards tab shows SQLite points and progress shared with Home. Reduce Motion shortens or skips entrance and transition animations.
 
-Auth headings use the bundled Nunito font, distributed under the SIL Open Font License. See [Nunito-OFL.txt](assets/fonts/Nunito-OFL.txt).
+The app bundles Comfortaa Regular for headlines and Montserrat for body text and buttons. Both fonts are distributed under the SIL Open Font License. See [Comfortaa-OFL.txt](assets/fonts/Comfortaa-OFL.txt) and [Montserrat-OFL.txt](assets/fonts/Montserrat-OFL.txt).

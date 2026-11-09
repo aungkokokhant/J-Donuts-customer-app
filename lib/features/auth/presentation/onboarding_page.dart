@@ -63,7 +63,7 @@ class OnboardingPage extends StatelessWidget {
         ),
         child: _OnboardingActions(
           strings: AppLocalizations.of(context),
-          headingSize: (limits.maxWidth * .095).clamp(30, 40),
+          headingSize: (limits.maxWidth * .088).clamp(28, 38),
         ),
       ),
     ],
@@ -83,12 +83,8 @@ class _OnboardingActions extends StatelessWidget {
         child: Text(
           strings.onboardingTitle,
           textAlign: TextAlign.center,
-          style: AuthLayout.heading(context)?.copyWith(
-            fontSize: headingSize,
-            height: 1.10,
-            fontWeight: FontWeight.w800,
-            fontVariations: const [FontVariation('wght', 800)],
-          ),
+          style: AuthLayout.heading(context)
+              ?.copyWith(fontSize: headingSize, height: 1.10),
         ),
       ),
       const SizedBox(height: AppSpacing.lg),
@@ -96,10 +92,6 @@ class _OnboardingActions extends StatelessWidget {
         index: 2,
         child: AuthButton(
           label: strings.getStarted,
-          labelStyle: const TextStyle(
-            fontFamily: 'Nunito',
-            fontVariations: [FontVariation('wght', 900)],
-          ),
           onPressed: () => context.push('/auth?mode=register'),
         ),
       ),
@@ -114,7 +106,7 @@ class _OnboardingActions extends StatelessWidget {
               onPressed: () => context.push('/auth?mode=login'),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-                textStyle: const TextStyle(fontWeight: FontWeight.w800),
+                textStyle: AppTypography.button,
               ),
               child: Text(strings.logIn),
             ),

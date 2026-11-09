@@ -39,48 +39,79 @@ abstract final class AppSpacing {
   static const buttonHeight = 54.0;
 }
 
-ThemeData appTheme() => ThemeData(
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: AppColors.pink,
-    primary: AppColors.pink,
-    error: AppColors.error,
-    onSurface: AppColors.ink,
-    surface: AppColors.canvas,
-  ),
-  scaffoldBackgroundColor: AppColors.canvas,
-  textTheme: const TextTheme(
-    headlineLarge: TextStyle(
-      fontSize: 34,
-      fontWeight: FontWeight.w900,
-      height: 1.05,
-      letterSpacing: -0.8,
+abstract final class AppTypography {
+  static const headlineFamily = 'Comfortaa';
+  static const bodyFamily = 'Montserrat';
+
+  static const button = TextStyle(
+    fontFamily: bodyFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    fontVariations: [FontVariation('wght', 700)],
+  );
+
+  static TextStyle? headline(TextStyle? style) => style?.copyWith(
+    fontFamily: headlineFamily,
+    fontWeight: FontWeight.w400,
+    fontVariations: const [FontVariation('wght', 400)],
+  );
+}
+
+ThemeData appTheme() {
+  final theme = ThemeData(
+    fontFamily: AppTypography.bodyFamily,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.pink,
+      primary: AppColors.pink,
+      error: AppColors.error,
+      onSurface: AppColors.ink,
+      surface: AppColors.canvas,
     ),
-    bodyMedium: TextStyle(fontSize: 15, height: 1.35),
-  ),
-  inputDecorationTheme: InputDecorationTheme(
-    filled: true,
-    fillColor: AppColors.white,
-    labelStyle: const TextStyle(color: AppColors.muted),
-    contentPadding: const EdgeInsets.all(AppSpacing.md),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
-      borderSide: BorderSide.none,
+    scaffoldBackgroundColor: AppColors.canvas,
+    textTheme: const TextTheme(
+      headlineLarge: TextStyle(fontSize: 34, height: 1.05, letterSpacing: -0.8),
+      bodyMedium: TextStyle(fontSize: 15, height: 1.35),
     ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
-      borderSide: const BorderSide(color: AppColors.sky, width: 2),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.white,
+      labelStyle: const TextStyle(color: AppColors.muted),
+      contentPadding: const EdgeInsets.all(AppSpacing.md),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
+        borderSide: const BorderSide(color: AppColors.sky, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
+        borderSide: const BorderSide(color: AppColors.error),
+      ),
     ),
-    errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppSpacing.fieldRadius),
-      borderSide: const BorderSide(color: AppColors.error),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.sky,
+        foregroundColor: AppColors.ink,
+        minimumSize: const Size(0, AppSpacing.buttonHeight),
+        textStyle: AppTypography.button,
+      ),
     ),
-  ),
-  filledButtonTheme: FilledButtonThemeData(
-    style: FilledButton.styleFrom(
-      backgroundColor: AppColors.sky,
-      foregroundColor: AppColors.ink,
-      minimumSize: const Size(0, AppSpacing.buttonHeight),
-      textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+  );
+
+  final text = theme.textTheme;
+  return theme.copyWith(
+    textTheme: text.copyWith(
+      displayLarge: AppTypography.headline(text.displayLarge),
+      displayMedium: AppTypography.headline(text.displayMedium),
+      displaySmall: AppTypography.headline(text.displaySmall),
+      headlineLarge: AppTypography.headline(text.headlineLarge),
+      headlineMedium: AppTypography.headline(text.headlineMedium),
+      headlineSmall: AppTypography.headline(text.headlineSmall),
     ),
-  ),
-);
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(textStyle: AppTypography.button),
+    ),
+  );
+}

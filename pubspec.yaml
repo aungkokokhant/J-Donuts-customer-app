@@ -76,12 +76,16 @@ flutter:
   assets:
     - assets/data/catalog.json
     - assets/images/
-    - assets/fonts/Nunito-OFL.txt
+    - assets/fonts/Comfortaa-OFL.txt
+    - assets/fonts/Montserrat-OFL.txt
 
   fonts:
-    - family: Nunito
+    - family: Comfortaa
       fonts:
-        - asset: assets/fonts/Nunito.ttf
+        - asset: assets/fonts/Comfortaa.ttf
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

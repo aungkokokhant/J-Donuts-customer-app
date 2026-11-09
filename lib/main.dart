@@ -9,8 +9,15 @@ import 'l10n/app_localizations.dart';
 
 void main() {
   LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString('assets/fonts/Nunito-OFL.txt');
-    yield LicenseEntryWithLineBreaks(['Nunito'], license);
+    for (final family in [
+      AppTypography.headlineFamily,
+      AppTypography.bodyFamily,
+    ]) {
+      final license = await rootBundle.loadString(
+        'assets/fonts/$family-OFL.txt',
+      );
+      yield LicenseEntryWithLineBreaks([family], license);
+    }
   });
   runApp(const ProviderScope(child: JDonutsApp()));
 }

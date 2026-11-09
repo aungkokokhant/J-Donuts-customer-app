@@ -14,14 +14,8 @@ abstract final class AuthLayout {
     vertical: 20,
   );
 
-  static TextStyle? heading(BuildContext context) => Theme.of(context)
-      .textTheme
-      .headlineLarge
-      ?.copyWith(
-        fontFamily: 'Nunito',
-        fontVariations: const [FontVariation('wght', 850)],
-        letterSpacing: -.35,
-      );
+  static TextStyle? heading(BuildContext context) =>
+      Theme.of(context).textTheme.headlineLarge?.copyWith(letterSpacing: -.35);
 }
 
 class AuthBackground extends StatelessWidget {
@@ -101,12 +95,10 @@ class AuthButton extends StatefulWidget {
     required this.label,
     this.onPressed,
     this.busy = false,
-    this.labelStyle,
   });
   final String label;
   final VoidCallback? onPressed;
   final bool busy;
-  final TextStyle? labelStyle;
 
   @override
   State<AuthButton> createState() => _AuthButtonState();
@@ -132,10 +124,7 @@ class _AuthButtonState extends State<AuthButton> {
             onPressed: enabled ? widget.onPressed : null,
             style: FilledButton.styleFrom(
               foregroundColor: AppColors.white,
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.w900,
-                letterSpacing: .75,
-              ).merge(widget.labelStyle),
+              textStyle: AppTypography.button.copyWith(letterSpacing: .75),
             ),
             child: AnimatedSwitcher(
               duration: duration,

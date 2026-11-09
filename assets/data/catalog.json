@@ -1,0 +1,41 @@
+{
+  "products": [
+    {"id":"p_coconut","code":"JD022123","name":"Coconut Donut","price_mmk":3200,"is_new":true,"discount_percent":null,"image_key":"coconut_donut","description":"A soft donut with coconut and a chocolate drizzle."},
+    {"id":"p_strawberry","code":"JD022124","name":"Strawberry Chocolate Donut","price_mmk":3400,"is_new":false,"discount_percent":20,"image_key":"strawberry_donut","description":"A strawberry glazed donut finished with chocolate."},
+    {"id":"p_dalgona","code":"JD022125","name":"Dalgona Creamy Coffee","price_mmk":4800,"is_new":false,"discount_percent":20,"image_key":"dalgona_coffee","description":"Whipped coffee over chilled milk."},
+    {"id":"p_mistletoe","code":"JD022126","name":"Mistletoe Romance Box","price_mmk":12500,"is_new":false,"discount_percent":50,"image_key":"mistletoe_box","description":"A festive assortment of donuts to share."},
+    {"id":"p_family","code":"JD022127","name":"Christmas Mini Family Box","price_mmk":16000,"is_new":false,"discount_percent":null,"image_key":"family_box","description":"A box of mini donuts with assorted toppings."}
+  ],
+  "banners": [
+    {"id":"b_central","title":"We are now at Central Boulevard","label":"New shop","image_key":"central_boulevard","position":0},
+    {"id":"b_specials","title":"Holiday specials","label":"50% off","image_key":"holiday_specials","position":1}
+  ],
+  "sections": [
+    {"id":"seasonal","title":"Seasonal specials","position":0},
+    {"id":"popular","title":"Popular","position":1},
+    {"id":"order_again","title":"Order again","position":2}
+  ],
+  "section_products": [
+    {"section_id":"seasonal","product_id":"p_mistletoe","position":0},
+    {"section_id":"seasonal","product_id":"p_family","position":1},
+    {"section_id":"popular","product_id":"p_strawberry","position":0},
+    {"section_id":"popular","product_id":"p_dalgona","position":1},
+    {"section_id":"popular","product_id":"p_coconut","position":2},
+    {"section_id":"order_again","product_id":"p_strawberry","position":0},
+    {"section_id":"order_again","product_id":"p_dalgona","position":1}
+  ],
+  "shops": [
+    {"id":"s_myaynigone","name":"Myaynigone J’Donut","address":"Pyay Road, Sanchaung Township, Yangon","image_key":"donut_shop","position":0},
+    {"id":"s_central","name":"Central Boulevard J’Donut","address":"Central Boulevard, Yangon","image_key":"central_boulevard","position":1},
+    {"id":"s_yankin","name":"Yankin J’Donut","address":"Yankin Township, Yangon","image_key":"donut_shop","position":2},
+    {"id":"s_bahan","name":"Bahan J’Donut","address":"Bahan Township, Yangon","image_key":"donut_shop","position":3}
+  ],
+  "members": [
+    {"id":"demo","name":"Hania","image_key":"member_avatar","tier":"Silver","next_tier":"Gold","points_to_next_tier":500,"total_points":680000,"notification_count":2,"available_rewards":3}
+  ],
+  "challenges": [
+    {"id":"c_donut_complete","member_id":"demo","title":"Eat 4 Coco donuts","kind":"donut","completed":4,"target":4,"points":100,"image_key":"challenge_donut","position":0},
+    {"id":"c_donut_partial","member_id":"demo","title":"Eat 4 Coco donuts","kind":"donut","completed":1,"target":4,"points":100,"image_key":"challenge_donut","position":1},
+    {"id":"c_coffee","member_id":"demo","title":"Drink 12 cups americano","kind":"coffee","completed":9,"target":12,"points":100,"image_key":"challenge_coffee","position":2}
+  ]
+}

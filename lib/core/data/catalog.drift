@@ -1,0 +1,63 @@
+CREATE TABLE products (
+  id TEXT NOT NULL PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  price_mmk INTEGER NOT NULL CHECK (price_mmk >= 0),
+  is_new BOOLEAN NOT NULL,
+  discount_percent INTEGER CHECK (discount_percent BETWEEN 1 AND 100),
+  image_key TEXT NOT NULL,
+  description TEXT NOT NULL
+);
+
+CREATE TABLE banners (
+  id TEXT NOT NULL PRIMARY KEY,
+  title TEXT NOT NULL,
+  label TEXT NOT NULL,
+  image_key TEXT NOT NULL,
+  position INTEGER NOT NULL
+);
+
+CREATE TABLE sections (
+  id TEXT NOT NULL PRIMARY KEY,
+  title TEXT NOT NULL,
+  position INTEGER NOT NULL
+);
+
+CREATE TABLE section_products (
+  section_id TEXT NOT NULL REFERENCES sections(id),
+  product_id TEXT NOT NULL REFERENCES products(id),
+  position INTEGER NOT NULL,
+  PRIMARY KEY (section_id, product_id)
+);
+
+CREATE TABLE shops (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  address TEXT NOT NULL,
+  image_key TEXT NOT NULL,
+  position INTEGER NOT NULL
+);
+
+CREATE TABLE members (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  image_key TEXT NOT NULL,
+  tier TEXT NOT NULL,
+  next_tier TEXT NOT NULL,
+  points_to_next_tier INTEGER NOT NULL CHECK (points_to_next_tier >= 0),
+  total_points INTEGER NOT NULL CHECK (total_points >= 0),
+  notification_count INTEGER NOT NULL CHECK (notification_count >= 0),
+  available_rewards INTEGER NOT NULL CHECK (available_rewards >= 0)
+);
+
+CREATE TABLE challenges (
+  id TEXT NOT NULL PRIMARY KEY,
+  member_id TEXT NOT NULL REFERENCES members(id),
+  title TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('donut', 'coffee')),
+  completed INTEGER NOT NULL CHECK (completed >= 0),
+  target INTEGER NOT NULL CHECK (target > 0 AND completed <= target),
+  points INTEGER NOT NULL CHECK (points >= 0),
+  image_key TEXT NOT NULL,
+  position INTEGER NOT NULL
+);

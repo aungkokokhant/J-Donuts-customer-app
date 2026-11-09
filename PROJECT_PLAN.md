@@ -35,9 +35,13 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 **ရွေးချယ်ထားတာ** — Riverpod ကို state နဲ့ DI နှစ်ခုလုံးအတွက်၊ Drift/SQLite ကို database အတွက်၊ `go_router` ကို navigation အတွက် သုံးမယ်။ Member tier ကို Rewards reference အတိုင်း **Silver၊ Gold ရောက်ဖို့ 500 points** လို့ seed လုပ်ပြီး Home နဲ့ Rewards နှစ်ခုလုံးမှာ တူညီအောင် ပြမယ်။ အခြေခံ scope မှာ mock server မထည့်ဘဲ refresh က database ကို ပြန်ဖတ်မယ်။
 
 - [ ] `auth`, `home`, `product`, `rewards` feature တစ်ခုစီကို `presentation`, `domain`, `data` ခွဲပါ။ Domain မှာ Flutter imports မသုံးပါ။ Data layer က domain repository interfaces ကို implement လုပ်ပါ။
+  - ပြီးပြီးသား: Home၊ Product၊ Rewards အတွက် pure Dart interfaces နဲ့ local implementations ရှိပါတယ်။ Auth နဲ့ screen တွေ ချိတ်ရန် ကျန်ပါတယ်။
 - [ ] Riverpod providers ကနေ dependencies ထည့်ပါ။ Widgets ထဲမှာ services မဆောက်ပါ။ Auth redirect guard နဲ့ `/product/:id` route ထည့်ပါ။
+  - ပြီးပြီးသား: Riverpod က database နဲ့ repository instances ပေးပါတယ်။ Router နဲ့ auth guard ကို auth flow နဲ့အတူ ချိတ်ပါမယ်။
 - [ ] Immutable models အတွက် Freezed + `json_serializable` သို့မဟုတ် PDF မှာ လက်ခံထားတဲ့ Dart 3 sealed classes/records ကို သုံးပါ။ Typed `Result` failures သုံးပြီး error တွေကို UI သို့ ပြန်ပို့ပါ။
+  - ပြီးပြီးသား: Catalog repositories မှာ Dart records နဲ့ sealed `Result` သုံးထားပါတယ်။ Screen error states ချိတ်ရန် ကျန်ပါတယ်။
 - [ ] Products၊ banners၊ sections၊ shops၊ member နဲ့ challenges ကို bundled JSON ကနေ ပထမ launch မှာ versioned Drift database ထဲ seed လုပ်ပါ။ Seed ထပ်မပွားခြင်းနဲ့ schema migrations ကို စစ်ပါ။ UI က repository မှတစ်ဆင့် database ကို ဖတ်ပါ။
+  - ပြီးပြီးသား: Schema v1 က bundled JSON ကို database ပထမဖွင့်ချိန် တစ်ကြိမ်ပဲ seed လုပ်ပါတယ်။ Database ဖိုင်ကို ပိတ်ဖွင့်ပြီး seed မပွားတာ၊ Product Detail က Home နဲ့တူတဲ့ product ကို ဖတ်တာ၊ Home နဲ့ Rewards က member တစ်ခုတည်း ဖတ်တာကို automated tests နဲ့ စစ်ပြီးပါပြီ။
 - [ ] Seed images ကို assets အဖြစ် ထည့်ပါ။ Network images အတွက် `cached_network_image` သို့မဟုတ် equivalent disk cache၊ placeholder နဲ့ error state ထည့်ပါ။
 - [ ] `connectivity_plus` နဲ့ actual reachability check ပေါင်းသုံးပါ။ Offline banner၊ network ပြန်ရင် background refresh နဲ့ pull-to-refresh ထည့်ပါ။ Refresh မအောင်မြင်ရင် နောက်ဆုံးရထားတဲ့ local data ကို ဆက်ပြပါ။
 - [ ] Network ပိတ်ထားတဲ့ fresh install မှာ seed လုပ်နိုင်ကြောင်း၊ ပုံတွေမြင်ရကြောင်းနဲ့ app ပြန်ဖွင့်ရင် duplicate records မဖြစ်ကြောင်း စမ်းပါ။ Home နဲ့ Rewards ကို member record တစ်ခုတည်းက ကျွေးကြောင်း စစ်ပါ။

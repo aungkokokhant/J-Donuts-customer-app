@@ -1,6 +1,6 @@
 # J’Donuts Customer App
 
-Flutter take-home project for Android and iOS. The current milestone is the starter app and platform setup.
+Flutter take-home project for Android and iOS. The current milestone is the local catalog and rewards data layer.
 
 ## Development setup
 
@@ -30,5 +30,11 @@ The Android APK is at `build/app/outputs/flutter-apk/app-release.apk`. The iOS S
 ```sh
 ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app build/ios/JDonuts-Simulator.zip
 ```
+
+## Local data
+
+Drift creates the SQLite schema and seeds it from `assets/data/catalog.json` on first open. Catalog, Home, and Rewards repositories read SQLite. Home and Rewards read the same member record. Riverpod provides the database and repositories so tests can use a separate database.
+
+After changing the Drift schema, regenerate the checked-in Dart file with `dart run build_runner build`.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance checks.

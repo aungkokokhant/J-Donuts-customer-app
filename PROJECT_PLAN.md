@@ -1,6 +1,8 @@
 # J’Donuts Flutter Code Test — Project Plan
 
-**Status: Planning complete · Implementation pending**
+**လက်ရှိအဆင့် — UI အတည်ပြုပြီး၊ ကျန်တဲ့ QA စစ်ဆေးချက်များ**
+
+Font review ရဲ့ local preview မှာ Menco family ကို UI စာသားအားလုံးမှာ သုံးထားပါတယ်။ Headings က Bold၊ labels၊ body နဲ့ footer က Medium၊ descriptions က Light၊ primary buttons နဲ့ အလေးပေးစာသားက Black ပါ။ Menco အတွက် app embedding နဲ့ public repo ဖြန့်ဝေခွင့်ကို သီးခြား အတည်ပြုရန် ကျန်ပါတယ်။
 
 Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတွင်း** Android emulator နဲ့ iOS Simulator နှစ်ခုလုံးမှာ အလုပ်လုပ်တဲ့ Flutter app နဲ့ submission files ကို ပြင်ဆင်မယ်။ ဒီ checklist က Madivizion code test PDF ကို အခြေခံထားပါတယ်။ အောက်က page references တွေကို မူရင်း PDF မှာ ပြန်တိုက်စစ်နိုင်ပါတယ်။
 
@@ -10,6 +12,13 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 - Task တစ်ခုပြီးရင် လိုအပ်သလို commit၊ စမ်းထားတဲ့ device၊ test ရလဒ် သို့မဟုတ် artifact link ကို task အောက်မှာ မှတ်ပါ။
 - **100% complete** ဆိုတာ required checkbox အားလုံး ပြီးပြီး submission items လေးခု အဆင်သင့်ဖြစ်တာကို ဆိုလိုပါတယ်။ Bonus တွေကို သီးခြားမှတ်ပါ။
 - Client ပိုင် PDF နဲ့ design screenshots ကို private reference အဖြစ်ထားပါ။ Public repo နဲ့ repo history ထဲ မပါစေရပါ။
+
+## UI အတည်ပြုပြီးနောက် QA checklist
+
+1. [ ] Onboarding စဖွင့်ချိန်နဲ့ Rewards ဝင်ချိန်က frame spikes ကို ရှာပြီး လိုသလို ပြင်ပါ။ Redmi K30 ပေါ်မှာ profile mode နဲ့ ပြန်တိုင်းပြီး အောက်မှာ မှတ်ထားတဲ့ 16.67 ms baseline နဲ့ ယှဉ်ပါ။
+2. [ ] Home ရဲ့ Seasonal specials၊ Popular နဲ့ Order again အတွက် error state ကို section တစ်ခုချင်းစီ ခွဲပြီး စစ်ပါ။
+3. [ ] Required tasks ပြီးပြီး deadline မတိုင်ခင် အချိန်ကျန်မှ Persistent cart bonus ကို စဉ်းစားပါ။
+4. [x] UI အတည်ပြုပြီးနောက် Android release APK၊ iOS Simulator ZIP နဲ့ online/offline walkthrough video ကို ပြန်ထုတ်ပြီး စစ်ထားပါတယ်။
 
 ## Day 1 — Platform setup၊ architecture နဲ့ အဓိက flow
 
@@ -101,7 +110,12 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 - [x] **Earn / badge / nav** — 4/4 ပြည့်ရင် Earn active နဲ့ attention cue၊ ကျန်ရင် grey state၊ tap feedback ပါစေ။ Rewards (3) badge pop နဲ့ Home ↔ Reward active pill slide ထည့်ပါ။
   - Rewards ကို 320 × 568 viewport၊ text scale 1.3 နဲ့ Reduce Motion ဖွင့်ပြီး widget test စမ်းထားပါတယ်။
 - [x] Durations နဲ့ curves ကို motion file တစ်ခုထဲမှာ named constants ထားပါ။ Motion အများစုကို Flutter animation APIs နဲ့ရေးပါ။ `MediaQuery.disableAnimations` နဲ့ Reduce Motion အတွက် animations တိုစေခြင်း သို့မဟုတ် ကျော်ခြင်းကို စမ်းပါ။
-- [ ] Mid-range Android ဖုန်းအစစ်မှာ profile mode နဲ့ animation frame timing တိုင်းပြီး 60 fps ရည်မှန်းချက်အတွက် jank စစ်ပါ။ Device မရသေးရင် ဒီ task ကို pending ထားပြီး limitation မှတ်ပါ။
+- [x] Redmi K30 (Android 11) ဖုန်းအစစ်မှာ Flutter profile build နဲ့ animation frame timing တိုင်းပါ။ Test copy ကို USB ကနေ install လုပ်ပြီး ပုံမှန် screen input နဲ့ စမ်းထားပါတယ်။
+- [ ] 60 fps အတွက် frame budget 16.67 ms ကျော်တဲ့ frames တွေကို optimize လုပ်ပြီး ဖုန်းအစစ်ပေါ်မှာ ပြန်တိုင်းပါ။
+
+**Redmi K30 profile result (2026-11-09)** — Flutter frame timings စုစုပေါင်း 1,510 ခုထဲက 60 ခုမှာ build သို့မဟုတ် raster stage က 16.67 ms ကျော်ပါတယ်။ Cold onboarding 13/54၊ Home scroll 3/86၊ Product Detail Hero ဝင်ချိန် 2/6၊ quantity animation 0/214၊ Rewards ပထမအကြိမ် 5/103 နဲ့ ထပ်ဝင်ချိန် 4/93 ကျော်ပါတယ်။ Build p95 8.76 ms နဲ့ raster p95 15.40 ms ဖြစ်ပါတယ်။ First Home entry မှာ samples မရခဲ့လို့ Home scroll နဲ့ tab ကနေ ပြန်ဝင်ချိန်ကို သီးခြားတိုင်းထားပါတယ်။
+
+**Redmi K30 profile audit (2026-11-10)** — Rewards tier ladder နဲ့ points animation ကို သီးခြား update လုပ်အောင် ပြင်ပြီး Android 11၊ display 120 Hz မှာ ပြန်တိုင်းထားပါတယ်။ Frame 1,642 ခုထဲက 46 ခုမှာ build သို့မဟုတ် raster က 16.67 ms ကျော်ပါတယ်။ Build p95 5.59 ms၊ raster p95 14.51 ms ဖြစ်ပါတယ်။ Home ပထမအကြိမ်ဝင်တာနဲ့ Rewards entry/tabs မှာ spikes ကျန်ပါတယ်။ အပေါ်က 60 fps jank-free checklist ကို ဖွင့်ထားပါတယ်။
 
 ### 6. နောက်ဆုံး quality gates
 
@@ -114,6 +128,10 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 - [x] သတ်မှတ်ထားတဲ့ UI states နဲ့ motion ကို တစ်ပတ်လည် စမ်းပါ။ Public commit history နဲ့ source tree ထဲ client reference PDF/screenshots မပါကြောင်း ပြန်စစ်ပါ။
 
 **Final QA** — Flutter 3.47.9 / Dart 3.13.7 နဲ့ clean checkout မှာ analyzer clean၊ unit/widget tests 15 ခု pass ပါတယ်။ Android emulator မှာ 320 × 568၊ text scale 1.3 နဲ့ airplane mode full integration pass ပါတယ်။ iPhone 17 Pro Simulator မှာ full integration pass ပါတယ်။ Android release APK မှာ offline register လုပ်ပြီး force-stop/relaunch နောက် session နဲ့ saved catalog ပြန်တက်တာ အတည်ပြုထားပါတယ်။ Walkthrough test မှာ network ပြန်ဖွင့်ပြီး offline banner ပျောက်တာနဲ့ Home pull-to-refresh ကို စစ်ထားပါတယ်။ Reduce Motion ကို Rewards widget test နဲ့ shared motion settings မှာ စစ်ထားပါတယ်။
+
+**Post-UI QA (2026-11-10)** — PDF ရဲ့ pp. 3–15 နဲ့ ပြန်တိုက်စစ်ပါတယ်။ အသုံးမပြုတော့တဲ့ Comfortaa/Montserrat font files ကို ဖယ်ထားပြီး လက်ရှိ UI သုံးတဲ့ asset နဲ့ font licenses တွေကို ထိန်းထားပါတယ်။ Shared button နဲ့ feedback ကို feature တွေကနေ ခွဲထားပါတယ်။ Home product label height ကို font metrics နဲ့ တွက်ပြီး iOS Simulator မှာ တွေ့ခဲ့တဲ့ overflow ကို ပြင်ထားပါတယ်။ Clean source copy မှာ README command တွေနဲ့ analyzer၊ tests၊ Android release APK နဲ့ iOS Simulator build ကို ပြန်စစ်ထားပါတယ်။
+
+**Updated delivery evidence (2026-11-10)** — Redmi K30 မှာ online နဲ့ airplane-mode Register → Log out → Log in → Home → Product Detail → Rewards walkthrough အောင်ပြီး ၃ မိနစ် ၃၆ စက္ကန့် recording ရှိပါတယ်။ Release APK မှာ offline registration၊ force-stop/relaunch၊ session restore၊ Rewards points နဲ့ reconnect banner ကို စစ်ပြီးပါပြီ။ iPhone 17 Pro Simulator မှာ zip ကို ဖြည်ပြီး install/launch လုပ်ထားသလို Android emulator 320 × 568၊ text scale 1.3၊ airplane mode နဲ့ integration flow ကိုလည်း ပြန်စစ်ထားပါတယ်။
 
 ### 7. Submission items လေးခု
 

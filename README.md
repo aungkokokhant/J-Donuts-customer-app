@@ -71,7 +71,10 @@ Hero and an animated quantity. Rewards uses a painted points ring with a count-u
 tier reveal, challenge progress artwork, sliding tabs and a sliding navigation
 pill. Reduce Motion shortens or skips these effects and stops carousel autoplay.
 
-The app bundles Comfortaa Regular for headlines and Montserrat for body text and buttons. Both fonts are distributed under the SIL Open Font License. See [Comfortaa-OFL.txt](assets/fonts/Comfortaa-OFL.txt) and [Montserrat-OFL.txt](assets/fonts/Montserrat-OFL.txt).
+The submission build uses Abel Regular for body text, labels and fields, and ADLaM
+Display Regular for display text and primary buttons. Both are distributed
+under the SIL Open Font License. See [Abel-OFL.txt](assets/fonts/Abel-OFL.txt)
+and [ADLaMDisplay-OFL.txt](assets/fonts/ADLaMDisplay-OFL.txt).
 
 Donut, coffee, bakery, assortment and member photographs are original
 AI-generated demo assets bundled for offline display. The member portrait is fictional.
@@ -81,7 +84,13 @@ AI-generated demo assets bundled for offline display. The member portrait is fic
 - Authentication and OTP are local demo flows. Checkout, the extra navigation
   items and social sign-in show demo feedback.
 - Catalog refresh reads local data. The app has no mock server or persistent cart.
-- Motion was checked on emulators and the iOS Simulator. Frame timing on a
-  physical mid-range Android phone is pending.
-- Approximately 2.5 hours of active implementation and verification across the
-  recorded work sessions, excluding breaks.
+- The release APK was installed on a Redmi K30 and verified after an offline
+  relaunch. The device walkthrough covers registration, logout, login, Home,
+  Product Detail and Rewards both online and in airplane mode.
+- On a physical Redmi K30 (Android 11, 120 Hz display mode), a profile
+  run captured 1,642 Flutter frames. Build or raster time exceeded the 16.67 ms
+  budget for 60 fps in 46 frames. The 95th percentile was 5.59 ms for build and
+  14.51 ms for raster. Home and Rewards entry showed spikes, so the
+  physical-device jank-free target remains open.
+- Approximately 2.5 hours logged for initial implementation and verification,
+  followed by UI polish and a physical-device audit.

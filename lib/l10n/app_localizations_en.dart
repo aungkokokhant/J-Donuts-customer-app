@@ -225,4 +225,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get rewardsTitle => 'J’ Donuts Rewards';
+
+  @override
+  String get rewardsBadge => 'Rewards';
+
+  @override
+  String get totalPoints => 'Total points';
+
+  @override
+  String get currentTier => 'You’re here now';
+
+  @override
+  String get futureTier => 'You’ll be here soon';
+
+  @override
+  String nextTierRemaining(String points, String tier) {
+    return '$points pts remaining to become $tier';
+  }
+
+  @override
+  String get silver => 'Silver';
+
+  @override
+  String get gold => 'Gold';
+
+  @override
+  String get platinum => 'Platinum';
+
+  @override
+  String get earnTab => 'Eat more earn more';
+
+  @override
+  String get giftTab => 'Gift';
+
+  @override
+  String get noGifts => 'Gifts will appear here.';
+
+  @override
+  String get earn => 'Earn';
+
+  @override
+  String rewardPoints(String points) {
+    return '$points pts';
+  }
+
+  @override
+  String challengeProgress(int done, int goal) {
+    return '$done/$goal';
+  }
 }

@@ -20,3 +20,17 @@ Future<void> _insertSeed(AppDatabase db, String raw) async {
     batch.insertAll(db.challenges, rows('challenges', Challenge.fromJson));
   });
 }
+
+Future<void> _seedTierStarts(AppDatabase db, String raw) async {
+  final json = jsonDecode(raw) as Map<String, Object?>;
+  final members = (json['members'] as List<Object?>).map(
+    (row) => Member.fromJson(row as Map<String, dynamic>),
+  );
+  for (final member in members) {
+    await (db.update(
+      db.members,
+    )..where((row) => row.id.equals(member.id))).write(
+      MembersCompanion(tierStartPoints: Value(member.tierStartPoints)),
+    );
+  }
+}

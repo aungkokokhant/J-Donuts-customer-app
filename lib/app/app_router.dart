@@ -13,7 +13,9 @@ import '../features/auth/presentation/session_controller.dart';
 import '../features/home/presentation/home_landing_page.dart';
 import '../features/product/presentation/product_detail_page.dart';
 import '../features/product/presentation/product_preview.dart';
+import '../features/rewards/presentation/rewards_page.dart';
 import '../l10n/app_localizations.dart';
+import 'app_shell.dart';
 import 'repository_providers.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>(
@@ -46,18 +48,34 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           session: session,
         ),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (_, _) => HomeLandingPage(session: session),
-      ),
-      GoRoute(
-        path: '/product/:id',
-        builder: (_, state) => ProductDetailPage(
-          id: state.pathParameters['id']!,
-          preview: state.extra is ProductPreview
-              ? state.extra as ProductPreview
-              : null,
-        ),
+      ShellRoute(
+        builder: (_, state, child) =>
+            AppShell(location: state.uri.path, session: session, child: child),
+        routes: [
+          GoRoute(
+            path: '/home',
+            pageBuilder: (_, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: HomeLandingPage(session: session),
+            ),
+          ),
+          GoRoute(
+            path: '/rewards',
+            pageBuilder: (_, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const RewardsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/product/:id',
+            builder: (_, state) => ProductDetailPage(
+              id: state.pathParameters['id']!,
+              preview: state.extra is ProductPreview
+                  ? state.extra as ProductPreview
+                  : null,
+            ),
+          ),
+        ],
       ),
     ],
   );
@@ -75,7 +93,9 @@ String? _redirect(GoRouterState state, SessionController session) {
     return location == '/session' ? null : '/session';
   }
   if (location == '/session') return session.user == null ? '/' : '/home';
-  if ((location == '/home' || location == '/product/:id') &&
+  if ((location == '/home' ||
+          location == '/rewards' ||
+          state.fullPath == '/product/:id') &&
       session.user == null) {
     return '/';
   }

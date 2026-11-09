@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jdonuts_customer_app/app/repository_providers.dart';
 import 'package:jdonuts_customer_app/core/data/app_database.dart';
+import 'package:jdonuts_customer_app/core/domain/member_profile.dart';
 import 'package:jdonuts_customer_app/core/domain/result.dart';
 
 T valueOf<T>(Result<T> result) => switch (result) {
@@ -39,6 +40,46 @@ void main() {
     expect(await reopened.select(reopened.sectionProducts).get(), hasLength(7));
     expect(seedLoads, 1);
   });
+
+  test(
+    'version 2 members keep their data when tier progress is added',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'jdonuts_upgrade_',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+      final file = File('${directory.path}/catalog.sqlite');
+      Future<String> seed() =>
+          rootBundle.loadString('assets/data/catalog.json');
+
+      final original = AppDatabase(NativeDatabase(file), loadSeed: seed);
+      try {
+        await original.customStatement(
+          'ALTER TABLE members DROP COLUMN tier_start_points',
+        );
+        await original.customStatement(
+          'UPDATE members SET total_points = 679000 WHERE id = ?',
+          [demoMemberId],
+        );
+        await original.customStatement('PRAGMA user_version = 2');
+      } finally {
+        await original.close();
+      }
+
+      final upgraded = AppDatabase(NativeDatabase(file), loadSeed: seed);
+      addTearDown(upgraded.close);
+      final container = ProviderContainer(
+        overrides: [databaseProvider.overrideWithValue(upgraded)],
+      );
+      addTearDown(container.dispose);
+      final profile = valueOf(
+        await container.read(homeRepositoryProvider).loadMember(demoMemberId),
+      )!;
+      expect(profile.totalPoints, 679000);
+      expect(profile.tierStartPoints, 678500);
+      expect(profile.tierProgress, .5);
+    },
+  );
 
   test(
     'Home and Rewards read one member and the same seeded catalog',

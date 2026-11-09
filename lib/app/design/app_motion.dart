@@ -6,9 +6,12 @@ abstract final class AppMotion {
   static const entrance = Duration(milliseconds: 460);
   static const stagger = Duration(milliseconds: 85);
   static const carouselInterval = Duration(seconds: 5);
+  static const rewardEntrance = Duration(milliseconds: 980);
+  static const rewardPulse = Duration(milliseconds: 620);
   static const shimmer = Duration(milliseconds: 1100);
   static const shake = Duration(milliseconds: 390);
   static const curve = Curves.easeOutCubic;
+  static const pop = Curves.easeOutBack;
 
   static Duration duration(BuildContext context, Duration normal) =>
       MediaQuery.disableAnimationsOf(context) ? Duration.zero : normal;

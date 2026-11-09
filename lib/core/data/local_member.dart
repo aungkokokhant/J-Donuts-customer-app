@@ -14,6 +14,7 @@ Future<MemberProfile?> loadLocalMember(AppDatabase db, String id) async {
           nextTier: member.nextTier,
           pointsToNextTier: member.pointsToNextTier,
           totalPoints: member.totalPoints,
+          tierStartPoints: member.tierStartPoints,
           notificationCount: member.notificationCount,
           availableRewards: member.availableRewards,
         );

@@ -31,7 +31,7 @@
     {"id":"s_bahan","name":"Bahan J’Donut","address":"Bahan Township, Yangon","image_key":"donut_shop","position":3}
   ],
   "members": [
-    {"id":"demo","name":"Hania","image_key":"member_avatar","tier":"Silver","next_tier":"Gold","points_to_next_tier":500,"total_points":680000,"notification_count":2,"available_rewards":3}
+    {"id":"demo","name":"Hania","image_key":"member_avatar","tier":"Silver","next_tier":"Gold","points_to_next_tier":500,"total_points":680000,"tier_start_points":678500,"notification_count":2,"available_rewards":3}
   ],
   "challenges": [
     {"id":"c_donut_complete","member_id":"demo","title":"Eat 4 Coco donuts","kind":"donut","completed":4,"target":4,"points":100,"image_key":"challenge_donut","position":0},

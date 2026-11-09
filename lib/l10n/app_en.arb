@@ -116,5 +116,47 @@
   "increaseQuantity": "Increase quantity",
   "dataError": "Couldn’t load this section.",
   "emptySection": "Nothing to show here yet.",
-  "retry": "Retry"
+  "retry": "Retry",
+  "rewardsTitle": "J’ Donuts Rewards",
+  "rewardsBadge": "Rewards",
+  "totalPoints": "Total points",
+  "currentTier": "You’re here now",
+  "futureTier": "You’ll be here soon",
+  "nextTierRemaining": "{points} pts remaining to become {tier}",
+  "@nextTierRemaining": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "silver": "Silver",
+  "gold": "Gold",
+  "platinum": "Platinum",
+  "earnTab": "Eat more earn more",
+  "giftTab": "Gift",
+  "noGifts": "Gifts will appear here.",
+  "earn": "Earn",
+  "rewardPoints": "{points} pts",
+  "@rewardPoints": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeProgress": "{done}/{goal}",
+  "@challengeProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  }
 }

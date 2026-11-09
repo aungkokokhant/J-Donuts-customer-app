@@ -46,6 +46,7 @@ CREATE TABLE members (
   next_tier TEXT NOT NULL,
   points_to_next_tier INTEGER NOT NULL CHECK (points_to_next_tier >= 0),
   total_points INTEGER NOT NULL CHECK (total_points >= 0),
+  tier_start_points INTEGER NOT NULL DEFAULT 0 CHECK (tier_start_points >= 0),
   notification_count INTEGER NOT NULL CHECK (notification_count >= 0),
   available_rewards INTEGER NOT NULL CHECK (available_rewards >= 0)
 );

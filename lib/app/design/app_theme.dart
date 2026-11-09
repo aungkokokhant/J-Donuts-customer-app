@@ -13,6 +13,11 @@ abstract final class AppColors {
   static const warm = Color(0xFFFFECD9);
   static const orange = Color(0xFFF57924);
   static const violet = Color(0xFF6658A6);
+  static const rewardHighlight = Color(0xFFFF9ECD);
+  static const rewardShadow = Color(0xFFE04491);
+  static const medalSilver = Color(0xFFD1D5DB);
+  static const medalGold = Color(0xFFFFDE8B);
+  static const medalPlatinum = Color(0xFF9DDFEE);
   static const skeleton = Color(0xFFDCE0E3);
 }
 

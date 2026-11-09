@@ -9,6 +9,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 import '../core/data/app_database.dart';
+import '../core/domain/member_profile.dart';
+import '../core/domain/result.dart';
 import '../features/home/data/local_home_repository.dart';
 import '../features/home/domain/home_repository.dart';
 import '../features/product/data/local_product_repository.dart';
@@ -40,3 +42,8 @@ final productRepositoryProvider = Provider<ProductRepository>(
 final rewardsRepositoryProvider = Provider<RewardsRepository>(
   (ref) => LocalRewardsRepository(ref.watch(databaseProvider)),
 );
+
+final memberProfileProvider =
+    FutureProvider.autoDispose<Result<MemberProfile?>>(
+      (ref) => ref.watch(homeRepositoryProvider).loadMember(demoMemberId),
+    );

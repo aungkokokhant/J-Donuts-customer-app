@@ -1,6 +1,6 @@
 # J’Donuts Customer App
 
-Flutter take-home project for Android and iOS. The current milestone includes local authentication, the offline Home catalog, and Product Detail.
+Flutter take-home project for Android and iOS. The app includes local authentication, the offline Home catalog, Product Detail, and animated Rewards.
 
 ## Development setup
 
@@ -41,6 +41,10 @@ After changing the Drift schema, regenerate the checked-in Dart file with `dart 
 
 Register with a Myanmar mobile number and use **123456** for the OTP. The demo saves users in SQLite and the current session in platform secure storage. Use **Settings → Log out** to try the returning user flow.
 
-Run the device registration and product flow test with `flutter test integration_test/app_flow_test.dart -d DEVICE_ID`.
+Run the device registration, product, and rewards flow test with `flutter test integration_test/app_flow_test.dart -d DEVICE_ID`.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance checks.
+
+## Motion
+
+The app uses Flutter transitions and custom painters for the onboarding steps, catalog loading and carousel, product image Hero, Rewards points ring and challenge artwork. The Rewards tab shows SQLite points and progress shared with Home. Reduce Motion shortens or skips entrance and transition animations.

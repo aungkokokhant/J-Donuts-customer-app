@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jdonuts_customer_app/app/app_router.dart';
+import 'package:jdonuts_customer_app/app/design/app_theme.dart';
 import 'package:jdonuts_customer_app/app/network_status.dart';
 import 'package:jdonuts_customer_app/app/repository_providers.dart';
 import 'package:jdonuts_customer_app/core/domain/member_profile.dart';
@@ -9,6 +10,9 @@ import 'package:jdonuts_customer_app/core/domain/result.dart';
 import 'package:jdonuts_customer_app/features/auth/domain/auth_repository.dart';
 import 'package:jdonuts_customer_app/features/auth/domain/auth_validation.dart';
 import 'package:jdonuts_customer_app/features/home/domain/home_repository.dart';
+import 'package:jdonuts_customer_app/features/rewards/domain/rewards_repository.dart';
+import 'package:jdonuts_customer_app/features/rewards/presentation/rewards_page.dart';
+import 'package:jdonuts_customer_app/l10n/app_localizations.dart';
 import 'package:jdonuts_customer_app/main.dart';
 
 class _FakeAuth implements AuthRepository {
@@ -67,6 +71,7 @@ class _FakeHome implements HomeRepository {
     nextTier: 'Gold',
     pointsToNextTier: 500,
     totalPoints: 680000,
+    tierStartPoints: 678500,
     notificationCount: 2,
     availableRewards: 3,
   ));
@@ -80,6 +85,26 @@ class _FakeHome implements HomeRepository {
 
   @override
   Future<Result<List<NearbyShop>>> loadShops() async => const Success([]);
+}
+
+class _FakeRewards implements RewardsRepository {
+  @override
+  Future<Result<MemberProfile?>> loadMember(String id) =>
+      _FakeHome().loadMember(id);
+
+  @override
+  Future<Result<List<RewardChallenge>>> loadChallenges(String memberId) async =>
+      const Success([
+        (
+          id: 'challenge',
+          title: 'Eat 4 Coco donuts',
+          kind: ChallengeKind.donut,
+          completed: 1,
+          target: 4,
+          points: 100,
+          imageKey: 'challenge_donut',
+        ),
+      ]);
 }
 
 const _phoneInput = Key('phoneInput');
@@ -109,6 +134,48 @@ Future<void> _sendPhone(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets(
+    'Rewards fits a narrow viewport with larger text and reduced motion',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            homeRepositoryProvider.overrideWithValue(_FakeHome()),
+            rewardsRepositoryProvider.overrideWithValue(_FakeRewards()),
+            networkOnlineProvider.overrideWith((ref) => Stream.value(false)),
+          ],
+          child: MaterialApp(
+            theme: appTheme(),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: const TextScaler.linear(1.3),
+                disableAnimations: true,
+              ),
+              child: child!,
+            ),
+            home: const RewardsPage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('680,000'), findsOneWidget);
+      await tester.scrollUntilVisible(find.text('Eat more earn more'), 90);
+      final indicator = tester.widget<AnimatedPositioned>(
+        find.byKey(const Key('rewardsTabIndicator')),
+      );
+      expect(indicator.duration, Duration.zero);
+      await tester.scrollUntilVisible(find.text('Eat 4 Coco donuts'), 120);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets(
     'a restored session opens Home and a cleared session opens Onboarding',
     (tester) async {

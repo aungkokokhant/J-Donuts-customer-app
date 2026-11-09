@@ -6,21 +6,41 @@ import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 
+abstract final class AuthLayout {
+  static const pageInset = 32.0;
+  static const profileHeadingWidth = 245.0;
+  static const fieldInset = EdgeInsets.symmetric(
+    horizontal: AppSpacing.md,
+    vertical: 20,
+  );
+
+  static TextStyle? heading(BuildContext context) => Theme.of(context)
+      .textTheme
+      .headlineLarge
+      ?.copyWith(
+        fontFamily: 'Nunito',
+        fontVariations: const [FontVariation('wght', 850)],
+        letterSpacing: -.35,
+      );
+}
+
 class AuthBackground extends StatelessWidget {
   const AuthBackground({super.key, required this.child});
   final Widget child;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.blush, AppColors.canvas, AppColors.blush],
+    body: SizedBox.expand(
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.blush, AppColors.canvas, AppColors.blush],
+          ),
         ),
+        child: SafeArea(child: child),
       ),
-      child: SafeArea(child: child),
     ),
   );
 }
@@ -100,6 +120,13 @@ class _AuthButtonState extends State<AuthButton> {
           width: double.infinity,
           child: FilledButton(
             onPressed: enabled ? widget.onPressed : null,
+            style: FilledButton.styleFrom(
+              foregroundColor: AppColors.white,
+              textStyle: const TextStyle(
+                fontWeight: FontWeight.w900,
+                letterSpacing: .75,
+              ),
+            ),
             child: AnimatedSwitcher(
               duration: duration,
               child: widget.busy
@@ -127,12 +154,7 @@ class RegistrationRing extends StatelessWidget {
     curve: AppMotion.curve,
     builder: (context, value, child) => CustomPaint(
       painter: _RingPainter(value),
-      child: SizedBox.square(
-        dimension: 28,
-        child: value >= 1
-            ? const Icon(Icons.check, size: 16, color: AppColors.white)
-            : null,
-      ),
+      child: const SizedBox.square(dimension: 28),
     ),
   );
 }
@@ -148,10 +170,6 @@ class _RingPainter extends CustomPainter {
     final paint = Paint()
       ..color = AppColors.pink
       ..strokeWidth = 4;
-    if (progress >= 1) {
-      canvas.drawCircle(center, radius + 2, paint);
-      return;
-    }
     paint.style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, paint..color = AppColors.sky);
     canvas.drawArc(
@@ -160,6 +178,26 @@ class _RingPainter extends CustomPainter {
       math.pi * 2 * progress,
       false,
       paint..color = AppColors.pink,
+    );
+    final complete = ((progress - .90) / .10).clamp(0.0, 1.0);
+    if (complete > 0) _drawCheck(canvas, center, radius + 2, complete);
+  }
+
+  void _drawCheck(Canvas canvas, Offset center, double radius, double phase) {
+    canvas.drawCircle(center, radius * phase, Paint()..color = AppColors.pink);
+    final check = Path()
+      ..moveTo(center.dx - 5, center.dy)
+      ..lineTo(center.dx - 1, center.dy + 4)
+      ..lineTo(center.dx + 6, center.dy - 4);
+    final metric = check.computeMetrics().single;
+    canvas.drawPath(
+      metric.extractPath(0, metric.length * phase),
+      Paint()
+        ..color = AppColors.white
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
     );
   }
 

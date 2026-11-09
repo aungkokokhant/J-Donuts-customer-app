@@ -19,6 +19,11 @@ abstract final class AppColors {
   static const medalGold = Color(0xFFFFDE8B);
   static const medalPlatinum = Color(0xFF9DDFEE);
   static const skeleton = Color(0xFFDCE0E3);
+  static const socialBlue = Color(0xFF1877F2);
+  static const googleRed = Color(0xFFEA4335);
+  static const googleYellow = Color(0xFFFBBC05);
+  static const googleGreen = Color(0xFF34A853);
+  static const googleBlue = Color(0xFF4285F4);
 }
 
 abstract final class AppSpacing {

@@ -6,21 +6,31 @@ import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 
 class DonutArt extends StatelessWidget {
-  const DonutArt({super.key, this.tiles = false});
+  const DonutArt({super.key, required this.height, this.tiles = false});
 
+  final double height;
   final bool tiles;
 
   @override
   Widget build(BuildContext context) {
     final total = AppMotion.entrance + AppMotion.stagger * 4;
     return SizedBox(
-      height: tiles ? 300 : 255,
+      height: height,
       width: double.infinity,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0, end: 1),
-        duration: AppMotion.duration(context, total),
-        builder: (context, value, _) =>
-            CustomPaint(painter: _DonutPainter(value, tiles: tiles)),
+      child: ShaderMask(
+        blendMode: BlendMode.dstIn,
+        shaderCallback: (bounds) => const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.white, AppColors.white, Colors.transparent],
+          stops: [0, .78, 1],
+        ).createShader(bounds),
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: 1),
+          duration: AppMotion.duration(context, total),
+          builder: (context, value, _) =>
+              CustomPaint(painter: _DonutPainter(value, tiles: tiles)),
+        ),
       ),
     );
   }
@@ -62,11 +72,19 @@ class _DonutPainter extends CustomPainter {
       _tile(canvas, Offset(w * .76, h * .81), radius, _gold, _raspberry, 3);
       return;
     }
-    _tile(canvas, Offset(w * .04, h * .07), 71, _blue, _purple, 0);
-    _tile(canvas, Offset(w * .5, h * .44), 78, _peach, _strawberry, 1);
-    _tile(canvas, Offset(w * .98, h * .13), 68, _lavender, _chocolate, 2);
-    _tile(canvas, Offset(w * .98, h * .81), 64, _blue, _raspberry, 3);
-    _tile(canvas, Offset(w * .49, h * 1.03), 63, _gold, _purple, 4);
+    final radius = math.min(w * .28, h * .26);
+    _tile(canvas, Offset(-w * .07, h * .09), radius * .91, _blue, _purple, 0);
+    _tile(canvas, Offset(w * .53, h * .43), radius, _peach, _strawberry, 1);
+    _tile(
+      canvas,
+      Offset(w * 1.07, h * .11),
+      radius * .9,
+      _lavender,
+      _chocolate,
+      2,
+    );
+    _tile(canvas, Offset(w * 1.09, h * .72), radius, _blue, _raspberry, 3);
+    _tile(canvas, Offset(w * .51, h * 1.03), radius, _gold, _purple, 4);
   }
 
   void _tile(

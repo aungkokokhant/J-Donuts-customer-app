@@ -22,10 +22,14 @@ class OnboardingPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const DonutArt(),
-                  const Spacer(),
+                  DonutArt(height: (limits.maxHeight * .51).clamp(215, 440)),
                   Padding(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    padding: const EdgeInsets.fromLTRB(
+                      AuthLayout.pageInset,
+                      AppSpacing.sm,
+                      AuthLayout.pageInset,
+                      AppSpacing.sm,
+                    ),
                     child: _OnboardingActions(strings: strings),
                   ),
                   const Spacer(),
@@ -60,7 +64,7 @@ class _OnboardingActions extends StatelessWidget {
         child: Text(
           strings.onboardingTitle,
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineLarge,
+          style: AuthLayout.heading(context),
         ),
       ),
       const SizedBox(height: AppSpacing.lg),
@@ -92,25 +96,45 @@ class _OnboardingActions extends StatelessWidget {
           children: [
             IconButton(
               tooltip: strings.google,
-              icon: const Text(
-                'G',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 21),
-              ),
+              icon: const _GoogleMark(),
               onPressed: () => showAuthPlaceholder(context),
             ),
             IconButton(
               tooltip: strings.apple,
-              icon: const Icon(Icons.apple),
+              icon: const Icon(Icons.apple, color: AppColors.ink),
               onPressed: () => showAuthPlaceholder(context),
             ),
             IconButton(
               tooltip: strings.facebook,
-              icon: const Icon(Icons.facebook),
+              icon: const Icon(Icons.facebook, color: AppColors.socialBlue),
               onPressed: () => showAuthPlaceholder(context),
             ),
           ],
         ),
       ),
     ],
+  );
+}
+
+class _GoogleMark extends StatelessWidget {
+  const _GoogleMark();
+
+  @override
+  Widget build(BuildContext context) => ShaderMask(
+    blendMode: BlendMode.srcIn,
+    shaderCallback: (bounds) => const SweepGradient(
+      colors: [
+        AppColors.googleBlue,
+        AppColors.googleGreen,
+        AppColors.googleYellow,
+        AppColors.googleRed,
+        AppColors.googleBlue,
+      ],
+      stops: [0, .25, .42, .65, 1],
+    ).createShader(bounds),
+    child: const Text(
+      'G',
+      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 21),
+    ),
   );
 }

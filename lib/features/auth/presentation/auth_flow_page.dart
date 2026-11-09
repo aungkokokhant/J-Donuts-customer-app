@@ -104,7 +104,10 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
       child: AuthBackground(
         child: LayoutBuilder(
           builder: (context, limits) => SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AuthLayout.pageInset,
+              vertical: AppSpacing.lg,
+            ),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: (limits.maxHeight - AppSpacing.lg * 2).clamp(
@@ -112,24 +115,21 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
                   double.infinity,
                 ),
               ),
-              child: IntrinsicHeight(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _header(),
-                    const SizedBox(height: AppSpacing.xl),
-                    _switchingForm(strings),
-                    const Spacer(),
-                    if (_step != _Step.otp)
-                      AuthButton(
-                        label: strings.continueLabel,
-                        busy: _busy,
-                        onPressed: _canContinue ? _submit : null,
-                      ),
-                    const SizedBox(height: AppSpacing.lg),
-                    const AuthLegal(),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _header(),
+                      const SizedBox(height: AppSpacing.lg),
+                      _switchingForm(strings),
+                      const SizedBox(height: AppSpacing.md),
+                    ],
+                  ),
+                  _footer(strings),
+                ],
               ),
             ),
           ),
@@ -138,10 +138,31 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
     );
   }
 
+  Widget _footer(AppLocalizations strings) => Column(
+    children: [
+      if (_step != _Step.otp)
+        AuthButton(
+          label: strings.continueLabel,
+          busy: _busy,
+          onPressed: _canContinue ? _submit : null,
+        ),
+      const SizedBox(height: AppSpacing.lg),
+      const AuthLegal(),
+    ],
+  );
+
   Widget _header() => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      BackButton(onPressed: _busy ? () {} : _goBack),
+      BackButton(
+        style: IconButton.styleFrom(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.sm),
+          ),
+        ),
+        onPressed: _busy ? () {} : _goBack,
+      ),
       if (_mode == AuthMode.register) RegistrationRing(step: _step.index + 1),
     ],
   );
@@ -162,11 +183,25 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
       key: ValueKey(_step),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(_title(strings), style: Theme.of(context).textTheme.headlineLarge),
+        _stepTitle(strings),
         const SizedBox(height: AppSpacing.lg),
         _form(strings),
         _feedback(strings),
       ],
     ),
   );
+
+  Widget _stepTitle(AppLocalizations strings) {
+    final title = Text(_title(strings), style: AuthLayout.heading(context));
+    if (_step != _Step.name && _step != _Step.birth) return title;
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: AuthLayout.profileHeadingWidth,
+        ),
+        child: title,
+      ),
+    );
+  }
 }

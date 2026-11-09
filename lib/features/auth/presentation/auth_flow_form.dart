@@ -18,6 +18,8 @@ extension _AuthFlowForm on _AuthFlowPageState {
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
         labelText: strings.phoneLabel,
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        contentPadding: AuthLayout.fieldInset,
         prefixIcon: const Padding(
           padding: EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.sm),
           child: Align(
@@ -79,6 +81,8 @@ extension _AuthFlowForm on _AuthFlowPageState {
     textCapitalization: TextCapitalization.words,
     decoration: InputDecoration(
       labelText: label,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      contentPadding: AuthLayout.fieldInset,
       errorText:
           controller.text.isNotEmpty &&
               !isValidName(controller.text, optional: optional)
@@ -159,31 +163,45 @@ extension _AuthFlowForm on _AuthFlowPageState {
   );
 
   Widget _welcome(AppLocalizations strings) => AuthBackground(
-    child: Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+    child: LayoutBuilder(
+      builder: (context, limits) => SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const DonutArt(tiles: true),
-            const SizedBox(height: AppSpacing.lg),
-            EnterMotion(
-              index: 1,
-              child: Text(
-                strings.welcomeTitle,
-                style: Theme.of(context).textTheme.headlineLarge,
-                textAlign: TextAlign.center,
+            DonutArt(
+              height: (limits.maxHeight * .68).clamp(245, 570),
+              tiles: true,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AuthLayout.pageInset,
+                0,
+                AuthLayout.pageInset,
+                AppSpacing.lg,
+              ),
+              child: Column(
+                children: [
+                  EnterMotion(
+                    index: 1,
+                    child: Text(
+                      strings.welcomeTitle,
+                      style: AuthLayout.heading(context),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  EnterMotion(
+                    index: 2,
+                    child: AuthButton(
+                      label: strings.explore,
+                      onPressed: _submit,
+                      busy: _busy,
+                    ),
+                  ),
+                  _feedback(strings),
+                ],
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            EnterMotion(
-              index: 2,
-              child: AuthButton(
-                label: strings.explore,
-                onPressed: _submit,
-                busy: _busy,
-              ),
-            ),
-            _feedback(strings),
           ],
         ),
       ),

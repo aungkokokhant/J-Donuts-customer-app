@@ -76,6 +76,12 @@ flutter:
   assets:
     - assets/data/catalog.json
     - assets/images/
+    - assets/fonts/Nunito-OFL.txt
+
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

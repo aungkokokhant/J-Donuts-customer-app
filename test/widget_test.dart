@@ -135,6 +135,41 @@ Future<void> _sendPhone(WidgetTester tester) async {
 
 void main() {
   testWidgets(
+    'auth stays scrollable on a narrow screen with the keyboard open',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetViewInsets);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await _start(tester, _FakeAuth());
+      final start = find.text('LET’S GET STARTED');
+      await tester.ensureVisible(start);
+      await tester.tap(start);
+      await tester.pumpAndSettle();
+
+      tester.view.viewInsets = const FakeViewPadding(bottom: 220);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(_phoneInput), '09254135592');
+      await tester.pumpAndSettle();
+      final next = find.text('CONTINUE');
+      await tester.ensureVisible(next);
+      await tester.tap(next);
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(_otpInput));
+      await tester.enterText(find.byKey(_otpInput), fakeOtp);
+      await tester.pumpAndSettle();
+      expect(find.text('What’s your name?'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'Rewards fits a narrow viewport with larger text and reduced motion',
     (tester) async {
       tester.view.physicalSize = const Size(320, 568);

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../app/design/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import 'auth_chrome.dart';
 
 class BirthFields extends StatelessWidget {
   const BirthFields({
@@ -33,7 +34,11 @@ class BirthFields extends StatelessWidget {
           key: const Key('birthMonth'),
           initialValue: month,
           isExpanded: true,
-          decoration: InputDecoration(labelText: strings.month),
+          decoration: InputDecoration(
+            labelText: strings.month,
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            contentPadding: AuthLayout.fieldInset,
+          ),
           items: [
             for (var value = 1; value <= DateTime.monthsPerYear; value++)
               DropdownMenuItem(
@@ -58,7 +63,11 @@ class BirthFields extends StatelessWidget {
   ) => TextField(
     controller: controller,
     enabled: enabled,
-    decoration: InputDecoration(labelText: label),
+    decoration: InputDecoration(
+      labelText: label,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      contentPadding: AuthLayout.fieldInset,
+    ),
     keyboardType: TextInputType.number,
     inputFormatters: [
       FilteringTextInputFormatter.digitsOnly,

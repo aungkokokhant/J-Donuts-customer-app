@@ -86,6 +86,8 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 
 **PDF စည်းကမ်း (pp. 1–2, 5, 8–14)** — Design states ၁၀ ခုနဲ့ နီးစပ်ရမယ်။ Name empty နဲ့ filled က route တစ်ခုရဲ့ states နှစ်ခုဖြစ်ပါတယ်။ Portrait 4.7–6.9 လက်မ၊ text scale 1.3 အထိ support ရမယ်။ Motion စာရင်းက အနည်းဆုံး လိုအပ်ချက်ပါ။
 
+**Visual review အပိုင်း ၁** — Onboarding၊ Phone၊ OTP၊ Name (empty/filled)၊ DOB နဲ့ Welcome ကို PDF reference နဲ့ တိုက်စစ်ပြီး rounded heading font၊ artwork အရွယ်နဲ့ fade၊ field/button spacing၊ back tile နဲ့ progress checkmark ကို ညှိထားပါတယ်။ 320 × 568 viewport၊ text scale 1.3 နဲ့ keyboard inset ကို auth widget test ထဲမှာ စစ်ထားပါတယ်။ Donut artwork က မူရင်း illustration ဖြစ်ပါတယ်။ Home၊ Product Detail နဲ့ Rewards ကို သီးခြား review လုပ်ရန် ကျန်ပါတယ်။
+
 - [ ] Design states ၁၀ ခုကို reference နဲ့ spacing၊ type၊ colors၊ imagery နဲ့ layout တိုက်စစ်ပါ။ Shared theme tokens သုံးပါ။ UI strings ကို ARB + `gen-l10n` ထဲထားပါ။ Portrait screen အသေး/အကြီး၊ text scale 1.3 နဲ့ keyboard ဖွင့်ထားချိန် overflow စစ်ပါ။
 - [ ] **Onboarding** — Donut circles drift in လုပ်ပြီး title နဲ့ buttons အချိန်ခြားကာ ဝင်လာပါစေ။
 - [ ] **Registration** — Shared-axis သို့မဟုတ် slide transitions၊ progress ring 25% → 50% → 75% → 100% → checkmark ထည့်ပါ။ Input focus/error နဲ့ wrong OTP shake ကို animate လုပ်ပါ။

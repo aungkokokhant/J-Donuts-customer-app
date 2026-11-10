@@ -2,17 +2,23 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _probeTimeout = Duration(seconds: 3);
-const _retryInterval = Duration(seconds: 30);
+const _reachabilityInterval = Duration(seconds: 30);
 final _probeUri = Uri.https('connectivitycheck.gstatic.com', '/generate_204');
 
 final networkOnlineProvider = StreamProvider.autoDispose<bool>(
-  (ref) => _watchNetwork(Connectivity()),
+  (ref) => watchNetwork(Connectivity(), probe: _isReachable),
 );
 
-Stream<bool> _watchNetwork(Connectivity connectivity) => Stream.multi((sink) {
+@visibleForTesting
+Stream<bool> watchNetwork(
+  Connectivity connectivity, {
+  required Future<bool> Function() probe,
+  Duration interval = _reachabilityInterval,
+}) => Stream.multi((sink) {
   var active = true;
   var generation = 0;
   bool? online;
@@ -22,7 +28,7 @@ Stream<bool> _watchNetwork(Connectivity connectivity) => Stream.multi((sink) {
     final available = transports ?? await _readTransports(connectivity);
     final reachable =
         available.any((transport) => transport != ConnectivityResult.none) &&
-        await _isReachable();
+        await probe();
     if (!active || request != generation || reachable == online) return;
     online = reachable;
     sink.add(reachable);
@@ -32,12 +38,10 @@ Stream<bool> _watchNetwork(Connectivity connectivity) => Stream.multi((sink) {
     (transports) => unawaited(check(transports)),
     onError: sink.addError,
   );
-  final retry = Timer.periodic(_retryInterval, (_) {
-    if (online != true) unawaited(check());
-  });
+  final poll = Timer.periodic(interval, (_) => unawaited(check()));
   sink.onCancel = () async {
     active = false;
-    retry.cancel();
+    poll.cancel();
     await subscription.cancel();
   };
   unawaited(check());

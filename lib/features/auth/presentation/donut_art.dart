@@ -114,14 +114,14 @@ class _DonutCollage extends StatelessWidget {
       x: _leftTileCenter,
       y: .21,
       widthFraction: _leftTileWidthFraction,
-      photo: DonutPhotos.blue,
+      photo: DonutPhotos.purpleGlaze,
       backdrop: DonutBackdropStyle.sky,
     ),
     (
       x: .8875,
       y: .30,
       widthFraction: _tileWidthFraction,
-      photo: DonutPhotos.chocolateDrizzle,
+      photo: DonutPhotos.pinkDrizzle,
       backdrop: DonutBackdropStyle.ice,
     ),
     (
@@ -135,7 +135,7 @@ class _DonutCollage extends StatelessWidget {
       x: .8875,
       y: .81,
       widthFraction: _tileWidthFraction,
-      photo: DonutPhotos.chocolate,
+      photo: DonutPhotos.chocolateDrizzle,
       backdrop: DonutBackdropStyle.honey,
     ),
   ];

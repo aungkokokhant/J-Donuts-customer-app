@@ -37,6 +37,10 @@ The Android APK is at `build/app/outputs/flutter-apk/app-release.apk`. The iOS S
 ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app build/ios/JDonuts-Simulator.zip
 ```
 
+Run the Android and iOS build commands sequentially. If Android reports an
+integration-test plugin error after running device tests, start with
+`flutter clean` and `flutter pub get`, then rebuild.
+
 ## Architecture
 
 | Folder | Responsibility |
@@ -60,8 +64,10 @@ Drift creates the SQLite schema and seeds it from `assets/data/catalog.json` on 
 Home loads the section list and then reads each product rail separately.
 Seasonal Specials, Popular, and Order Again each have loading, empty, and error
 states. Retry reloads the selected rail. Home uses an HTTPS reachability probe
-for its offline banner and refreshes the catalog from SQLite when connectivity
-returns or the user pulls to refresh.
+for its offline banner. It also rechecks reachability every 30 seconds while
+the screen is active, even when the Wi-Fi connection stays attached. Home
+refreshes the catalog from SQLite when connectivity returns or the user pulls
+to refresh.
 
 After changing the Drift schema, regenerate the checked-in Dart file with `dart run build_runner build`.
 

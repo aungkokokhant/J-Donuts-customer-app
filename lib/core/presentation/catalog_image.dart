@@ -16,7 +16,7 @@ class CatalogImage extends StatelessWidget {
   final BoxFit fit;
 
   static const _photoSources = {
-    'coconut_donut': DonutPhotos.chocolateDrizzle,
+    'coconut_donut': DonutPhotos.pinkDrizzle,
     'strawberry_donut': DonutPhotos.pink,
     'challenge_donut': DonutPhotos.pink,
     'challenge_coffee': 'assets/images/catalog/iced-coffee.webp',
@@ -28,14 +28,23 @@ class CatalogImage extends StatelessWidget {
     'member_avatar': 'assets/images/catalog/member.webp',
   };
 
+  static bool _isRemote(String source) =>
+      source.startsWith('https://') || source.startsWith('http://');
+
+  static ImageProvider? rasterProviderFor(String source) {
+    if (_isRemote(source)) return CachedNetworkImageProvider(source);
+    final path = _photoSources[source];
+    return path == null ? null : AssetImage(path);
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (source.startsWith('https://') || source.startsWith('http://')) {
+    if (_isRemote(source)) {
       return CachedNetworkImage(
         imageUrl: source,
         fit: fit,
-        placeholder: (_, _) => const _ImageFallback(),
-        errorWidget: (_, _, _) => const _ImageFallback(failed: true),
+        placeholder: (_, _) => const CatalogImagePlaceholder(),
+        errorWidget: (_, _, _) => const CatalogImagePlaceholder(failed: true),
       );
     }
     final photo = _photoSources[source];
@@ -46,21 +55,21 @@ class CatalogImage extends StatelessWidget {
         frameBuilder: (_, child, frame, loadedSynchronously) =>
             loadedSynchronously || frame != null
             ? child
-            : const _ImageFallback(),
-        errorBuilder: (_, _, _) => const _ImageFallback(failed: true),
+            : const CatalogImagePlaceholder(),
+        errorBuilder: (_, _, _) => const CatalogImagePlaceholder(failed: true),
       );
     }
     return SvgPicture.asset(
       'assets/images/$source.svg',
       fit: fit,
-      placeholderBuilder: (_) => const _ImageFallback(),
-      errorBuilder: (_, _, _) => const _ImageFallback(failed: true),
+      placeholderBuilder: (_) => const CatalogImagePlaceholder(),
+      errorBuilder: (_, _, _) => const CatalogImagePlaceholder(failed: true),
     );
   }
 }
 
-class _ImageFallback extends StatelessWidget {
-  const _ImageFallback({this.failed = false});
+class CatalogImagePlaceholder extends StatelessWidget {
+  const CatalogImagePlaceholder({super.key, this.failed = false});
   final bool failed;
 
   @override

@@ -149,10 +149,12 @@ Day 2 ရဲ့ နောက်ဆုံး **၃ နာရီ** ကို clean
 
 - [x] **Public repo** — User ပေးတဲ့ GitHub/GitLab repo link ကို အသုံးပြုပြီး final commit နဲ့ readable commit history ရှိကြောင်း စစ်ပါ။ Reviewer က repo ဖွင့်လို့ရကြောင်း အတည်ပြုပါ။
 - [x] **Builds** — Android release `.apk` နဲ့ iOS Simulator `.app` zip ပြင်ပါ။ PDF မှာ `flutter build ios --simulator` ကို ဖော်ပြထားပါတယ်။ Simulator build အတွက် debug mode သုံးပြီး အမှန်တကယ် zip ဖြည်ကာ simulator မှာ install/launch စမ်းပါ။ Android APK ကိုလည်း install/launch စမ်းပါ။
-- [x] **Recording** — ၂–၄ မိနစ်အတွင်း Register → Log out → Log in → Home → Product Detail → Rewards ပြပါ။ တူညီတဲ့ flow ကို airplane mode မှာ ထပ်ပြပါ။ Online နဲ့ airplane mode အပိုင်းတွေမှာ demo phone number သီးသန့်သုံးထားပြီး final MP4 က ၃ မိနစ် ၃၁ စက္ကန့် ကြာပါတယ်။
+- [x] **Recording** — ၂–၄ မိနစ်အတွင်း Register → Log out → Log in → Home → Product Detail → Rewards ပြပါ။ တူညီတဲ့ flow ကို airplane mode မှာ ထပ်ပြပါ။ Online နဲ့ airplane mode အပိုင်းတွေမှာ demo phone number သီးသန့်သုံးပြီး MP4 duration ကို စစ်ပါ။
 - [x] **README** — Run/setup၊ Flutter/Dart versions၊ architecture နဲ့ folder map၊ state management ရွေးရတဲ့အကြောင်း၊ offline strategy၊ animations၊ fake OTP၊ known gaps နဲ့ time spent ထည့်ပါ။ README instructions ကို fresh checkout နဲ့ verify လုပ်ပါ။
 - [ ] Email reply အတွက် repo/README links၊ builds နဲ့ video attachments သို့မဟုတ် links ပြင်ပါ။ Link permissions နဲ့ artifact versions ကို စစ်ပါ။ မူရင်း email ကို reply ပို့ပြီးမှ submission ကို sent အဖြစ် မှတ်ပါ။
 - [ ] Walkthrough အတွက် auth ကို API နဲ့ ဘယ်လိုအစားထိုးမလဲ၊ database/refresh ဘယ်လိုအလုပ်လုပ်လဲ၊ motion နဲ့ tests ဘာကြောင့် ဒီလိုရေးထားလဲ ရှင်းပြနိုင်အောင် ပြန်ကြည့်ပါ။
+
+**Submission version** — APK၊ Simulator ZIP နဲ့ walkthrough ကို commit တစ်ခုတည်းကနေ ထုတ်ပါ။ Submission folder ထဲက `BUILD-MANIFEST.txt` မှာ source revision၊ recording duration နဲ့ file checksums ကို စစ်နိုင်ပါတယ်။
 
 ## Bonus — Required tasks ပြည့်ပြီး အချိန်ကျန်မှ
 

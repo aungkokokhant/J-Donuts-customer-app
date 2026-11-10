@@ -8,6 +8,7 @@ import '../../../core/presentation/catalog_image.dart';
 import '../../../core/presentation/catalog_price.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/rewards_repository.dart';
+import 'donut_progress_art.dart';
 import 'rewards_style.dart';
 
 class ChallengeCard extends StatelessWidget {
@@ -124,92 +125,31 @@ class _ChallengeArt extends StatelessWidget {
   const _ChallengeArt({required this.challenge});
   final RewardChallenge challenge;
 
-  static const _frosted = ColorFilter.matrix(<double>[
-    .0680,
-    .2289,
-    .0231,
-    0,
-    166,
-    .0680,
-    .2289,
-    .0231,
-    0,
-    166,
-    .0680,
-    .2289,
-    .0231,
-    0,
-    166,
-    0,
-    0,
-    0,
-    1,
-    0,
-  ]);
-
   @override
-  Widget build(BuildContext context) {
-    final image = CatalogImage(source: challenge.imageKey);
-    final isDonut = challenge.kind == ChallengeKind.donut;
-    final background = isDonut
-        ? RepaintBoundary(
-            child: ColorFiltered(colorFilter: _frosted, child: image),
-          )
-        : Align(
-            alignment: Alignment.bottomCenter,
-            child: FractionallySizedBox(
-              widthFactor: .74,
-              heightFactor: .74,
-              child: image,
+  Widget build(BuildContext context) => AspectRatio(
+    aspectRatio: 1,
+    child: TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: challenge.completed / challenge.target),
+      duration: AppMotion.duration(context, AppMotion.rewardEntrance),
+      curve: AppMotion.curve,
+      child: challenge.kind == ChallengeKind.coffee
+          ? Align(
+              alignment: Alignment.bottomCenter,
+              child: FractionallySizedBox(
+                widthFactor: .74,
+                heightFactor: .74,
+                child: CatalogImage(source: challenge.imageKey),
+              ),
+            )
+          : null,
+      builder: (context, value, coffee) => coffee == null
+          ? DonutProgressArt(source: challenge.imageKey, fill: value)
+          : CustomPaint(
+              foregroundPainter: _CoffeeProgress(value),
+              child: coffee,
             ),
-          );
-    return AspectRatio(
-      aspectRatio: 1,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0, end: challenge.completed / challenge.target),
-        duration: AppMotion.duration(context, AppMotion.rewardEntrance),
-        curve: AppMotion.curve,
-        child: background,
-        builder: (context, value, background) => Stack(
-          fit: StackFit.expand,
-          children: [
-            if (!isDonut || value < 1) background!,
-            if (isDonut)
-              ClipPath(
-                key: const ValueKey('coloredDonut'),
-                clipper: value < 1 ? _DonutSector(value) : null,
-                clipBehavior: value < 1 ? Clip.antiAlias : Clip.none,
-                child: image,
-              )
-            else
-              CustomPaint(painter: _CoffeeProgress(value)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DonutSector extends CustomClipper<Path> {
-  const _DonutSector(this.fill);
-  final double fill;
-
-  @override
-  Path getClip(Size size) {
-    final center = size.center(Offset.zero);
-    return Path()
-      ..moveTo(center.dx, center.dy)
-      ..arcTo(
-        Rect.fromCircle(center: center, radius: size.longestSide),
-        -math.pi / 2,
-        math.pi * 2 * fill,
-        false,
-      )
-      ..close();
-  }
-
-  @override
-  bool shouldReclip(_DonutSector oldClipper) => fill != oldClipper.fill;
+    ),
+  );
 }
 
 class _CoffeeProgress extends CustomPainter {

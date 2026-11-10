@@ -16,9 +16,9 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 ## UI အတည်ပြုပြီးနောက် QA checklist
 
 1. [ ] Onboarding စဖွင့်ချိန်နဲ့ Rewards ဝင်ချိန်က frame spikes ကို ရှာပြီး လိုသလို ပြင်ပါ။ Redmi K30 ပေါ်မှာ profile mode နဲ့ ပြန်တိုင်းပြီး အောက်မှာ မှတ်ထားတဲ့ 16.67 ms baseline နဲ့ ယှဉ်ပါ။
-2. [ ] Home ရဲ့ Seasonal specials၊ Popular နဲ့ Order again အတွက် error state ကို section တစ်ခုချင်းစီ ခွဲပြီး စစ်ပါ။
+2. [x] Seasonal Specials၊ Popular နဲ့ Order Again ကို သီးခြား load လုပ်ပါတယ်။ Popular တစ်ခု fail ဖြစ်တဲ့အခါ ကျန်တဲ့ section တွေ ဆက်ပေါ်တာ၊ Retry က Popular ကိုပဲ load လုပ်တာနဲ့ pull-to-refresh က section အားလုံးကို ပြန်ဖတ်တာကို widget test မှာ စစ်ထားပါတယ်။
 3. [ ] Required tasks ပြီးပြီး deadline မတိုင်ခင် အချိန်ကျန်မှ Persistent cart bonus ကို စဉ်းစားပါ။
-4. [x] UI အတည်ပြုပြီးနောက် Android release APK၊ iOS Simulator ZIP နဲ့ online/offline walkthrough video ကို ပြန်ထုတ်ပြီး စစ်ထားပါတယ်။
+4. [x] Home section Retry ပြင်ပြီးနောက် source commit `fde9392` ကနေ Android release APK၊ iOS Simulator ZIP နဲ့ ၃ မိနစ် ၂၄ စက္ကန့် online/offline walkthrough ကို ပြန်ထုတ်ပြီး စစ်ထားပါတယ်။
 
 ## Day 1 — Platform setup၊ architecture နဲ့ အဓိက flow
 
@@ -116,6 +116,8 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 **Redmi K30 profile result (2026-11-09)** — Flutter frame timings စုစုပေါင်း 1,510 ခုထဲက 60 ခုမှာ build သို့မဟုတ် raster stage က 16.67 ms ကျော်ပါတယ်။ Cold onboarding 13/54၊ Home scroll 3/86၊ Product Detail Hero ဝင်ချိန် 2/6၊ quantity animation 0/214၊ Rewards ပထမအကြိမ် 5/103 နဲ့ ထပ်ဝင်ချိန် 4/93 ကျော်ပါတယ်။ Build p95 8.76 ms နဲ့ raster p95 15.40 ms ဖြစ်ပါတယ်။ First Home entry မှာ samples မရခဲ့လို့ Home scroll နဲ့ tab ကနေ ပြန်ဝင်ချိန်ကို သီးခြားတိုင်းထားပါတယ်။
 
 **Redmi K30 profile audit (2026-11-10)** — Rewards tier ladder နဲ့ points animation ကို သီးခြား update လုပ်အောင် ပြင်ပြီး Android 11၊ display 120 Hz မှာ ပြန်တိုင်းထားပါတယ်။ Frame 1,642 ခုထဲက 46 ခုမှာ build သို့မဟုတ် raster က 16.67 ms ကျော်ပါတယ်။ Build p95 5.59 ms၊ raster p95 14.51 ms ဖြစ်ပါတယ်။ Home ပထမအကြိမ်ဝင်တာနဲ့ Rewards entry/tabs မှာ spikes ကျန်ပါတယ်။ အပေါ်က 60 fps jank-free checklist ကို ဖွင့်ထားပါတယ်။
+
+**Home / Rewards retest (2026-11-10)** — Home product rail တွေကို scroll viewport နားရောက်မှ ဆောက်ပြီး Rewards points ring ကို layout ပြန်လုပ်စရာမလိုဘဲ repaint လုပ်အောင် ပြင်ထားပါတယ်။ Redmi K30 မှာ profile mode၊ display 120 Hz နဲ့ မပြင်ခင်/ပြင်ပြီး ၅ ကြိမ်စီ တိုင်းထားပါတယ်။ Cold Home မှာ 16.67 ms ကျော်တဲ့ frames က 29/428 (6.8%) ကနေ 24/467 (5.1%) ဖြစ်လာပါတယ်။ Rewards entry ရဲ့ peak က 44.70 ms ကနေ 31.20 ms ကျပြီး budget ကျော်တဲ့အချိုးက 3.1% ဝန်းကျင်မှာ ရှိနေပါတယ်။ Analyzer၊ unit/widget tests 15 ခု၊ compact Android airplane-mode flow နဲ့ iOS Simulator flow အောင်ပါတယ်။ 60 fps jank-free checklist ကို ဆက်ဖွင့်ထားပါတယ်။
 
 ### 6. နောက်ဆုံး quality gates
 

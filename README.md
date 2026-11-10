@@ -50,7 +50,13 @@ providers to exercise the same UI with controlled data.
 
 ## Local data
 
-Drift creates the SQLite schema and seeds it from `assets/data/catalog.json` on first open. Catalog, Home, and Rewards repositories read SQLite. Home and Rewards read the same member record. Riverpod provides the database and repositories so tests can use a separate database. Donut cutouts and other catalog artwork are bundled as local assets. For remote images the image widget uses a disk cache. Home uses an HTTPS reachability probe for its offline banner and refreshes from SQLite when connectivity returns or the user pulls to refresh.
+Drift creates the SQLite schema and seeds it from `assets/data/catalog.json` on first open. Catalog, Home, and Rewards repositories read SQLite. Home and Rewards read the same member record. Riverpod provides the database and repositories so tests can use a separate database. Donut cutouts and other catalog artwork are bundled as local assets. For remote images the image widget uses a disk cache.
+
+Home loads the section list and then reads each product rail separately.
+Seasonal Specials, Popular, and Order Again each have loading, empty, and error
+states. Retry reloads the selected rail. Home uses an HTTPS reachability probe
+for its offline banner and refreshes the catalog from SQLite when connectivity
+returns or the user pulls to refresh.
 
 After changing the Drift schema, regenerate the checked-in Dart file with `dart run build_runner build`.
 
@@ -84,13 +90,18 @@ AI-generated demo assets bundled for offline display. The member portrait is fic
 - Authentication and OTP are local demo flows. Checkout, the extra navigation
   items and social sign-in show demo feedback.
 - Catalog refresh reads local data. The app has no mock server or persistent cart.
-- The release APK was installed on a Redmi K30 and verified after an offline
-  relaunch. The device walkthrough covers registration, logout, login, Home,
-  Product Detail and Rewards both online and in airplane mode.
+- The walkthrough covers registration, logout, login, Home, Product Detail
+  and Rewards on the Android emulator, online and in airplane mode. An
+  earlier release APK was also verified after an offline relaunch on the
+  Redmi K30.
 - On a physical Redmi K30 (Android 11, 120 Hz display mode), a profile
-  run captured 1,642 Flutter frames. Build or raster time exceeded the 16.67 ms
-  budget for 60 fps in 46 frames. The 95th percentile was 5.59 ms for build and
-  14.51 ms for raster. Home and Rewards entry showed spikes, so the
-  physical-device jank-free target remains open.
+  retest measured five cold Home launches and Rewards entries before and
+  after the rendering changes. Cold Home frames over the 16.67 ms budget
+  fell from 29/428 to 24/467. The longest Rewards frame fell from 44.70 ms
+  to 31.20 ms, with 16/511 frames over budget. The physical-device jank-free
+  target remains open.
+- The Home section Retry update passed the compact Android emulator and iOS
+  Simulator flows. Its physical-device retest is pending a USB debugging
+  connection to the Redmi K30.
 - Approximately 2.5 hours logged for initial implementation and verification,
   followed by UI polish and a physical-device audit.

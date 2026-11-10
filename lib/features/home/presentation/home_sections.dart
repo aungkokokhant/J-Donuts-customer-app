@@ -148,6 +148,13 @@ class _ProductRail extends ConsumerWidget {
 
   Widget _title(BuildContext context, {required bool hot}) {
     final titleStyle = Theme.of(context).textTheme.headlineSmall;
+    final strings = AppLocalizations.of(context);
+    final title = switch (section.id) {
+      'seasonal' => strings.seasonalSpecials,
+      'popular' => strings.popular,
+      'order_again' => strings.orderAgain,
+      _ => section.title,
+    };
     return Row(
       children: [
         Expanded(
@@ -155,7 +162,7 @@ class _ProductRail extends ConsumerWidget {
             spacing: AppSpacing.xs,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text(section.title, style: titleStyle),
+              Text(title, style: titleStyle),
               if (hot) ExcludeSemantics(child: Text('🔥', style: titleStyle)),
             ],
           ),

@@ -142,6 +142,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get languageTitle => 'Language';
+
+  @override
+  String get systemLanguage => 'Device language';
+
+  @override
+  String get languageUpdateFailed =>
+      'Couldn’t save your language. Please try again.';
+
+  @override
   String get logOut => 'Log out';
 
   @override
@@ -188,6 +198,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderOnline => 'Order online';
+
+  @override
+  String get seasonalSpecials => 'Seasonal specials';
+
+  @override
+  String get popular => 'Popular';
+
+  @override
+  String get orderAgain => 'Order again';
 
   @override
   String get newLabel => 'New';
@@ -263,6 +282,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String nextTierRemaining(String points, String tier) {
     return '$points pts remaining to become $tier';
   }
+
+  @override
+  String get bronze => 'Bronze';
 
   @override
   String get silver => 'Silver';

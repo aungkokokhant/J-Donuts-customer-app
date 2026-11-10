@@ -47,7 +47,7 @@ ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app build/ios/JDonuts-
 | `lib/features/{auth,home,product,rewards}/data/` | Local implementations of the domain contracts |
 | `lib/features/cart/` | Cart screen, repository contract and Drift implementation |
 | `lib/core/` | Shared Drift database, typed results, member model and catalog widgets |
-| `assets/data/` and `lib/l10n/` | Catalog seed and English UI strings |
+| `assets/data/` and `lib/l10n/` | Catalog seed and English/Burmese UI strings |
 
 Riverpod provides feature state and dependency injection. The screens watch
 independent async providers for catalog sections, while tests override repository
@@ -79,6 +79,11 @@ Register with a Myanmar mobile number and use **123456** for the OTP. The demo s
 
 Run the device registration, product, and rewards flow test with `flutter test integration_test/app_flow_test.dart -d DEVICE_ID`. For Android offline verification, enable airplane mode, turn Wi-Fi off and add `--dart-define=EXPECT_OFFLINE=true`.
 
+The app follows the device language by default and falls back to English for
+unsupported languages. After signing in, open Settings → Language to choose
+English or မြန်မာ. The choice is saved locally across launches. Demo catalog
+content such as product names, descriptions, and shop addresses remains in English.
+
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance checks.
 
 ## Motion
@@ -90,10 +95,11 @@ Hero and an animated quantity. Rewards uses a painted points ring with a count-u
 tier reveal, challenge progress artwork, sliding tabs and a sliding navigation
 pill. Reduce Motion shortens or skips these effects and stops carousel autoplay.
 
-The submission build uses Abel Regular for body text, labels and fields, and ADLaM
-Display Regular for display text and primary buttons. Both are distributed
-under the SIL Open Font License. See [Abel-OFL.txt](assets/fonts/Abel-OFL.txt)
-and [ADLaMDisplay-OFL.txt](assets/fonts/ADLaMDisplay-OFL.txt).
+The app uses Abel Regular for body text, labels and fields, ADLaM Display Regular
+for display text and primary buttons, and Noto Sans Myanmar for Myanmar
+characters. See the SIL Open Font Licenses for [Abel](assets/fonts/Abel-OFL.txt),
+[ADLaM Display](assets/fonts/ADLaMDisplay-OFL.txt), and
+[Noto Sans Myanmar](assets/fonts/NotoSansMyanmar-OFL.txt).
 
 Donut, coffee, bakery, assortment and member photographs are original
 AI-generated demo assets bundled for offline display. The member portrait is fictional.

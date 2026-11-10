@@ -116,6 +116,7 @@ class _OnboardingActions extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
                 textStyle: const TextStyle(
                   fontFamily: AppTypography.bodyFamily,
+                  fontFamilyFallback: AppTypography.fontFallback,
                   fontSize: _accountFontSize,
                   fontWeight: AppTypography.strongWeight,
                 ),

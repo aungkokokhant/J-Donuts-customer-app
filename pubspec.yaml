@@ -45,6 +45,7 @@ flutter:
     - assets/images/catalog/
     - assets/fonts/ADLaMDisplay-OFL.txt
     - assets/fonts/Abel-OFL.txt
+    - assets/fonts/NotoSansMyanmar-OFL.txt
 
   fonts:
     - family: ADLaMDisplay
@@ -53,3 +54,6 @@ flutter:
     - family: Abel
       fonts:
         - asset: assets/fonts/Abel-Regular.ttf
+    - family: NotoSansMyanmar
+      fonts:
+        - asset: assets/fonts/NotoSansMyanmar.ttf

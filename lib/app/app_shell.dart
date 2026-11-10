@@ -8,11 +8,12 @@ import 'package:go_router/go_router.dart';
 import '../core/presentation/unavailable_message.dart';
 import '../features/auth/presentation/session_controller.dart';
 import '../l10n/app_localizations.dart';
+import 'app_language.dart';
 import 'design/app_motion.dart';
 import 'design/app_theme.dart';
 import 'network_status.dart';
 
-enum _SettingsAction { cart, logout }
+enum _SettingsAction { cart, language, logout }
 
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({
@@ -78,6 +79,11 @@ class _AppShellState extends ConsumerState<AppShell> {
               onTap: () => Navigator.of(context).pop(_SettingsAction.cart),
             ),
             ListTile(
+              leading: const Icon(Icons.language),
+              title: Text(strings.languageTitle),
+              onTap: () => Navigator.of(context).pop(_SettingsAction.language),
+            ),
+            ListTile(
               leading: const Icon(Icons.logout),
               title: Text(strings.logOut),
               onTap: () => Navigator.of(context).pop(_SettingsAction.logout),
@@ -91,6 +97,10 @@ class _AppShellState extends ConsumerState<AppShell> {
       unawaited(context.push('/cart'));
       return;
     }
+    if (action == _SettingsAction.language) {
+      await _selectLanguage(context);
+      return;
+    }
     final loggedOut = await widget.session.logout();
     if (!context.mounted) return;
     if (loggedOut) {
@@ -99,6 +109,32 @@ class _AppShellState extends ConsumerState<AppShell> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(strings.authError)));
     }
+  }
+
+  Future<void> _selectLanguage(BuildContext context) async {
+    final strings = AppLocalizations.of(context);
+    final current = await ref.read(appLanguageProvider.future);
+    if (!context.mounted) return;
+    final selected = await showDialog<AppLanguage>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(strings.languageTitle),
+        children: [
+          for (final language in AppLanguage.values)
+            ListTile(
+              title: Text(language.label(strings)),
+              selected: language == current,
+              trailing: language == current ? const Icon(Icons.check) : null,
+              onTap: () => Navigator.of(context).pop(language),
+            ),
+        ],
+      ),
+    );
+    if (!context.mounted || selected == null) return;
+    final saved = await ref.read(appLanguageProvider.notifier).select(selected);
+    if (!context.mounted || saved) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(strings.languageUpdateFailed)));
   }
 }
 

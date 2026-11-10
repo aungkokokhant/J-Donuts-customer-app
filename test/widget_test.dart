@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jdonuts_customer_app/app/app_router.dart';
 import 'package:jdonuts_customer_app/app/design/app_theme.dart';
@@ -182,6 +183,59 @@ Future<void> _sendPhone(WidgetTester tester) async {
 }
 
 void main() {
+  setUp(() => FlutterSecureStorage.setMockInitialValues({}));
+
+  testWidgets('Burmese follows the device locale on compact onboarding', (
+    tester,
+  ) async {
+    tester.platformDispatcher.localesTestValue = const [Locale('my', 'MM')];
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await _start(tester, _FakeAuth());
+    final getStarted = find.text('စလိုက်ရအောင်');
+    expect(getStarted, findsOneWidget);
+    await tester.ensureVisible(getStarted);
+    await tester.tap(getStarted);
+    await tester.pumpAndSettle();
+    expect(find.byKey(_phoneInput), findsOneWidget);
+    expect(find.text('ဖုန်းနံပါတ် ထည့်ပါ'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('language changes on Home and survives app recreation', (
+    tester,
+  ) async {
+    final auth = _FakeAuth()
+      ..active = (
+        phone: '+959254135592',
+        firstName: 'Hania',
+        lastName: 'Aung',
+        birthDate: DateTime(1990, 1, 1),
+      );
+    await _start(tester, auth);
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Language'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('မြန်မာ'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomeLandingPage), findsOneWidget);
+    expect(find.text('ငွေ အဖွဲ့ဝင်'), findsOneWidget);
+    expect(find.byTooltip('ဆက်တင်များ'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await _start(tester, auth);
+    expect(find.byTooltip('ဆက်တင်များ'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'each Home rail loads, shows failures and retries independently',
     (tester) async {

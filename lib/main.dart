@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'app/app_language.dart';
 import 'app/app_router.dart';
 import 'app/design/app_theme.dart';
 import 'l10n/app_localizations.dart';
@@ -12,6 +13,7 @@ void main() {
     for (final family in [
       AppTypography.adlamFamily,
       AppTypography.abelFamily,
+      AppTypography.myanmarFamily,
     ]) {
       final license = await rootBundle.loadString(
         'assets/fonts/$family-OFL.txt',
@@ -30,6 +32,7 @@ class JDonutsApp extends ConsumerWidget {
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
     debugShowCheckedModeBanner: false,
     theme: appTheme(),
+    locale: ref.watch(appLanguageProvider).value?.locale,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: ref.watch(appRouterProvider),

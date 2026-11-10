@@ -60,6 +60,8 @@ abstract final class AppTypography {
   static const usesLocalFamily = _localFamily != '';
   static const adlamFamily = 'ADLaMDisplay';
   static const abelFamily = 'Abel';
+  static const myanmarFamily = 'NotoSansMyanmar';
+  static const fontFallback = [myanmarFamily];
   static const headlineFamily = usesLocalFamily ? _localFamily : adlamFamily;
   static const bodyFamily = usesLocalFamily ? _localFamily : abelFamily;
   static const descriptionWeight = FontWeight.w300;
@@ -71,6 +73,7 @@ abstract final class AppTypography {
 
   static const textButton = TextStyle(
     fontFamily: headlineFamily,
+    fontFamilyFallback: fontFallback,
     fontSize: 15,
     fontWeight: _displayWeight,
   );
@@ -86,6 +89,7 @@ abstract final class AppTypography {
 ThemeData appTheme() {
   final theme = ThemeData(
     fontFamily: AppTypography.bodyFamily,
+    fontFamilyFallback: AppTypography.fontFallback,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.pink,
       primary: AppColors.pink,

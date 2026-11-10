@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_my.dart';
 
 // ignore_for_file: type=lint
 
@@ -92,7 +93,10 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('my'),
+  ];
 
   /// No description provided for @appTitle.
   ///
@@ -346,6 +350,24 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @languageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get languageTitle;
+
+  /// No description provided for @systemLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Device language'**
+  String get systemLanguage;
+
+  /// No description provided for @languageUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t save your language. Please try again.'**
+  String get languageUpdateFailed;
+
   /// No description provided for @logOut.
   ///
   /// In en, this message translates to:
@@ -417,6 +439,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order online'**
   String get orderOnline;
+
+  /// No description provided for @seasonalSpecials.
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal specials'**
+  String get seasonalSpecials;
+
+  /// No description provided for @popular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get popular;
+
+  /// No description provided for @orderAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Order again'**
+  String get orderAgain;
 
   /// No description provided for @newLabel.
   ///
@@ -556,6 +596,12 @@ abstract class AppLocalizations {
   /// **'{points} pts remaining to become {tier}'**
   String nextTierRemaining(String points, String tier);
 
+  /// No description provided for @bronze.
+  ///
+  /// In en, this message translates to:
+  /// **'Bronze'**
+  String get bronze;
+
   /// No description provided for @silver.
   ///
   /// In en, this message translates to:
@@ -622,7 +668,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+      <String>['en', 'my'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -633,6 +679,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
+    case 'my':
+      return AppLocalizationsMy();
   }
 
   throw FlutterError(

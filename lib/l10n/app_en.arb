@@ -56,6 +56,9 @@
   "explore": "Let’s explore",
   "home": "Home",
   "settings": "Settings",
+  "languageTitle": "Language",
+  "systemLanguage": "Device language",
+  "languageUpdateFailed": "Couldn’t save your language. Please try again.",
   "logOut": "Log out",
   "productUnavailable": "This product is unavailable.",
   "memberTier": "{tier} member",
@@ -92,6 +95,9 @@
   },
   "exploreNow": "Explore now",
   "orderOnline": "Order online",
+  "seasonalSpecials": "Seasonal specials",
+  "popular": "Popular",
+  "orderAgain": "Order again",
   "newLabel": "New",
   "discountLabel": "{percent}% off",
   "@discountLabel": {
@@ -139,6 +145,7 @@
       }
     }
   },
+  "bronze": "Bronze",
   "silver": "Silver",
   "gold": "Gold",
   "platinum": "Platinum",

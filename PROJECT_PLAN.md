@@ -157,7 +157,7 @@ Day 2 ရဲ့ နောက်ဆုံး **၃ နာရီ** ကို clean
 ## Bonus — Required tasks ပြည့်ပြီး အချိန်ကျန်မှ
 
 - [x] Persistent cart ကို SQLite မှာ account အလိုက် သိမ်းပါတယ်။ Product Detail ကနေ ထည့်ပြီး Settings → Cart ကနေ ပြန်ဖွင့်နိုင်ပါတယ်။
-- [ ] Burmese locale။
+- [x] Burmese locale ကို ARB နှင့် `gen-l10n` ဖြင့် ထည့်ထားပါတယ်။ Redmi K30 တွင် Settings မှ ဘာသာစကား ပြောင်းခြင်း၊ Home၊ Rewards နှင့် Cart တွင် မြန်မာစာပေါ်ခြင်း၊ app ပိတ်ပြီး ပြန်ဖွင့်သည့်အခါ ရွေးထားသည့် ဘာသာစကား ဆက်သုံးခြင်းတို့ကို စစ်ထားပါတယ်။
 - [ ] Minimum ထက်ပိုတဲ့ animation။
 - [x] GitHub Actions မှာ Flutter 3.47.9 နဲ့ push / pull request တိုင်း analyzer နဲ့ unit/widget tests run အောင် ထည့်ထားပါတယ်။
 - [ ] Mock server ထည့်ပါက public data အတွက် `/v1/...`၊ `{data, error, meta}` envelope၊ Dio timeouts၊ retry/logging interceptors၊ source နဲ့ README run instructions ပါစေ။ Server က database ကို update လုပ်ပြီး UI က local database ကိုပဲ ဖတ်ပါစေ။

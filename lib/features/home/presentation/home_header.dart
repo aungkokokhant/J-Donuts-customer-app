@@ -56,7 +56,7 @@ class HomeMemberHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  strings.memberTier(member.tier),
+                  strings.memberTier(_tierName(strings, member.tier)),
                   style: textTheme.bodyMedium,
                 ),
               ],
@@ -120,26 +120,38 @@ class _PointsToTier extends StatelessWidget {
   final MemberProfile member;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: const ShapeDecoration(
-      color: AppColors.white,
-      shape: StadiumBorder(),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: 6,
+  Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
+    return DecoratedBox(
+      decoration: const ShapeDecoration(
+        color: AppColors.white,
+        shape: StadiumBorder(),
       ),
-      child: Text(
-        AppLocalizations.of(context).pointsToTier(
-          formatNumber(context, member.pointsToNextTier),
-          member.nextTier,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: 6,
         ),
-        style: Theme.of(context).textTheme.bodyMedium,
+        child: Text(
+          strings.pointsToTier(
+            formatNumber(context, member.pointsToNextTier),
+            _tierName(strings, member.nextTier),
+          ),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
+
+String _tierName(AppLocalizations strings, String tier) =>
+    switch (tier.toLowerCase()) {
+      'bronze' => strings.bronze,
+      'silver' => strings.silver,
+      'gold' => strings.gold,
+      'platinum' => strings.platinum,
+      _ => tier,
+    };
 
 class _NotificationCount extends StatelessWidget {
   const _NotificationCount({required this.count});

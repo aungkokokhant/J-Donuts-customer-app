@@ -91,17 +91,13 @@ AI-generated demo assets bundled for offline display. The member portrait is fic
   items and social sign-in show demo feedback.
 - Catalog refresh reads local data. The app has no mock server or persistent cart.
 - The walkthrough covers registration, logout, login, Home, Product Detail
-  and Rewards on the Android emulator, online and in airplane mode. An
-  earlier release APK was also verified after an offline relaunch on the
-  Redmi K30.
-- On a physical Redmi K30 (Android 11, 120 Hz display mode), a profile
-  retest measured five cold Home launches and Rewards entries before and
-  after the rendering changes. Cold Home frames over the 16.67 ms budget
-  fell from 29/428 to 24/467. The longest Rewards frame fell from 44.70 ms
-  to 31.20 ms, with 16/511 frames over budget. The physical-device jank-free
-  target remains open.
-- The Home section Retry update passed the compact Android emulator and iOS
-  Simulator flows. Its physical-device retest is pending a USB debugging
-  connection to the Redmi K30.
+  and Rewards on the Android emulator, online and in airplane mode. The final
+  source also passed both integration flows on the Redmi K30, and the release
+  APK restored the session and local Home catalog after an offline relaunch.
+- The final profile build was measured on a Redmi K30 (Android 11, 120 Hz
+  display mode) across five cold Home launches and five Rewards entries.
+  Build or raster time exceeded the 16.67 ms budget in 25/462 Home frames
+  and 24/513 Rewards frames. The longest stages were 48.44 ms and 28.13 ms,
+  respectively. The physical-device jank-free target remains open.
 - Approximately 2.5 hours logged for initial implementation and verification,
   followed by UI polish and a physical-device audit.

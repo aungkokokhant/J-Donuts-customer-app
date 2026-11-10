@@ -119,6 +119,10 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 
 **Home / Rewards retest (2026-11-10)** — Home product rail တွေကို scroll viewport နားရောက်မှ ဆောက်ပြီး Rewards points ring ကို layout ပြန်လုပ်စရာမလိုဘဲ repaint လုပ်အောင် ပြင်ထားပါတယ်။ Redmi K30 မှာ profile mode၊ display 120 Hz နဲ့ မပြင်ခင်/ပြင်ပြီး ၅ ကြိမ်စီ တိုင်းထားပါတယ်။ Cold Home မှာ 16.67 ms ကျော်တဲ့ frames က 29/428 (6.8%) ကနေ 24/467 (5.1%) ဖြစ်လာပါတယ်။ Rewards entry ရဲ့ peak က 44.70 ms ကနေ 31.20 ms ကျပြီး budget ကျော်တဲ့အချိုးက 3.1% ဝန်းကျင်မှာ ရှိနေပါတယ်။ Analyzer၊ unit/widget tests 15 ခု၊ compact Android airplane-mode flow နဲ့ iOS Simulator flow အောင်ပါတယ်။ 60 fps jank-free checklist ကို ဆက်ဖွင့်ထားပါတယ်။
 
+**Final Redmi K30 profile (2026-11-10)** — Source commit `fde9392` ကို display 120 Hz၊ profile mode နဲ့ Cold Home နှင့် Rewards entry ၅ ကြိမ်စီ ပြန်တိုင်းထားပါတယ်။ 16.67 ms ကျော်တဲ့ frames က Home 25/462 (5.4%) နဲ့ Rewards 24/513 (4.7%) ပါ။ အကြာဆုံး stage က Home 48.44 ms နဲ့ Rewards 28.13 ms ဖြစ်ပါတယ်။ 60 fps jank-free checklist ကို ဆက်ဖွင့်ထားပါတယ်။
+
+**Final Redmi K30 flow check (2026-11-10)** — `fde9392` ရဲ့ online နဲ့ airplane-mode integration flows နှစ်ခုလုံး အောင်ပါတယ်။ Release APK ကို install လုပ်ပြီး airplane mode ထဲမှာ app ပိတ်ဖွင့်တဲ့အခါ saved session နဲ့ local Home catalog ပြန်တက်တာကိုလည်း စစ်ထားပါတယ်။
+
 ### 6. နောက်ဆုံး quality gates
 
 **PDF စည်းကမ်း (pp. 13–15)** — `flutter analyze` clean ဖြစ်ရမယ်။ `flutter_lints` သို့မဟုတ် `very_good_analysis`၊ နားလည်လွယ်တဲ့ names နဲ့ named constants သုံးပါ။ Functions ကို အကြမ်းဖျင်း ၂၀ လိုင်း၊ files ကို ၃၀၀ လိုင်းဝန်းကျင်အတွင်း ထိန်းပါ။ README အတိုင်း build မရခြင်း၊ main flow crash ဖြစ်ခြင်း၊ widgets ထဲမှာ app data hard-code လုပ်ခြင်းက တစ်ခုခုရှိရင် ချက်ချင်းကျနိုင်ပါတယ်။

@@ -1,13 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
-import '../../../core/presentation/catalog_price.dart';
 import '../../../l10n/app_localizations.dart';
 import 'rewards_style.dart';
 
-class RewardsPointsRing extends StatelessWidget {
+class RewardsPointsRing extends StatefulWidget {
   const RewardsPointsRing({
     super.key,
     required this.points,
@@ -18,6 +19,34 @@ class RewardsPointsRing extends StatelessWidget {
   final double fill;
 
   @override
+  State<RewardsPointsRing> createState() => _RewardsPointsRingState();
+}
+
+class _RewardsPointsRingState extends State<RewardsPointsRing>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: AppMotion.rewardEntrance,
+  );
+  late final _progress = _controller.drive(CurveTween(curve: AppMotion.curve));
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.value = 1;
+    } else if (_controller.isDismissed && !_controller.isAnimating) {
+      _controller.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => AspectRatio(
     aspectRatio: 1,
     child: Stack(
@@ -25,7 +54,7 @@ class RewardsPointsRing extends StatelessWidget {
       children: [
         Positioned.fill(
           child: RepaintBoundary(
-            child: CustomPaint(painter: _PointsPainter(fill)),
+            child: CustomPaint(painter: _PointsPainter(widget.fill, _progress)),
           ),
         ),
         FractionallySizedBox(
@@ -38,11 +67,19 @@ class RewardsPointsRing extends StatelessWidget {
 
   Widget _total(BuildContext context) {
     final theme = Theme.of(context).textTheme;
+    final strings = AppLocalizations.of(context);
+    final format = NumberFormat.decimalPattern(strings.localeName);
+    final countStyle = theme.headlineMedium?.copyWith(
+      color: AppColors.pink,
+      fontSize: RewardsTextSize.points,
+      fontWeight: FontWeight.w900,
+      height: 1.1,
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          AppLocalizations.of(context).totalPoints,
+          strings.totalPoints,
           style: theme.titleSmall?.copyWith(
             color: AppColors.pink,
             fontSize: RewardsTextSize.label,
@@ -50,14 +87,12 @@ class RewardsPointsRing extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
-        Text(
-          formatNumber(context, points),
-          key: const Key('rewardPointTotal'),
-          style: theme.headlineMedium?.copyWith(
-            color: AppColors.pink,
-            fontSize: RewardsTextSize.points,
-            fontWeight: FontWeight.w900,
-            height: 1.1,
+        AnimatedBuilder(
+          animation: _progress,
+          builder: (_, _) => Text(
+            format.format((widget.points * _progress.value).round()),
+            key: const Key('rewardPointTotal'),
+            style: countStyle,
           ),
         ),
       ],
@@ -66,9 +101,12 @@ class RewardsPointsRing extends StatelessWidget {
 }
 
 class _PointsPainter extends CustomPainter {
-  const _PointsPainter(this.fill);
+  _PointsPainter(this.fill, this.progress) : super(repaint: progress);
 
   final double fill;
+  final Animation<double> progress;
+  Rect? _icingBounds;
+  Shader? _icingShader;
   static const _start = -math.pi / 2 + .14;
   static const _turn = math.pi * 2;
   static const _sprinkleCount = 24;
@@ -85,6 +123,7 @@ class _PointsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final visibleFill = fill * progress.value;
     final width = size.shortestSide * .21;
     final outer = size.shortestSide / 2 - 1;
     final center = size.center(Offset.zero);
@@ -96,24 +135,33 @@ class _PointsPainter extends CustomPainter {
       ..strokeWidth = width
       ..color = AppColors.catalogSurface;
     canvas.drawCircle(center, radius, paint);
-    if (fill <= 0) return;
+    if (visibleFill <= 0) return;
+    final bounds = Rect.fromCircle(center: center, radius: outer);
+    if (_icingBounds != bounds) {
+      _icingBounds = bounds;
+      _icingShader = _icing.createShader(bounds);
+    }
     paint
       ..strokeCap = StrokeCap.round
-      ..shader = _icing.createShader(
-        Rect.fromCircle(center: center, radius: outer),
-      );
-    canvas.drawArc(ring, _start, _turn * fill, false, paint);
-    _sprinkles(canvas, center, radius, width);
+      ..shader = _icingShader;
+    canvas.drawArc(ring, _start, _turn * visibleFill, false, paint);
+    _sprinkles(canvas, center, radius, width, visibleFill);
   }
 
-  void _sprinkles(Canvas canvas, Offset center, double radius, double width) {
+  void _sprinkles(
+    Canvas canvas,
+    Offset center,
+    double radius,
+    double width,
+    double visibleFill,
+  ) {
     final paint = Paint()
       ..color = AppColors.white.withValues(alpha: .32)
       ..strokeWidth = width * .105
       ..strokeCap = StrokeCap.round;
     for (var index = 0; index < _sprinkleCount; index++) {
       final position = (index + .40) / _sprinkleCount;
-      if (position > fill) break;
+      if (position > visibleFill) break;
       final angle = _start + _turn * position;
       final inset = ((index % 3) - 1) * width * .24;
       final anchor = center + _direction(angle) * (radius + inset);
@@ -126,5 +174,6 @@ class _PointsPainter extends CustomPainter {
   Offset _direction(double angle) => Offset(math.cos(angle), math.sin(angle));
 
   @override
-  bool shouldRepaint(_PointsPainter oldDelegate) => oldDelegate.fill != fill;
+  bool shouldRepaint(_PointsPainter oldDelegate) =>
+      oldDelegate.fill != fill || oldDelegate.progress != progress;
 }

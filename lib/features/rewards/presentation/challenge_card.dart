@@ -151,29 +151,38 @@ class _ChallengeArt extends StatelessWidget {
   Widget build(BuildContext context) {
     final image = CatalogImage(source: challenge.imageKey);
     final isDonut = challenge.kind == ChallengeKind.donut;
+    final background = isDonut
+        ? RepaintBoundary(
+            child: ColorFiltered(colorFilter: _frosted, child: image),
+          )
+        : Align(
+            alignment: Alignment.bottomCenter,
+            child: FractionallySizedBox(
+              widthFactor: .74,
+              heightFactor: .74,
+              child: image,
+            ),
+          );
     return AspectRatio(
       aspectRatio: 1,
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: challenge.completed / challenge.target),
         duration: AppMotion.duration(context, AppMotion.rewardEntrance),
         curve: AppMotion.curve,
-        builder: (context, value, _) => Stack(
+        child: background,
+        builder: (context, value, background) => Stack(
           fit: StackFit.expand,
           children: [
-            if (isDonut) ...[
-              ColorFiltered(colorFilter: _frosted, child: image),
-              ClipPath(clipper: _DonutSector(value), child: image),
-            ] else ...[
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: FractionallySizedBox(
-                  widthFactor: .74,
-                  heightFactor: .74,
-                  child: image,
-                ),
-              ),
+            if (!isDonut || value < 1) background!,
+            if (isDonut)
+              ClipPath(
+                key: const ValueKey('coloredDonut'),
+                clipper: value < 1 ? _DonutSector(value) : null,
+                clipBehavior: value < 1 ? Clip.antiAlias : Clip.none,
+                child: image,
+              )
+            else
               CustomPaint(painter: _CoffeeProgress(value)),
-            ],
           ],
         ),
       ),
@@ -187,7 +196,6 @@ class _DonutSector extends CustomClipper<Path> {
 
   @override
   Path getClip(Size size) {
-    if (fill >= 1) return Path()..addRect(Offset.zero & size);
     final center = size.center(Offset.zero);
     return Path()
       ..moveTo(center.dx, center.dy)

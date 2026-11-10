@@ -17,14 +17,9 @@ class RewardsOverview extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, space) {
       final width = space.maxWidth;
-      final ring = TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0, end: 1),
-        duration: AppMotion.duration(context, AppMotion.rewardEntrance),
-        curve: AppMotion.curve,
-        builder: (_, progress, _) => RewardsPointsRing(
-          points: (member.totalPoints * progress).round(),
-          fill: member.tierProgress * progress,
-        ),
+      final ring = RewardsPointsRing(
+        points: member.totalPoints,
+        fill: member.tierProgress,
       );
       final largeText = MediaQuery.textScalerOf(context).scale(16) > 19;
       return width <= 340 && largeText

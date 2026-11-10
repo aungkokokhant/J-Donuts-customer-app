@@ -24,11 +24,23 @@ class RewardsPointsRing extends StatefulWidget {
 
 class _RewardsPointsRingState extends State<RewardsPointsRing>
     with SingleTickerProviderStateMixin {
+  static const _countSteps = 15;
   late final _controller = AnimationController(
     vsync: this,
     duration: AppMotion.rewardEntrance,
   );
   late final _progress = _controller.drive(CurveTween(curve: AppMotion.curve));
+  final _countStep = ValueNotifier(0);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_updateCountStep);
+  }
+
+  void _updateCountStep() {
+    _countStep.value = (_controller.value * _countSteps).floor();
+  }
 
   @override
   void didChangeDependencies() {
@@ -43,6 +55,7 @@ class _RewardsPointsRingState extends State<RewardsPointsRing>
   @override
   void dispose() {
     _controller.dispose();
+    _countStep.dispose();
     super.dispose();
   }
 
@@ -87,13 +100,16 @@ class _RewardsPointsRingState extends State<RewardsPointsRing>
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
-        AnimatedBuilder(
-          animation: _progress,
-          builder: (_, _) => Text(
-            format.format((widget.points * _progress.value).round()),
-            key: const Key('rewardPointTotal'),
-            style: countStyle,
-          ),
+        ValueListenableBuilder<int>(
+          valueListenable: _countStep,
+          builder: (_, step, _) {
+            final progress = AppMotion.curve.transform(step / _countSteps);
+            return Text(
+              format.format((widget.points * progress).round()),
+              key: const Key('rewardPointTotal'),
+              style: countStyle,
+            );
+          },
         ),
       ],
     );

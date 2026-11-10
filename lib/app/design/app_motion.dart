@@ -28,6 +28,7 @@ class EnterMotion extends StatelessWidget {
     if (MediaQuery.disableAnimationsOf(context)) return child;
     final delay = AppMotion.stagger * index;
     final duration = AppMotion.entrance + delay;
+    final devicePixels = MediaQuery.devicePixelRatioOf(context);
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: duration,
@@ -35,12 +36,10 @@ class EnterMotion extends StatelessWidget {
       child: child,
       builder: (context, value, child) {
         final eased = AppMotion.curve.transform(value);
+        final offset = (22 * (1 - eased) * devicePixels).round() / devicePixels;
         return Opacity(
           opacity: eased,
-          child: Transform.translate(
-            offset: Offset(0, 22 * (1 - eased)),
-            child: child,
-          ),
+          child: Transform.translate(offset: Offset(0, offset), child: child),
         );
       },
     );

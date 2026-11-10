@@ -94,10 +94,13 @@ AI-generated demo assets bundled for offline display. The member portrait is fic
   and Rewards on the Android emulator, online and in airplane mode. The final
   source also passed both integration flows on the Redmi K30, and the release
   APK restored the session and local Home catalog after an offline relaunch.
-- The final profile build was measured on a Redmi K30 (Android 11, 120 Hz
-  display mode) across five cold Home launches and five Rewards entries.
-  Build or raster time exceeded the 16.67 ms budget in 25/462 Home frames
-  and 24/513 Rewards frames. The longest stages were 48.44 ms and 28.13 ms,
-  respectively. The physical-device jank-free target remains open.
+- The last performance pass used a Redmi K30 (Android 11, active 60 Hz)
+  in profile mode. The trace showed glyph-atlas work in some slow raster
+  frames. Entrance translations now align to device pixels, and the points
+  label updates in steps while the ring stays continuously animated.
+  Over five runs per build, cold Home frames over 16.67 ms fell from
+  45/268 to 31/266 and Rewards frames from 46/296 to 33/298. The longest
+  Rewards stage fell from 48.57 ms to 29.98 ms. The physical-device
+  jank-free target remains open.
 - Approximately 2.5 hours logged for initial implementation and verification,
   followed by UI polish and a physical-device audit.

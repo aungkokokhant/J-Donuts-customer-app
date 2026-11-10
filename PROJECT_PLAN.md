@@ -18,7 +18,7 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 1. [ ] Onboarding စဖွင့်ချိန်နဲ့ Rewards ဝင်ချိန်က frame spikes ကို ရှာပြီး လိုသလို ပြင်ပါ။ Redmi K30 ပေါ်မှာ profile mode နဲ့ ပြန်တိုင်းပြီး အောက်မှာ မှတ်ထားတဲ့ 16.67 ms baseline နဲ့ ယှဉ်ပါ။
 2. [x] Seasonal Specials၊ Popular နဲ့ Order Again ကို သီးခြား load လုပ်ပါတယ်။ Popular တစ်ခု fail ဖြစ်တဲ့အခါ ကျန်တဲ့ section တွေ ဆက်ပေါ်တာ၊ Retry က Popular ကိုပဲ load လုပ်တာနဲ့ pull-to-refresh က section အားလုံးကို ပြန်ဖတ်တာကို widget test မှာ စစ်ထားပါတယ်။
 3. [ ] Required tasks ပြီးပြီး deadline မတိုင်ခင် အချိန်ကျန်မှ Persistent cart bonus ကို စဉ်းစားပါ။
-4. [x] Home section Retry ပြင်ပြီးနောက် source commit `fde9392` ကနေ Android release APK၊ iOS Simulator ZIP နဲ့ ၃ မိနစ် ၂၄ စက္ကန့် online/offline walkthrough ကို ပြန်ထုတ်ပြီး စစ်ထားပါတယ်။
+4. [x] နောက်ဆုံး performance pass ပြီးနောက် source commit `c0bb547` ကနေ Android release APK၊ iOS Simulator ZIP နဲ့ ၃ မိနစ် ၂၄ စက္ကန့် online/offline walkthrough ကို ပြန်ထုတ်ပြီး စစ်ထားပါတယ်။
 
 ## Day 1 — Platform setup၊ architecture နဲ့ အဓိက flow
 
@@ -122,6 +122,8 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 **Final Redmi K30 profile (2026-11-10)** — Source commit `fde9392` ကို display 120 Hz၊ profile mode နဲ့ Cold Home နှင့် Rewards entry ၅ ကြိမ်စီ ပြန်တိုင်းထားပါတယ်။ 16.67 ms ကျော်တဲ့ frames က Home 25/462 (5.4%) နဲ့ Rewards 24/513 (4.7%) ပါ။ အကြာဆုံး stage က Home 48.44 ms နဲ့ Rewards 28.13 ms ဖြစ်ပါတယ်။ 60 fps jank-free checklist ကို ဆက်ဖွင့်ထားပါတယ်။
 
 **Final Redmi K30 flow check (2026-11-10)** — `fde9392` ရဲ့ online နဲ့ airplane-mode integration flows နှစ်ခုလုံး အောင်ပါတယ်။ Release APK ကို install လုပ်ပြီး airplane mode ထဲမှာ app ပိတ်ဖွင့်တဲ့အခါ saved session နဲ့ local Home catalog ပြန်တက်တာကိုလည်း စစ်ထားပါတယ်။
+
+**Last 60 Hz trace pass (2026-11-10)** — Redmi K30 ရဲ့ active 60 Hz ကို အတည်ပြုပြီး profile timeline ဖမ်းထားပါတယ်။ နှေးတဲ့ raster frames တချို့မှာ glyph atlas ပုံဖော်တဲ့အလုပ် ပါပါတယ်။ Entrance translation ကို device pixel နဲ့ ညှိပြီး Rewards points label ကို အဆင့်လိုက် update လုပ်ထားပါတယ်။ Build တစ်ခုစီ ၅ ကြိမ်တိုင်းရာမှာ 16.67 ms ကျော်တာ Home 45/268 (16.8%) → 31/266 (11.7%)၊ Rewards 46/296 (15.5%) → 33/298 (11.1%) ပါ။ Rewards peak 48.57 ms → 29.98 ms ဖြစ်ပါတယ်။ ပြင်ဆင်ချက်ကို ထားပြီး jank-free 60 fps checklist ကို ဖွင့်ထားပါတယ်။
 
 ### 6. နောက်ဆုံး quality gates
 

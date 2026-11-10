@@ -69,3 +69,10 @@ CREATE TABLE registered_users (
   last_name TEXT NOT NULL,
   birth_date DATETIME NOT NULL
 );
+
+CREATE TABLE cart_items (
+  owner_phone TEXT NOT NULL REFERENCES registered_users(phone) ON DELETE CASCADE,
+  product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  PRIMARY KEY (owner_phone, product_id)
+);

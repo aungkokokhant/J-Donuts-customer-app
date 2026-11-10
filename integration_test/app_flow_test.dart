@@ -6,9 +6,7 @@ import 'package:jdonuts_customer_app/main.dart' as app;
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('registers, opens Product Detail and Rewards, and logs back in', (
-    tester,
-  ) async {
+  testWidgets('registers, saves the cart, and logs back in', (tester) async {
     app.main();
     await tester.pumpAndSettle();
 
@@ -47,7 +45,13 @@ void main() {
     await _verifyPhone(tester, phone);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Demo'), findsOneWidget);
-    await _logOut(tester);
+    await _tap(tester, find.byTooltip('Settings'));
+    await _tap(tester, find.text('Cart'));
+    _expectCartQuantity(tester, '3');
+    await _tap(tester, find.byType(BackButton));
+    if (!const bool.fromEnvironment('VERIFY_CART_RELAUNCH')) {
+      await _logOut(tester);
+    }
   });
 }
 
@@ -125,7 +129,20 @@ Future<void> _openCoconut(WidgetTester tester) async {
   expect(find.textContaining('6,400 MMK'), findsOneWidget);
   await _tap(tester, decrease);
   expect(find.textContaining('ADD TO CART'), findsOneWidget);
+  await _tap(tester, find.byTooltip('Increase quantity'));
+  await _tap(tester, find.textContaining('ADD TO CART'));
+  await _tap(tester, find.text('View cart'));
+  _expectCartQuantity(tester, '2');
+  await _tap(tester, find.byTooltip('Increase quantity'));
+  _expectCartQuantity(tester, '3');
+  expect(find.text('9,600 MMK'), findsNWidgets(2));
   await _tap(tester, find.byType(BackButton));
+  await _tap(tester, find.byType(BackButton));
+}
+
+void _expectCartQuantity(WidgetTester tester, String quantity) {
+  final count = find.byKey(const ValueKey('cart-quantity:p_coconut'));
+  expect(tester.widget<Text>(count).data, quantity);
 }
 
 Future<void> _openRewards(WidgetTester tester) async {

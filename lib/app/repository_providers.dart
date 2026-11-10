@@ -11,6 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import '../core/data/app_database.dart';
 import '../core/domain/member_profile.dart';
 import '../core/domain/result.dart';
+import '../features/cart/data/local_cart_repository.dart';
+import '../features/cart/domain/cart_repository.dart';
 import '../features/home/data/local_home_repository.dart';
 import '../features/home/domain/home_repository.dart';
 import '../features/product/data/local_product_repository.dart';
@@ -37,6 +39,10 @@ final homeRepositoryProvider = Provider<HomeRepository>(
 
 final productRepositoryProvider = Provider<ProductRepository>(
   (ref) => LocalProductRepository(ref.watch(databaseProvider)),
+);
+
+final cartRepositoryProvider = Provider<CartRepository>(
+  (ref) => LocalCartRepository(ref.watch(databaseProvider)),
 );
 
 final rewardsRepositoryProvider = Provider<RewardsRepository>(

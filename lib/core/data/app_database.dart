@@ -12,7 +12,7 @@ class AppDatabase extends _$AppDatabase {
   final Future<String> Function() loadSeed;
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -25,14 +25,15 @@ class AppDatabase extends _$AppDatabase {
       });
     },
     onUpgrade: (migrator, from, to) async {
-      final seed = await loadSeed();
+      final seed = from < 4 ? await loadSeed() : null;
       await transaction(() async {
         if (from < 2) await migrator.createTable(registeredUsers);
         if (from < 3) {
           await migrator.addColumn(members, members.tierStartPoints);
-          await _seedTierStarts(this, seed);
+          await _seedTierStarts(this, seed!);
         }
-        if (from < 4) await _refreshCoconutDescription(this, seed);
+        if (seed != null) await _refreshCoconutDescription(this, seed);
+        if (from < 5) await migrator.createTable(cartItems);
       });
     },
     beforeOpen: (_) => customStatement('PRAGMA foreign_keys = ON'),

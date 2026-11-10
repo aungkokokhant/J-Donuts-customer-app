@@ -20,8 +20,14 @@ final productDetailProvider = FutureProvider.autoDispose
     );
 
 class ProductDetailPage extends ConsumerWidget {
-  const ProductDetailPage({super.key, required this.id, this.preview});
+  const ProductDetailPage({
+    super.key,
+    required this.id,
+    required this.cartOwner,
+    this.preview,
+  });
   final String id;
+  final String cartOwner;
   final ProductPreview? preview;
 
   @override
@@ -59,6 +65,7 @@ class ProductDetailPage extends ConsumerWidget {
               : _ProductBody(
                   key: ValueKey(product.id),
                   product: product,
+                  cartOwner: cartOwner,
                   heroTag: snapshot?.heroTag,
                 ),
         ),
@@ -67,18 +74,52 @@ class ProductDetailPage extends ConsumerWidget {
   }
 }
 
-class _ProductBody extends StatefulWidget {
-  const _ProductBody({super.key, required this.product, required this.heroTag});
+class _ProductBody extends ConsumerStatefulWidget {
+  const _ProductBody({
+    super.key,
+    required this.product,
+    required this.cartOwner,
+    required this.heroTag,
+  });
   final CatalogProduct product;
+  final String cartOwner;
   final String? heroTag;
 
   @override
-  State<_ProductBody> createState() => _ProductBodyState();
+  ConsumerState<_ProductBody> createState() => _ProductBodyState();
 }
 
-class _ProductBodyState extends State<_ProductBody> {
+class _ProductBodyState extends ConsumerState<_ProductBody> {
   static const _minimum = 1;
   var _quantity = _minimum;
+  bool _adding = false;
+
+  Future<void> _addToCart() async {
+    if (_adding) return;
+    setState(() => _adding = true);
+    final result = await ref
+        .read(cartRepositoryProvider)
+        .add(widget.cartOwner, widget.product.id, _quantity);
+    if (!mounted) return;
+    setState(() => _adding = false);
+    if (ModalRoute.isCurrentOf(context) != true) return;
+    final strings = AppLocalizations.of(context);
+    final router = GoRouter.of(context);
+    final added = result is Success<void>;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(added ? strings.addedToCart : strings.cartUpdateFailed),
+          action: added
+              ? SnackBarAction(
+                  label: strings.viewCart,
+                  onPressed: () => router.push('/cart'),
+                )
+              : null,
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,10 +150,12 @@ class _ProductBodyState extends State<_ProductBody> {
                   ),
                   _QuantityStepper(
                     quantity: _quantity,
-                    onDecrease: _quantity > _minimum
+                    onDecrease: !_adding && _quantity > _minimum
                         ? () => setState(() => _quantity--)
                         : null,
-                    onIncrease: () => setState(() => _quantity++),
+                    onIncrease: _adding
+                        ? null
+                        : () => setState(() => _quantity++),
                   ),
                 ],
               ),
@@ -131,9 +174,8 @@ class _ProductBodyState extends State<_ProductBody> {
           child: PrimaryActionButton(
             label:
                 '${strings.addToCart}  |  ${formatMmk(context, product.priceMmk * _quantity)}',
-            onPressed: () =>
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text(strings.addedToCart))),
+            busy: _adding,
+            onPressed: _addToCart,
           ),
         ),
       ],
@@ -148,7 +190,7 @@ class _QuantityStepper extends StatelessWidget {
     required this.onDecrease,
   });
   final int quantity;
-  final VoidCallback onIncrease;
+  final VoidCallback? onIncrease;
   final VoidCallback? onDecrease;
 
   static const height = 64.0;

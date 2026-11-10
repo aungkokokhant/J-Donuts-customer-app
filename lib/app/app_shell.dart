@@ -12,6 +12,8 @@ import 'design/app_motion.dart';
 import 'design/app_theme.dart';
 import 'network_status.dart';
 
+enum _SettingsAction { cart, logout }
+
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({
     super.key,
@@ -64,17 +66,31 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   Future<void> _settings(BuildContext context) async {
     final strings = AppLocalizations.of(context);
-    final confirmed = await showModalBottomSheet<bool>(
+    final action = await showModalBottomSheet<_SettingsAction>(
       context: context,
       builder: (context) => SafeArea(
-        child: ListTile(
-          leading: const Icon(Icons.logout),
-          title: Text(strings.logOut),
-          onTap: () => Navigator.of(context).pop(true),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.shopping_cart_outlined),
+              title: Text(strings.cartTitle),
+              onTap: () => Navigator.of(context).pop(_SettingsAction.cart),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: Text(strings.logOut),
+              onTap: () => Navigator.of(context).pop(_SettingsAction.logout),
+            ),
+          ],
         ),
       ),
     );
-    if (confirmed != true || !context.mounted) return;
+    if (!context.mounted || action == null) return;
+    if (action == _SettingsAction.cart) {
+      unawaited(context.push('/cart'));
+      return;
+    }
     final loggedOut = await widget.session.logout();
     if (!context.mounted) return;
     if (loggedOut) {

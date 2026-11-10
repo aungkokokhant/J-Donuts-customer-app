@@ -45,6 +45,7 @@ ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app build/ios/JDonuts-
 | `lib/features/{auth,home,product,rewards}/presentation/` | Screens, interactions and feature state |
 | `lib/features/{auth,home,product,rewards}/domain/` | Pure Dart models, validation and repository contracts |
 | `lib/features/{auth,home,product,rewards}/data/` | Local implementations of the domain contracts |
+| `lib/features/cart/` | Cart screen, repository contract and Drift implementation |
 | `lib/core/` | Shared Drift database, typed results, member model and catalog widgets |
 | `assets/data/` and `lib/l10n/` | Catalog seed and English UI strings |
 
@@ -63,6 +64,14 @@ for its offline banner and refreshes the catalog from SQLite when connectivity
 returns or the user pulls to refresh.
 
 After changing the Drift schema, regenerate the checked-in Dart file with `dart run build_runner build`.
+
+## Persistent cart
+
+Choose a quantity on Product Detail, tap **Add to cart**, and select **View cart**.
+You can reopen the cart from **Settings → Cart**. Adding the same product
+increases its quantity, and reducing a line to zero removes it. The cart uses
+the current catalog prices for its total and saves each account’s items in
+SQLite, so they remain available offline after a relaunch or a new login.
 
 ## Demo authentication
 
@@ -93,7 +102,7 @@ AI-generated demo assets bundled for offline display. The member portrait is fic
 
 - Authentication and OTP are local demo flows. Checkout, the extra navigation
   items and social sign-in show demo feedback.
-- Catalog refresh reads local data. The app has no mock server or persistent cart.
+- Catalog refresh reads local data. The app has no mock server.
 - The walkthrough covers registration, logout, login, Home, Product Detail
   and Rewards on the Android emulator, online and in airplane mode. The final
   source also passed both integration flows on the Redmi K30, and the release

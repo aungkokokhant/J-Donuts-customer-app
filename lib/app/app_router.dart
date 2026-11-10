@@ -10,6 +10,7 @@ import '../features/auth/domain/auth_repository.dart';
 import '../features/auth/presentation/auth_flow_page.dart';
 import '../features/auth/presentation/onboarding_page.dart';
 import '../features/auth/presentation/session_controller.dart';
+import '../features/cart/presentation/cart_page.dart';
 import '../features/home/presentation/home_landing_page.dart';
 import '../features/product/presentation/product_detail_page.dart';
 import '../features/product/presentation/product_preview.dart';
@@ -67,13 +68,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ),
           ),
           GoRoute(
+            path: '/cart',
+            builder: (_, _) {
+              final user = session.user;
+              return user == null
+                  ? const SizedBox.shrink()
+                  : CartPage(key: ValueKey(user.phone), owner: user.phone);
+            },
+          ),
+          GoRoute(
             path: '/product/:id',
-            builder: (_, state) => ProductDetailPage(
-              id: state.pathParameters['id']!,
-              preview: state.extra is ProductPreview
-                  ? state.extra as ProductPreview
-                  : null,
-            ),
+            builder: (_, state) {
+              final user = session.user;
+              if (user == null) return const SizedBox.shrink();
+              return ProductDetailPage(
+                id: state.pathParameters['id']!,
+                cartOwner: user.phone,
+                preview: state.extra is ProductPreview
+                    ? state.extra as ProductPreview
+                    : null,
+              );
+            },
           ),
         ],
       ),
@@ -95,6 +110,7 @@ String? _redirect(GoRouterState state, SessionController session) {
   if (location == '/session') return session.user == null ? '/' : '/home';
   if ((location == '/home' ||
           location == '/rewards' ||
+          location == '/cart' ||
           state.fullPath == '/product/:id') &&
       session.user == null) {
     return '/';

@@ -8,6 +8,7 @@ import 'package:jdonuts_customer_app/app/repository_providers.dart';
 import 'package:jdonuts_customer_app/core/data/app_database.dart';
 import 'package:jdonuts_customer_app/core/domain/member_profile.dart';
 import 'package:jdonuts_customer_app/core/domain/result.dart';
+import 'package:jdonuts_customer_app/features/cart/data/local_cart_repository.dart';
 
 T valueOf<T>(Result<T> result) => switch (result) {
   Success(:final value) => value,
@@ -65,6 +66,7 @@ void main() {
           'UPDATE products SET description = ? WHERE id = ?',
           ['A soft donut with coconut and a chocolate drizzle.', 'p_coconut'],
         );
+        await original.customStatement('DROP TABLE cart_items');
         await original.customStatement('PRAGMA user_version = 2');
       } finally {
         await original.close();
@@ -86,6 +88,73 @@ void main() {
         await container.read(productRepositoryProvider).findById('p_coconut'),
       )!;
       expect(coconut.description, startsWith('A soft, fluffy donut'));
+    },
+  );
+
+  test(
+    'cart migration preserves accounts and persists isolated quantities',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('jdonuts_cart_');
+      addTearDown(() => directory.delete(recursive: true));
+      final file = File('${directory.path}/catalog.sqlite');
+      const owner = '+95912345678';
+      const otherOwner = '+95912345679';
+      const product = 'p_coconut';
+      final old = AppDatabase(
+        NativeDatabase(file),
+        loadSeed: () => rootBundle.loadString('assets/data/catalog.json'),
+      );
+      try {
+        for (final phone in [owner, otherOwner]) {
+          await old
+              .into(old.registeredUsers)
+              .insert(
+                RegisteredUsersCompanion.insert(
+                  phone: phone,
+                  firstName: 'Demo',
+                  lastName: '',
+                  birthDate: DateTime(2000, 1, 15),
+                ),
+              );
+        }
+        await old.customStatement('DROP TABLE cart_items');
+        await old.customStatement('PRAGMA user_version = 4');
+      } finally {
+        await old.close();
+      }
+
+      AppDatabase open() => AppDatabase(
+        NativeDatabase(file),
+        loadSeed: () async =>
+            throw StateError('The existing catalog should not be reseeded'),
+      );
+      final upgraded = open();
+      try {
+        final cart = LocalCartRepository(upgraded);
+        expect(valueOf(await cart.watch(owner).first), isEmpty);
+        final added = await Future.wait([
+          cart.add(owner, product, 2),
+          cart.add(owner, product, 1),
+        ]);
+        expect(added, everyElement(isA<Success<void>>()));
+        expect(await cart.add(owner, product, 0), isA<Failure<void>>());
+        expect(await cart.add(otherOwner, product, 1), isA<Success<void>>());
+      } finally {
+        await upgraded.close();
+      }
+
+      final reopened = open();
+      addTearDown(reopened.close);
+      final cart = LocalCartRepository(reopened);
+      final restored = valueOf(await cart.watch(owner).first).single;
+      expect(restored.product.name, 'Coconut Donut');
+      expect(restored.quantity * restored.product.priceMmk, 9600);
+      expect(valueOf(await cart.watch(otherOwner).first).single.quantity, 1);
+      for (var i = 0; i < restored.quantity; i++) {
+        expect(await cart.decrease(owner, product), isA<Success<void>>());
+      }
+      expect(valueOf(await cart.watch(owner).first), isEmpty);
+      expect(valueOf(await cart.watch(otherOwner).first).single.quantity, 1);
     },
   );
 

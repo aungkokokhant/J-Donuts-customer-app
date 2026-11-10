@@ -17,7 +17,7 @@ Test လက်ခံရရှိချိန်ကနေ **၂ ရက်အတ�
 
 1. [ ] Onboarding စဖွင့်ချိန်နဲ့ Rewards ဝင်ချိန်က frame spikes ကို ရှာပြီး လိုသလို ပြင်ပါ။ Redmi K30 ပေါ်မှာ profile mode နဲ့ ပြန်တိုင်းပြီး အောက်မှာ မှတ်ထားတဲ့ 16.67 ms baseline နဲ့ ယှဉ်ပါ။
 2. [x] Seasonal Specials၊ Popular နဲ့ Order Again ကို သီးခြား load လုပ်ပါတယ်။ Popular တစ်ခု fail ဖြစ်တဲ့အခါ ကျန်တဲ့ section တွေ ဆက်ပေါ်တာ၊ Retry က Popular ကိုပဲ load လုပ်တာနဲ့ pull-to-refresh က section အားလုံးကို ပြန်ဖတ်တာကို widget test မှာ စစ်ထားပါတယ်။
-3. [ ] Required tasks ပြီးပြီး deadline မတိုင်ခင် အချိန်ကျန်မှ Persistent cart bonus ကို စဉ်းစားပါ။
+3. [x] Persistent cart bonus ထည့်ပြီး cart ကို account အလိုက် သိမ်းတာနဲ့ offline relaunch မှာ ပြန်ပေါ်တာကို စစ်ထားပါတယ်။
 4. [x] နောက်ဆုံး performance pass ပြီးနောက် source commit `c0bb547` ကနေ Android release APK၊ iOS Simulator ZIP နဲ့ ၃ မိနစ် ၂၄ စက္ကန့် online/offline walkthrough ကို ပြန်ထုတ်ပြီး စစ်ထားပါတယ်။
 
 ## Day 1 — Platform setup၊ architecture နဲ့ အဓိက flow
@@ -156,7 +156,7 @@ Day 2 ရဲ့ နောက်ဆုံး **၃ နာရီ** ကို clean
 
 ## Bonus — Required tasks ပြည့်ပြီး အချိန်ကျန်မှ
 
-- [ ] Persistent cart။
+- [x] Persistent cart ကို SQLite မှာ account အလိုက် သိမ်းပါတယ်။ Product Detail ကနေ ထည့်ပြီး Settings → Cart ကနေ ပြန်ဖွင့်နိုင်ပါတယ်။
 - [ ] Burmese locale။
 - [ ] Minimum ထက်ပိုတဲ့ animation။
 - [x] GitHub Actions မှာ Flutter 3.47.9 နဲ့ push / pull request တိုင်း analyzer နဲ့ unit/widget tests run အောင် ထည့်ထားပါတယ်။

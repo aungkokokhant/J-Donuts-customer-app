@@ -3269,6 +3269,281 @@ class RegisteredUsersCompanion extends UpdateCompanion<RegisteredUser> {
   }
 }
 
+class CartItems extends Table with TableInfo<CartItems, CartItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  CartItems(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _ownerPhoneMeta = const VerificationMeta(
+    'ownerPhone',
+  );
+  late final GeneratedColumn<String> ownerPhone = GeneratedColumn<String>(
+    'owner_phone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES registered_users(phone)ON DELETE CASCADE',
+  );
+  static const VerificationMeta _productIdMeta = const VerificationMeta(
+    'productId',
+  );
+  late final GeneratedColumn<String> productId = GeneratedColumn<String>(
+    'product_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL REFERENCES products(id)ON DELETE CASCADE',
+  );
+  static const VerificationMeta _quantityMeta = const VerificationMeta(
+    'quantity',
+  );
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
+    'quantity',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (quantity > 0)',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [ownerPhone, productId, quantity];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cart_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CartItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('owner_phone')) {
+      context.handle(
+        _ownerPhoneMeta,
+        ownerPhone.isAcceptableOrUnknown(data['owner_phone']!, _ownerPhoneMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerPhoneMeta);
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(
+        _productIdMeta,
+        productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('quantity')) {
+      context.handle(
+        _quantityMeta,
+        quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_quantityMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {ownerPhone, productId};
+  @override
+  CartItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CartItem(
+      ownerPhone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_phone'],
+      )!,
+      productId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_id'],
+      )!,
+      quantity: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantity'],
+      )!,
+    );
+  }
+
+  @override
+  CartItems createAlias(String alias) {
+    return CartItems(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(owner_phone, product_id)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class CartItem extends DataClass implements Insertable<CartItem> {
+  final String ownerPhone;
+  final String productId;
+  final int quantity;
+  const CartItem({
+    required this.ownerPhone,
+    required this.productId,
+    required this.quantity,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['owner_phone'] = Variable<String>(ownerPhone);
+    map['product_id'] = Variable<String>(productId);
+    map['quantity'] = Variable<int>(quantity);
+    return map;
+  }
+
+  CartItemsCompanion toCompanion(bool nullToAbsent) {
+    return CartItemsCompanion(
+      ownerPhone: Value(ownerPhone),
+      productId: Value(productId),
+      quantity: Value(quantity),
+    );
+  }
+
+  factory CartItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CartItem(
+      ownerPhone: serializer.fromJson<String>(json['owner_phone']),
+      productId: serializer.fromJson<String>(json['product_id']),
+      quantity: serializer.fromJson<int>(json['quantity']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'owner_phone': serializer.toJson<String>(ownerPhone),
+      'product_id': serializer.toJson<String>(productId),
+      'quantity': serializer.toJson<int>(quantity),
+    };
+  }
+
+  CartItem copyWith({String? ownerPhone, String? productId, int? quantity}) =>
+      CartItem(
+        ownerPhone: ownerPhone ?? this.ownerPhone,
+        productId: productId ?? this.productId,
+        quantity: quantity ?? this.quantity,
+      );
+  CartItem copyWithCompanion(CartItemsCompanion data) {
+    return CartItem(
+      ownerPhone: data.ownerPhone.present
+          ? data.ownerPhone.value
+          : this.ownerPhone,
+      productId: data.productId.present ? data.productId.value : this.productId,
+      quantity: data.quantity.present ? data.quantity.value : this.quantity,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CartItem(')
+          ..write('ownerPhone: $ownerPhone, ')
+          ..write('productId: $productId, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(ownerPhone, productId, quantity);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CartItem &&
+          other.ownerPhone == this.ownerPhone &&
+          other.productId == this.productId &&
+          other.quantity == this.quantity);
+}
+
+class CartItemsCompanion extends UpdateCompanion<CartItem> {
+  final Value<String> ownerPhone;
+  final Value<String> productId;
+  final Value<int> quantity;
+  final Value<int> rowid;
+  const CartItemsCompanion({
+    this.ownerPhone = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CartItemsCompanion.insert({
+    required String ownerPhone,
+    required String productId,
+    required int quantity,
+    this.rowid = const Value.absent(),
+  }) : ownerPhone = Value(ownerPhone),
+       productId = Value(productId),
+       quantity = Value(quantity);
+  static Insertable<CartItem> custom({
+    Expression<String>? ownerPhone,
+    Expression<String>? productId,
+    Expression<int>? quantity,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (ownerPhone != null) 'owner_phone': ownerPhone,
+      if (productId != null) 'product_id': productId,
+      if (quantity != null) 'quantity': quantity,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CartItemsCompanion copyWith({
+    Value<String>? ownerPhone,
+    Value<String>? productId,
+    Value<int>? quantity,
+    Value<int>? rowid,
+  }) {
+    return CartItemsCompanion(
+      ownerPhone: ownerPhone ?? this.ownerPhone,
+      productId: productId ?? this.productId,
+      quantity: quantity ?? this.quantity,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (ownerPhone.present) {
+      map['owner_phone'] = Variable<String>(ownerPhone.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<String>(productId.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CartItemsCompanion(')
+          ..write('ownerPhone: $ownerPhone, ')
+          ..write('productId: $productId, ')
+          ..write('quantity: $quantity, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3280,6 +3555,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Members members = Members(this);
   late final Challenges challenges = Challenges(this);
   late final RegisteredUsers registeredUsers = RegisteredUsers(this);
+  late final CartItems cartItems = CartItems(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3293,7 +3569,25 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     members,
     challenges,
     registeredUsers,
+    cartItems,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'registered_users',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('cart_items', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'products',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('cart_items', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $ProductsCreateCompanionBuilder = ProductsCompanion Function({
@@ -3338,6 +3632,25 @@ final class $ProductsReferences
     final cache = $_typedResult.readTableOrNull(
       _sectionProductsRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<CartItems, List<CartItem>> _cartItemsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.cartItems,
+    aliasName: 'products__id__cart_items__product_id',
+  );
+
+  $CartItemsProcessedTableManager get cartItemsRefs {
+    final manager = $CartItemsTableManager(
+      $_db,
+      $_db.cartItems,
+    ).filter((f) => f.productId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_cartItemsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -3408,6 +3721,31 @@ class $ProductsFilterComposer extends Composer<_$AppDatabase, Products> {
           }) => $SectionProductsFilterComposer(
             $db: $db,
             $table: $db.sectionProducts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> cartItemsRefs(
+    Expression<bool> Function($CartItemsFilterComposer f) f,
+  ) {
+    final $CartItemsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.cartItems,
+      getReferencedColumn: (t) => t.productId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $CartItemsFilterComposer(
+            $db: $db,
+            $table: $db.cartItems,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3527,6 +3865,31 @@ class $ProductsAnnotationComposer extends Composer<_$AppDatabase, Products> {
     );
     return f(composer);
   }
+
+  Expression<T> cartItemsRefs<T extends Object>(
+    Expression<T> Function($CartItemsAnnotationComposer a) f,
+  ) {
+    final $CartItemsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.cartItems,
+      getReferencedColumn: (t) => t.productId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $CartItemsAnnotationComposer(
+            $db: $db,
+            $table: $db.cartItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $ProductsTableManager
@@ -3542,7 +3905,7 @@ class $ProductsTableManager
           $ProductsUpdateCompanionBuilder,
           (Product, $ProductsReferences),
           Product,
-          PrefetchHooks Function({bool sectionProductsRefs})
+          PrefetchHooks Function({bool sectionProductsRefs, bool cartItemsRefs})
         > {
   $ProductsTableManager(_$AppDatabase db, Products table)
     : super(
@@ -3607,38 +3970,56 @@ class $ProductsTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({sectionProductsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (sectionProductsRefs) db.sectionProducts,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (sectionProductsRefs)
-                    await $_getPrefetchedDataByColumns<
-                      Product,
-                      Products,
-                      SectionProduct,
-                      SectionProducts
-                    >(
-                      currentTable: table,
-                      referencedTable: $ProductsReferences
-                          ._sectionProductsRefsTable(db),
-                      managerFromTypedResult: (p0) => $ProductsReferences(
-                        db,
-                        table,
-                        p0,
-                      ).sectionProductsRefs,
-                      currentColumn: 'id',
-                      referencedColumn: 'product_id',
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({sectionProductsRefs = false, cartItemsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (sectionProductsRefs) db.sectionProducts,
+                    if (cartItemsRefs) db.cartItems,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (sectionProductsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          Product,
+                          Products,
+                          SectionProduct,
+                          SectionProducts
+                        >(
+                          currentTable: table,
+                          referencedTable: $ProductsReferences
+                              ._sectionProductsRefsTable(db),
+                          managerFromTypedResult: (p0) => $ProductsReferences(
+                            db,
+                            table,
+                            p0,
+                          ).sectionProductsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'product_id',
+                          typedResults: items,
+                        ),
+                      if (cartItemsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          Product,
+                          Products,
+                          CartItem,
+                          CartItems
+                        >(
+                          currentTable: table,
+                          referencedTable: $ProductsReferences
+                              ._cartItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $ProductsReferences(db, table, p0).cartItemsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'product_id',
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -3655,7 +4036,7 @@ typedef $ProductsProcessedTableManager =
       $ProductsUpdateCompanionBuilder,
       (Product, $ProductsReferences),
       Product,
-      PrefetchHooks Function({bool sectionProductsRefs})
+      PrefetchHooks Function({bool sectionProductsRefs, bool cartItemsRefs})
     >;
 typedef $BannersCreateCompanionBuilder = BannersCompanion Function({
   required String id,
@@ -5473,6 +5854,29 @@ typedef $RegisteredUsersUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
+final class $RegisteredUsersReferences
+    extends BaseReferences<_$AppDatabase, RegisteredUsers, RegisteredUser> {
+  $RegisteredUsersReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<CartItems, List<CartItem>> _cartItemsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.cartItems,
+    aliasName: 'registered_users__phone__cart_items__owner_phone',
+  );
+
+  $CartItemsProcessedTableManager get cartItemsRefs {
+    final manager = $CartItemsTableManager($_db, $_db.cartItems).filter(
+      (f) => f.ownerPhone.phone.sqlEquals($_itemColumn<String>('phone')!),
+    );
+
+    final cache = $_typedResult.readTableOrNull(_cartItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $RegisteredUsersFilterComposer
     extends Composer<_$AppDatabase, RegisteredUsers> {
   $RegisteredUsersFilterComposer({
@@ -5501,6 +5905,31 @@ class $RegisteredUsersFilterComposer
     column: $table.birthDate,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> cartItemsRefs(
+    Expression<bool> Function($CartItemsFilterComposer f) f,
+  ) {
+    final $CartItemsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.phone,
+      referencedTable: $db.cartItems,
+      getReferencedColumn: (t) => t.ownerPhone,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $CartItemsFilterComposer(
+            $db: $db,
+            $table: $db.cartItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $RegisteredUsersOrderingComposer
@@ -5553,6 +5982,31 @@ class $RegisteredUsersAnnotationComposer
 
   GeneratedColumn<DateTime> get birthDate =>
       $composableBuilder(column: $table.birthDate, builder: (column) => column);
+
+  Expression<T> cartItemsRefs<T extends Object>(
+    Expression<T> Function($CartItemsAnnotationComposer a) f,
+  ) {
+    final $CartItemsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.phone,
+      referencedTable: $db.cartItems,
+      getReferencedColumn: (t) => t.ownerPhone,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $CartItemsAnnotationComposer(
+            $db: $db,
+            $table: $db.cartItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $RegisteredUsersTableManager
@@ -5566,12 +6020,9 @@ class $RegisteredUsersTableManager
           $RegisteredUsersAnnotationComposer,
           $RegisteredUsersCreateCompanionBuilder,
           $RegisteredUsersUpdateCompanionBuilder,
-          (
-            RegisteredUser,
-            BaseReferences<_$AppDatabase, RegisteredUsers, RegisteredUser>,
-          ),
+          (RegisteredUser, $RegisteredUsersReferences),
           RegisteredUser,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool cartItemsRefs})
         > {
   $RegisteredUsersTableManager(_$AppDatabase db, RegisteredUsers table)
     : super(
@@ -5616,15 +6067,41 @@ class $RegisteredUsersTableManager
               .map(
                 (e) => (
                   e.readTable<RegisteredUsers, RegisteredUser>(table),
-                  BaseReferences<
-                    _$AppDatabase,
-                    RegisteredUsers,
-                    RegisteredUser
-                  >(db, table, e),
+                  $RegisteredUsersReferences(db, table, e),
                 ),
               )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({cartItemsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (cartItemsRefs) db.cartItems],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (cartItemsRefs)
+                    await $_getPrefetchedDataByColumns<
+                      RegisteredUser,
+                      RegisteredUsers,
+                      CartItem,
+                      CartItems
+                    >(
+                      currentTable: table,
+                      referencedTable: $RegisteredUsersReferences
+                          ._cartItemsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $RegisteredUsersReferences(
+                            db,
+                            table,
+                            p0,
+                          ).cartItemsRefs,
+                      currentColumn: 'phone',
+                      referencedColumn: 'owner_phone',
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -5639,12 +6116,368 @@ typedef $RegisteredUsersProcessedTableManager =
       $RegisteredUsersAnnotationComposer,
       $RegisteredUsersCreateCompanionBuilder,
       $RegisteredUsersUpdateCompanionBuilder,
-      (
-        RegisteredUser,
-        BaseReferences<_$AppDatabase, RegisteredUsers, RegisteredUser>,
-      ),
+      (RegisteredUser, $RegisteredUsersReferences),
       RegisteredUser,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool cartItemsRefs})
+    >;
+typedef $CartItemsCreateCompanionBuilder = CartItemsCompanion Function({
+  required String ownerPhone,
+  required String productId,
+  required int quantity,
+  Value<int> rowid,
+});
+typedef $CartItemsUpdateCompanionBuilder = CartItemsCompanion Function({
+  Value<String> ownerPhone,
+  Value<String> productId,
+  Value<int> quantity,
+  Value<int> rowid,
+});
+
+final class $CartItemsReferences
+    extends BaseReferences<_$AppDatabase, CartItems, CartItem> {
+  $CartItemsReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static RegisteredUsers _ownerPhoneTable(_$AppDatabase db) => db
+      .registeredUsers
+      .createAlias('cart_items__owner_phone__registered_users__phone');
+
+  $RegisteredUsersProcessedTableManager get ownerPhone {
+    final $_column = $_itemColumn<String>('owner_phone')!;
+
+    final manager = $RegisteredUsersTableManager(
+      $_db,
+      $_db.registeredUsers,
+    ).filter((f) => f.phone.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_ownerPhoneTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Products _productIdTable(_$AppDatabase db) =>
+      db.products.createAlias('cart_items__product_id__products__id');
+
+  $ProductsProcessedTableManager get productId {
+    final $_column = $_itemColumn<String>('product_id')!;
+
+    final manager = $ProductsTableManager(
+      $_db,
+      $_db.products,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_productIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $CartItemsFilterComposer extends Composer<_$AppDatabase, CartItems> {
+  $CartItemsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $RegisteredUsersFilterComposer get ownerPhone {
+    final $RegisteredUsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ownerPhone,
+      referencedTable: $db.registeredUsers,
+      getReferencedColumn: (t) => t.phone,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $RegisteredUsersFilterComposer(
+            $db: $db,
+            $table: $db.registeredUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ProductsFilterComposer get productId {
+    final $ProductsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.productId,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ProductsFilterComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $CartItemsOrderingComposer extends Composer<_$AppDatabase, CartItems> {
+  $CartItemsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $RegisteredUsersOrderingComposer get ownerPhone {
+    final $RegisteredUsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ownerPhone,
+      referencedTable: $db.registeredUsers,
+      getReferencedColumn: (t) => t.phone,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $RegisteredUsersOrderingComposer(
+            $db: $db,
+            $table: $db.registeredUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ProductsOrderingComposer get productId {
+    final $ProductsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.productId,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ProductsOrderingComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $CartItemsAnnotationComposer extends Composer<_$AppDatabase, CartItems> {
+  $CartItemsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get quantity =>
+      $composableBuilder(column: $table.quantity, builder: (column) => column);
+
+  $RegisteredUsersAnnotationComposer get ownerPhone {
+    final $RegisteredUsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.ownerPhone,
+      referencedTable: $db.registeredUsers,
+      getReferencedColumn: (t) => t.phone,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $RegisteredUsersAnnotationComposer(
+            $db: $db,
+            $table: $db.registeredUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ProductsAnnotationComposer get productId {
+    final $ProductsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.productId,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ProductsAnnotationComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $CartItemsTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          CartItems,
+          CartItem,
+          $CartItemsFilterComposer,
+          $CartItemsOrderingComposer,
+          $CartItemsAnnotationComposer,
+          $CartItemsCreateCompanionBuilder,
+          $CartItemsUpdateCompanionBuilder,
+          (CartItem, $CartItemsReferences),
+          CartItem,
+          PrefetchHooks Function({bool ownerPhone, bool productId})
+        > {
+  $CartItemsTableManager(_$AppDatabase db, CartItems table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $CartItemsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $CartItemsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $CartItemsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> ownerPhone = const Value.absent(),
+                Value<String> productId = const Value.absent(),
+                Value<int> quantity = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CartItemsCompanion(
+                ownerPhone: ownerPhone,
+                productId: productId,
+                quantity: quantity,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String ownerPhone,
+                required String productId,
+                required int quantity,
+                Value<int> rowid = const Value.absent(),
+              }) => CartItemsCompanion.insert(
+                ownerPhone: ownerPhone,
+                productId: productId,
+                quantity: quantity,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<CartItems, CartItem>(table),
+                  $CartItemsReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({ownerPhone = false, productId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (ownerPhone) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.ownerPhone,
+                        referencedTable: $CartItemsReferences._ownerPhoneTable(
+                          db,
+                        ),
+                        referencedColumn: $CartItemsReferences
+                            ._ownerPhoneTable(db)
+                            .phone,
+                      ) as T;
+                    }
+                    if (productId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.productId,
+                        referencedTable: $CartItemsReferences._productIdTable(
+                          db,
+                        ),
+                        referencedColumn: $CartItemsReferences
+                            ._productIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $CartItemsProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      CartItems,
+      CartItem,
+      $CartItemsFilterComposer,
+      $CartItemsOrderingComposer,
+      $CartItemsAnnotationComposer,
+      $CartItemsCreateCompanionBuilder,
+      $CartItemsUpdateCompanionBuilder,
+      (CartItem, $CartItemsReferences),
+      CartItem,
+      PrefetchHooks Function({bool ownerPhone, bool productId})
     >;
 
 class $AppDatabaseManager {
@@ -5663,4 +6496,6 @@ class $AppDatabaseManager {
       $ChallengesTableManager(_db, _db.challenges);
   $RegisteredUsersTableManager get registeredUsers =>
       $RegisteredUsersTableManager(_db, _db.registeredUsers);
+  $CartItemsTableManager get cartItems =>
+      $CartItemsTableManager(_db, _db.cartItems);
 }

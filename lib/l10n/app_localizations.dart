@@ -454,6 +454,42 @@ abstract class AppLocalizations {
   /// **'Added to cart'**
   String get addedToCart;
 
+  /// No description provided for @cartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get cartTitle;
+
+  /// No description provided for @viewCart.
+  ///
+  /// In en, this message translates to:
+  /// **'View cart'**
+  String get viewCart;
+
+  /// No description provided for @cartEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty.'**
+  String get cartEmpty;
+
+  /// No description provided for @cartTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get cartTotal;
+
+  /// No description provided for @cartUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t update your cart. Please try again.'**
+  String get cartUpdateFailed;
+
+  /// No description provided for @removeFromCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from cart'**
+  String get removeFromCart;
+
   /// No description provided for @decreaseQuantity.
   ///
   /// In en, this message translates to:

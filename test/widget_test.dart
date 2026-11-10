@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,9 +9,12 @@ import 'package:jdonuts_customer_app/app/network_status.dart';
 import 'package:jdonuts_customer_app/app/repository_providers.dart';
 import 'package:jdonuts_customer_app/core/domain/member_profile.dart';
 import 'package:jdonuts_customer_app/core/domain/result.dart';
+import 'package:jdonuts_customer_app/core/presentation/catalog_state.dart';
 import 'package:jdonuts_customer_app/features/auth/domain/auth_repository.dart';
 import 'package:jdonuts_customer_app/features/auth/domain/auth_validation.dart';
 import 'package:jdonuts_customer_app/features/home/domain/home_repository.dart';
+import 'package:jdonuts_customer_app/features/home/presentation/home_landing_page.dart';
+import 'package:jdonuts_customer_app/features/product/domain/product_repository.dart';
 import 'package:jdonuts_customer_app/features/rewards/domain/rewards_repository.dart';
 import 'package:jdonuts_customer_app/features/rewards/presentation/rewards_page.dart';
 import 'package:jdonuts_customer_app/l10n/app_localizations.dart';
@@ -84,7 +89,50 @@ class _FakeHome implements HomeRepository {
       const Success([]);
 
   @override
+  Future<Result<List<CatalogProduct>>> loadSectionProducts(
+    String sectionId,
+  ) async => const Success([]);
+
+  @override
   Future<Result<List<NearbyShop>>> loadShops() async => const Success([]);
+}
+
+class _IsolatedSectionsHome extends _FakeHome {
+  final firstPopularLoad = Completer<Result<List<CatalogProduct>>>();
+  final loads = <String, int>{};
+  bool popularIsEmpty = false;
+
+  @override
+  Future<Result<List<ProductSection>>> loadSections() async => const Success([
+    (id: 'seasonal', title: 'Seasonal specials'),
+    (id: 'popular', title: 'Popular'),
+    (id: 'order_again', title: 'Order again'),
+  ]);
+
+  @override
+  Future<Result<List<CatalogProduct>>> loadSectionProducts(
+    String sectionId,
+  ) async {
+    final count = loads.update(
+      sectionId,
+      (value) => value + 1,
+      ifAbsent: () => 1,
+    );
+    if (sectionId == 'popular' && count == 1) return firstPopularLoad.future;
+    if (sectionId == 'popular' && popularIsEmpty) return const Success([]);
+    return Success([
+      (
+        id: sectionId,
+        code: 'JD022123',
+        name: 'Donut for $sectionId',
+        priceMmk: 3200,
+        isNew: false,
+        discountPercent: null,
+        imageKey: 'coconut_donut',
+        description: '',
+      ),
+    ]);
+  }
 }
 
 class _FakeRewards implements RewardsRepository {
@@ -134,6 +182,65 @@ Future<void> _sendPhone(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets(
+    'each Home rail loads, shows failures and retries independently',
+    (tester) async {
+      tester.view.physicalSize = const Size(430, 1450);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final home = _IsolatedSectionsHome();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            homeRepositoryProvider.overrideWithValue(home),
+            networkOnlineProvider.overrideWith((ref) => Stream.value(false)),
+          ],
+          child: MaterialApp(
+            theme: appTheme(),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const HomeLandingPage(memberName: null),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      final popular = find.byKey(const PageStorageKey('popular'));
+      Finder inPopular(Finder item) =>
+          find.descendant(of: popular, matching: item);
+      expect(inPopular(find.byType(CatalogSkeleton)), findsOneWidget);
+      expect(find.byKey(const ValueKey('rail-seasonal')), findsOneWidget);
+      expect(find.byKey(const ValueKey('rail-order_again')), findsOneWidget);
+
+      home.firstPopularLoad.complete(
+        Failure(
+          LocalDataFailure(StateError('Popular unavailable'), StackTrace.empty),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(inPopular(find.text('Retry')), findsOneWidget);
+      expect(find.byKey(const ValueKey('rail-seasonal')), findsOneWidget);
+      expect(find.byKey(const ValueKey('rail-order_again')), findsOneWidget);
+
+      await tester.tap(inPopular(find.text('Retry')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('rail-popular')), findsOneWidget);
+      expect(find.text('Retry'), findsNothing);
+      expect(home.loads, {'seasonal': 1, 'popular': 2, 'order_again': 1});
+
+      home.popularIsEmpty = true;
+      final refresh = tester.state<RefreshIndicatorState>(
+        find.byType(RefreshIndicator),
+      );
+      unawaited(refresh.show());
+      await tester.pumpAndSettle();
+      final strings = AppLocalizations.of(tester.element(popular));
+      expect(inPopular(find.text(strings.emptySection)), findsOneWidget);
+      expect(home.loads, {'seasonal': 2, 'popular': 3, 'order_again': 2});
+    },
+  );
+
   testWidgets(
     'auth stays scrollable on a narrow screen with the keyboard open',
     (tester) async {

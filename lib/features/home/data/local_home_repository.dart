@@ -30,34 +30,29 @@ final class LocalHomeRepository implements HomeRepository {
   });
 
   @override
-  Future<Result<List<ProductSection>>> loadSections() =>
-      readLocal(() => _db.transaction(_loadSections));
-
-  Future<List<ProductSection>> _loadSections() async {
+  Future<Result<List<ProductSection>>> loadSections() => readLocal(() async {
     final query = _db.select(_db.sections)
       ..orderBy([(row) => OrderingTerm.asc(row.position)]);
-    final sections = await query.get();
+    return List.unmodifiable(
+      (await query.get()).map((row) => (id: row.id, title: row.title)),
+    );
+  });
+
+  @override
+  Future<Result<List<CatalogProduct>>> loadSectionProducts(String sectionId) =>
+      readLocal(() => _loadSectionProducts(sectionId));
+
+  Future<List<CatalogProduct>> _loadSectionProducts(String sectionId) async {
     final links = _db.sectionProducts;
     final products = _db.products;
-    final items = _db.select(links).join([
-      innerJoin(products, products.id.equalsExp(links.productId)),
-    ])..orderBy([OrderingTerm.asc(links.position)]);
-    final productsBySection = <String, List<CatalogProduct>>{};
-    for (final row in await items.get()) {
-      productsBySection
-          .putIfAbsent(row.readTable(links).sectionId, () => [])
-          .add(row.readTable(products).toDomain());
-    }
+    final items =
+        _db.select(links).join([
+            innerJoin(products, products.id.equalsExp(links.productId)),
+          ])
+          ..where(links.sectionId.equals(sectionId))
+          ..orderBy([OrderingTerm.asc(links.position)]);
     return List.unmodifiable(
-      sections.map(
-        (row) => (
-          id: row.id,
-          title: row.title,
-          products: List<CatalogProduct>.unmodifiable(
-            productsBySection[row.id] ?? const [],
-          ),
-        ),
-      ),
+      (await items.get()).map((row) => row.readTable(products).toDomain()),
     );
   }
 

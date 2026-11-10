@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../core/presentation/catalog_image.dart';
+import '../../../core/presentation/catalog_state.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../product/domain/product_repository.dart';
 import '../domain/home_repository.dart';
+import 'home_data.dart';
 
 class HomeProductSections extends StatelessWidget {
   const HomeProductSections({super.key, required this.sections});
   final List<ProductSection> sections;
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      for (final (index, section) in sections.indexed)
-        EnterMotion(
-          index: index + 1,
-          child: _ProductRail(section: section),
-        ),
-    ],
+  Widget build(BuildContext context) => SliverList.builder(
+    itemCount: sections.length,
+    itemBuilder: (_, index) {
+      final section = sections[index];
+      return EnterMotion(
+        key: PageStorageKey(section.id),
+        index: index + 1,
+        child: _ProductRail(section: section),
+      );
+    },
   );
 }
 
@@ -48,12 +53,12 @@ const _productLabelSize = 16.0;
 const _productLabelLineHeight = 1.3;
 const _productLabelLines = 2;
 
-class _ProductRail extends StatelessWidget {
+class _ProductRail extends ConsumerWidget {
   const _ProductRail({required this.section});
   final ProductSection section;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final style = switch (section.id) {
       'seasonal' => _RailStyle.seasonal,
       'popular' => _RailStyle.popular,
@@ -61,15 +66,9 @@ class _ProductRail extends StatelessWidget {
     };
     final viewport = MediaQuery.sizeOf(context).width;
     final inset = (viewport * .064).clamp(20.0, 32.0);
-    final gap = (viewport * .043).clamp(12.0, 22.0);
     final width = viewport * style.cardWidthFactor;
     final imageHeight = width * style.imageHeightFactor;
-    final labelStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-      fontSize: _productLabelSize,
-      height: _productLabelLineHeight,
-      fontWeight: AppTypography.strongWeight,
-    );
-    final labelHeight = _labelHeight(context, labelStyle);
+    final provider = homeSectionProductsProvider(section.id);
     return Padding(
       padding: EdgeInsets.only(
         top: style == _RailStyle.seasonal ? AppSpacing.lg : AppSpacing.xxl,
@@ -82,31 +81,56 @@ class _ProductRail extends StatelessWidget {
             child: _title(context, hot: style == _RailStyle.popular),
           ),
           const SizedBox(height: AppSpacing.md),
-          if (section.products.isEmpty)
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: inset),
-              child: Text(AppLocalizations.of(context).emptySection),
-            )
-          else
-            SizedBox(
-              height: imageHeight + labelHeight + AppSpacing.sm,
-              child: ListView.separated(
-                key: ValueKey('rail-${section.id}'),
-                padding: EdgeInsets.symmetric(horizontal: inset),
-                scrollDirection: Axis.horizontal,
-                itemCount: section.products.length,
-                separatorBuilder: (_, _) => SizedBox(width: gap),
-                itemBuilder: (context, index) => _ProductCard(
-                  product: section.products[index],
-                  sectionId: section.id,
-                  width: width,
-                  imageHeight: imageHeight,
-                  style: style,
-                  labelStyle: labelStyle,
-                ),
-              ),
+          CatalogState(
+            value: ref.watch(provider),
+            isEmpty: (products) => products.isEmpty,
+            retry: () => ref.invalidate(provider),
+            height: imageHeight,
+            buildData: (products) => _productList(
+              context,
+              products,
+              style: style,
+              width: width,
+              imageHeight: imageHeight,
+              inset: inset,
             ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _productList(
+    BuildContext context,
+    List<CatalogProduct> products, {
+    required _RailStyle style,
+    required double width,
+    required double imageHeight,
+    required double inset,
+  }) {
+    final viewport = MediaQuery.sizeOf(context).width;
+    final gap = (viewport * .043).clamp(12.0, 22.0);
+    final labelStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+      fontSize: _productLabelSize,
+      height: _productLabelLineHeight,
+      fontWeight: AppTypography.strongWeight,
+    );
+    return SizedBox(
+      height: imageHeight + _labelHeight(context, labelStyle) + AppSpacing.sm,
+      child: ListView.separated(
+        key: ValueKey('rail-${section.id}'),
+        padding: EdgeInsets.symmetric(horizontal: inset),
+        scrollDirection: Axis.horizontal,
+        itemCount: products.length,
+        separatorBuilder: (_, _) => SizedBox(width: gap),
+        itemBuilder: (context, index) => _ProductCard(
+          product: products[index],
+          sectionId: section.id,
+          width: width,
+          imageHeight: imageHeight,
+          style: style,
+          labelStyle: labelStyle,
+        ),
       ),
     );
   }

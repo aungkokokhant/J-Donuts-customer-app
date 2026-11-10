@@ -14,32 +14,47 @@ class CatalogState<T> extends StatelessWidget {
     required this.isEmpty,
     required this.retry,
     this.height = 120,
-  });
+  }) : _isSliver = false;
+
+  const CatalogState.sliver({
+    super.key,
+    required this.value,
+    required this.buildData,
+    required this.isEmpty,
+    required this.retry,
+    this.height = 120,
+  }) : _isSliver = true;
 
   final AsyncValue<Result<T>> value;
   final Widget Function(T) buildData;
   final bool Function(T) isEmpty;
   final VoidCallback retry;
   final double height;
+  final bool _isSliver;
 
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
     return value.when(
-      loading: () => CatalogSkeleton(height: height),
+      loading: () => _placeholder(CatalogSkeleton(height: height)),
       error: (_, _) => _failure(strings),
       data: (result) => switch (result) {
         Success(:final value) when !isEmpty(value) => buildData(value),
-        Success() => _message(strings.emptySection),
+        Success() => _placeholder(_message(strings.emptySection)),
         Failure() => _failure(strings),
       },
     );
   }
 
-  Widget _failure(AppLocalizations strings) => _message(
-    strings.dataError,
-    action: TextButton(onPressed: retry, child: Text(strings.retry)),
+  Widget _failure(AppLocalizations strings) => _placeholder(
+    _message(
+      strings.dataError,
+      action: TextButton(onPressed: retry, child: Text(strings.retry)),
+    ),
   );
+
+  Widget _placeholder(Widget child) =>
+      _isSliver ? SliverToBoxAdapter(child: child) : child;
 
   Widget _message(String text, {Widget? action}) => SizedBox(
     width: double.infinity,

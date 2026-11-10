@@ -124,7 +124,14 @@ void main() {
       ]);
       final coconut = valueOf(await products.findById('p_coconut'));
       expect(coconut?.priceMmk, 3200);
-      expect(sections[1].products.last, coconut);
+      final popular = valueOf(await home.loadSectionProducts('popular'));
+      expect(popular.map((product) => product.id), [
+        'p_strawberry',
+        'p_dalgona',
+        'p_coconut',
+      ]);
+      expect(popular.last, coconut);
+      expect(valueOf(await home.loadSectionProducts('missing')), isEmpty);
       expect(valueOf(await products.findById('missing')), isNull);
 
       final challenges = valueOf(await rewards.loadChallenges(member.id));

@@ -5,6 +5,7 @@ import '../../../app/design/app_motion.dart';
 import '../../../app/design/app_theme.dart';
 import '../../../app/network_status.dart';
 import '../../../app/repository_providers.dart';
+import '../../../core/domain/result.dart';
 import '../../../core/presentation/catalog_state.dart';
 import '../../../core/presentation/offline_banner.dart';
 import '../../../l10n/app_localizations.dart';
@@ -42,6 +43,7 @@ class _HomeLandingPageState extends ConsumerState<HomeLandingPage> {
     ref.invalidate(memberProfileProvider);
     ref.invalidate(homeBannersProvider);
     ref.invalidate(homeSectionsProvider);
+    ref.invalidate(homeSectionProductsProvider);
     ref.invalidate(homeShopsProvider);
   }
 
@@ -51,9 +53,21 @@ class _HomeLandingPageState extends ConsumerState<HomeLandingPage> {
     await Future.wait<Object?>([
       ref.read(memberProfileProvider.future),
       ref.read(homeBannersProvider.future),
-      ref.read(homeSectionsProvider.future),
+      _refreshSectionProducts(),
       ref.read(homeShopsProvider.future),
     ]);
+  }
+
+  Future<void> _refreshSectionProducts() async {
+    final result = await ref.read(homeSectionsProvider.future);
+    if (!mounted) return;
+    if (result case Success(:final value)) {
+      await Future.wait(
+        value.map((section) {
+          return ref.read(homeSectionProductsProvider(section.id).future);
+        }),
+      );
+    }
   }
 
   @override
@@ -74,18 +88,23 @@ class _HomeLandingPageState extends ConsumerState<HomeLandingPage> {
             color: AppColors.catalogSurface,
             child: RefreshIndicator(
               onRefresh: _refresh,
-              child: ListView(
+              child: CustomScrollView(
                 key: const Key('homeScroll'),
                 controller: _scrollController,
-                padding: EdgeInsets.zero,
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: [
+                slivers: [
                   if (online.value == false)
-                    OfflineBanner(label: strings.offlineMessage),
-                  _header(),
+                    SliverToBoxAdapter(
+                      child: OfflineBanner(label: strings.offlineMessage),
+                    ),
+                  SliverToBoxAdapter(child: _header()),
                   _sections(),
-                  const SizedBox(height: AppSpacing.lg),
-                  _shops(MediaQuery.paddingOf(context).bottom),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: AppSpacing.lg),
+                  ),
+                  SliverToBoxAdapter(
+                    child: _shops(MediaQuery.paddingOf(context).bottom),
+                  ),
                 ],
               ),
             ),
@@ -140,7 +159,7 @@ class _HomeLandingPageState extends ConsumerState<HomeLandingPage> {
     ],
   );
 
-  Widget _sections() => CatalogState(
+  Widget _sections() => CatalogState.sliver(
     value: ref.watch(homeSectionsProvider),
     isEmpty: (sections) => sections.isEmpty,
     retry: () => ref.invalidate(homeSectionsProvider),

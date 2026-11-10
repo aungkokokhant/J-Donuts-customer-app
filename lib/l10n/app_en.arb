@@ -41,7 +41,6 @@
   "resend": "Resend",
   "unknownPhone": "This number hasn’t registered yet.",
   "register": "Register",
-  "alreadyRegistered": "This number is already registered.",
   "authError": "Something went wrong. Please try again.",
   "nameTitle": "What’s your name?",
   "firstName": "First name",

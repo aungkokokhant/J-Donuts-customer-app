@@ -97,9 +97,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get register => 'Register';
 
   @override
-  String get alreadyRegistered => 'This number is already registered.';
-
-  @override
   String get authError => 'Something went wrong. Please try again.';
 
   @override

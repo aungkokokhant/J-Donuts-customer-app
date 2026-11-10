@@ -23,7 +23,7 @@ enum AuthMode { register, login }
 
 enum _Step { phone, otp, name, birth, welcome }
 
-enum _Problem { wrongCode, locked, unknownPhone, registered, other }
+enum _Problem { wrongCode, locked, unknownPhone, other }
 
 class AuthFlowPage extends StatefulWidget {
   const AuthFlowPage({
@@ -52,7 +52,9 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
   final _day = TextEditingController();
   final _year = TextEditingController();
   final _phoneFocus = FocusNode();
+  final _firstFocus = FocusNode();
   bool _phoneBlurred = false;
+  bool _firstBlurred = false;
   bool _busy = false;
   int? _month;
   int _wrongAttempts = 0;
@@ -77,6 +79,9 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
     _phoneFocus.addListener(() {
       if (!_phoneFocus.hasFocus) _update(() => _phoneBlurred = true);
     });
+    _firstFocus.addListener(() {
+      if (!_firstFocus.hasFocus) _update(() => _firstBlurred = true);
+    });
   }
 
   void _update(VoidCallback update) {
@@ -90,6 +95,7 @@ class _AuthFlowPageState extends State<AuthFlowPage> {
       controller.dispose();
     }
     _phoneFocus.dispose();
+    _firstFocus.dispose();
     super.dispose();
   }
 

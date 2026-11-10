@@ -39,7 +39,13 @@ extension _AuthFlowForm on _AuthFlowPageState {
     _Step.otp => _otpForm(strings),
     _Step.name => Column(
       children: [
-        _nameField(_first, strings.firstName, strings.invalidName),
+        _nameField(
+          _first,
+          strings.firstName,
+          strings.invalidName,
+          focusNode: _firstFocus,
+          showEmptyError: _firstBlurred,
+        ),
         const SizedBox(height: AppSpacing.md),
         _nameField(
           _last,
@@ -75,8 +81,11 @@ extension _AuthFlowForm on _AuthFlowPageState {
     String label,
     String error, {
     bool optional = false,
+    FocusNode? focusNode,
+    bool showEmptyError = false,
   }) => TextField(
     controller: controller,
+    focusNode: focusNode,
     enabled: !_busy,
     textCapitalization: TextCapitalization.words,
     decoration: InputDecoration(
@@ -84,7 +93,7 @@ extension _AuthFlowForm on _AuthFlowPageState {
       floatingLabelBehavior: FloatingLabelBehavior.never,
       contentPadding: AuthLayout.fieldInset,
       errorText:
-          controller.text.isNotEmpty &&
+          (showEmptyError || controller.text.isNotEmpty) &&
               !isValidName(controller.text, optional: optional)
           ? error
           : null,
@@ -131,7 +140,6 @@ extension _AuthFlowForm on _AuthFlowPageState {
       _Problem.wrongCode => strings.otpWrong,
       _Problem.locked => strings.otpLocked,
       _Problem.unknownPhone => strings.unknownPhone,
-      _Problem.registered => strings.alreadyRegistered,
       _Problem.other => strings.authError,
       null => null,
     };
@@ -142,14 +150,12 @@ extension _AuthFlowForm on _AuthFlowPageState {
         _error(label),
         if (_problem == _Problem.unknownPhone)
           TextButton(onPressed: _switchMode, child: Text(strings.register)),
-        if (_problem == _Problem.registered)
-          TextButton(onPressed: _switchMode, child: Text(strings.logIn)),
       ],
     );
   }
 
   void _switchMode() => _update(() {
-    _mode = _mode == AuthMode.login ? AuthMode.register : AuthMode.login;
+    _mode = AuthMode.register;
     _problem = null;
     _step = _Step.phone;
   });

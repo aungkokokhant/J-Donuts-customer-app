@@ -6,7 +6,9 @@ import 'package:jdonuts_customer_app/main.dart' as app;
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('registers, saves the cart, and logs back in', (tester) async {
+  testWidgets('registers, saves the cart, and signs in from both entries', (
+    tester,
+  ) async {
     app.main();
     await tester.pumpAndSettle();
 
@@ -40,6 +42,10 @@ void main() {
     }
     await _openCoconut(tester);
     await _openRewards(tester);
+    await _logOut(tester);
+    await _tap(tester, find.text('LET’S GET STARTED'));
+    await _verifyPhone(tester, phone);
+    expect(find.text('Home'), findsOneWidget);
     await _logOut(tester);
     await _tap(tester, find.text('Log in'));
     await _verifyPhone(tester, phone);

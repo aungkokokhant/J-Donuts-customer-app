@@ -125,43 +125,32 @@ extension _AuthFlowActions on _AuthFlowPageState {
         });
       case Success(value: true):
         _code.clear();
-        if (_mode == AuthMode.register) {
-          await _continueRegistration(phone);
-        } else {
-          await _logIn(phone);
-        }
+        await _resolveVerifiedPhone(
+          phone,
+          allowRegistration: _mode == AuthMode.register,
+        );
     }
   }
 
-  Future<void> _continueRegistration(String phone) async {
-    final user = await widget.repository.findUser(phone);
-    if (!mounted) return;
-    _update(() {
-      switch (user) {
-        case Failure():
-          _problem = _Problem.other;
-        case Success(value: final value):
-          if (value == null) {
-            _step = _Step.name;
-          } else {
-            _problem = _Problem.registered;
-          }
-      }
-    });
-  }
-
-  Future<void> _logIn(String phone) async {
+  Future<void> _resolveVerifiedPhone(
+    String phone, {
+    required bool allowRegistration,
+  }) async {
     final result = await widget.repository.findUser(phone);
     if (!mounted) return;
     switch (result) {
       case Failure():
         _update(() => _problem = _Problem.other);
+      case Success(value: null):
+        _update(() {
+          if (allowRegistration) {
+            _step = _Step.name;
+          } else {
+            _problem = _Problem.unknownPhone;
+          }
+        });
       case Success(:final value):
-        if (value == null) {
-          _update(() => _problem = _Problem.unknownPhone);
-        } else {
-          await _signIn(value);
-        }
+        await _signIn(value!);
     }
   }
 
@@ -174,17 +163,17 @@ extension _AuthFlowActions on _AuthFlowPageState {
     );
     final result = await widget.repository.register(user);
     if (!mounted) return;
-    _update(() {
-      switch (result) {
-        case Failure():
-          _problem = _Problem.other;
-        case Success(value: false):
-          _problem = _Problem.registered;
-        case Success(value: true):
+    switch (result) {
+      case Failure():
+        _update(() => _problem = _Problem.other);
+      case Success(value: false):
+        await _resolveVerifiedPhone(user.phone, allowRegistration: false);
+      case Success(value: true):
+        _update(() {
           _registeredUser = user;
           _step = _Step.welcome;
-      }
-    });
+        });
+    }
   }
 
   Future<void> _signIn(RegisteredUser user) async {

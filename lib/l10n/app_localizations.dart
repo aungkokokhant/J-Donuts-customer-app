@@ -260,12 +260,6 @@ abstract class AppLocalizations {
   /// **'Register'**
   String get register;
 
-  /// No description provided for @alreadyRegistered.
-  ///
-  /// In en, this message translates to:
-  /// **'This number is already registered.'**
-  String get alreadyRegistered;
-
   /// No description provided for @authError.
   ///
   /// In en, this message translates to:

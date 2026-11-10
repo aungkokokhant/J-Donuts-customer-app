@@ -460,6 +460,33 @@ void main() {
     expect(auth.requests, 2);
   });
 
+  for (final entry in ['LET’S GET STARTED', 'Log in']) {
+    testWidgets('a verified returning user goes directly Home from $entry', (
+      tester,
+    ) async {
+      final user = (
+        phone: '+959254135592',
+        firstName: 'Hania',
+        lastName: '',
+        birthDate: DateTime(2000, 1, 15),
+      );
+      final auth = _FakeAuth()..users[user.phone] = user;
+      await _start(tester, auth);
+      await tester.tap(find.text(entry));
+      await tester.pumpAndSettle();
+      await _sendPhone(tester);
+      expect(auth.active, isNull);
+
+      await tester.enterText(find.byKey(_otpInput), fakeOtp);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HomeLandingPage), findsOneWidget);
+      expect(find.byKey(_otpInput), findsNothing);
+      expect(auth.active, user);
+      expect(auth.requests, 1);
+    });
+  }
+
   testWidgets('unknown login number can switch to registration', (
     tester,
   ) async {
@@ -513,6 +540,14 @@ void main() {
     await tester.pumpAndSettle();
 
     final name = find.widgetWithText(TextField, 'First name');
+    await tester.tap(name);
+    await tester.tap(find.widgetWithText(TextField, 'Last name'));
+    await tester.pumpAndSettle();
+    expect(find.text('Use 1–50 letters and spaces.'), findsOneWidget);
+    expect(
+      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+      isNull,
+    );
     await tester.enterText(name, 'Aung 2');
     await tester.pumpAndSettle();
     expect(find.text('Use 1–50 letters and spaces.'), findsOneWidget);

@@ -97,9 +97,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get register => 'အကောင့်ဖွင့်ရန်';
 
   @override
-  String get alreadyRegistered => 'ဤနံပါတ်ဖြင့် အကောင့်ဖွင့်ထားပြီးပါပြီ။';
-
-  @override
   String get authError => 'အမှားတစ်ခု ဖြစ်သွားပါသည်။ ထပ်စမ်းကြည့်ပါ။';
 
   @override

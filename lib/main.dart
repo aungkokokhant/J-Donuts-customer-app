@@ -28,13 +28,17 @@ class JDonutsApp extends ConsumerWidget {
   const JDonutsApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-    onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-    debugShowCheckedModeBanner: false,
-    theme: appTheme(),
-    locale: ref.watch(appLanguageProvider).value?.locale,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    routerConfig: ref.watch(appRouterProvider),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final language =
+        ref.watch(appLanguageProvider).value ?? AppLanguage.english;
+    return MaterialApp.router(
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+      debugShowCheckedModeBanner: false,
+      theme: appTheme(),
+      locale: language.locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      routerConfig: ref.watch(appRouterProvider),
+    );
+  }
 }

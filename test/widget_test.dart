@@ -185,9 +185,17 @@ Future<void> _sendPhone(WidgetTester tester) async {
 void main() {
   setUp(() => FlutterSecureStorage.setMockInitialValues({}));
 
-  testWidgets('Burmese follows the device locale on compact onboarding', (
+  testWidgets('first launch uses English on a Burmese device', (tester) async {
+    tester.platformDispatcher.localesTestValue = const [Locale('my', 'MM')];
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+    await _start(tester, _FakeAuth());
+    expect(find.text('LET’S GET STARTED'), findsOneWidget);
+  });
+
+  testWidgets('compact onboarding follows an explicit device language choice', (
     tester,
   ) async {
+    FlutterSecureStorage.setMockInitialValues({'app_language': 'system'});
     tester.platformDispatcher.localesTestValue = const [Locale('my', 'MM')];
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;

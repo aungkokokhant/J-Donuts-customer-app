@@ -79,10 +79,11 @@ Register with a Myanmar mobile number and use **123456** for the OTP. The demo s
 
 Run the device registration, product, and rewards flow test with `flutter test integration_test/app_flow_test.dart -d DEVICE_ID`. For Android offline verification, enable airplane mode, turn Wi-Fi off and add `--dart-define=EXPECT_OFFLINE=true`.
 
-The app follows the device language by default and falls back to English for
-unsupported languages. After signing in, open Settings → Language to choose
-English or မြန်မာ. The choice is saved locally across launches. Demo catalog
-content such as product names, descriptions, and shop addresses remains in English.
+The app starts in English by default. After signing in, open Settings → Language
+to choose English, မြန်မာ, or Device language. The choice is saved locally across
+launches. Device language falls back to English for unsupported languages.
+Demo catalog content such as product names, descriptions, and shop addresses
+remains in English.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for milestone status and acceptance checks.
 

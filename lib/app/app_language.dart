@@ -13,6 +13,8 @@ enum AppLanguage {
   const AppLanguage(this.locale);
   final Locale? locale;
 
+  String get storageCode => locale?.languageCode ?? 'system';
+
   String label(AppLocalizations strings) => switch (this) {
     system => strings.systemLanguage,
     english => 'English',
@@ -35,13 +37,13 @@ class LanguagePreference extends AsyncNotifier<AppLanguage> {
     try {
       final code = await _storage.read(key: _key);
       return AppLanguage.values.firstWhere(
-        (language) => language.locale?.languageCode == code,
-        orElse: () => AppLanguage.system,
+        (language) => language.storageCode == code,
+        orElse: () => AppLanguage.english,
       );
     } on PlatformException {
-      return AppLanguage.system;
+      return AppLanguage.english;
     } on MissingPluginException {
-      return AppLanguage.system;
+      return AppLanguage.english;
     }
   }
 
@@ -51,12 +53,7 @@ class LanguagePreference extends AsyncNotifier<AppLanguage> {
 
     _saving = true;
     final saved = await AsyncValue.guard(() async {
-      final code = language.locale?.languageCode;
-      if (code == null) {
-        await _storage.delete(key: _key);
-      } else {
-        await _storage.write(key: _key, value: code);
-      }
+      await _storage.write(key: _key, value: language.storageCode);
       return language;
     });
     _saving = false;

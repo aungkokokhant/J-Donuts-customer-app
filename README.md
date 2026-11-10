@@ -18,6 +18,10 @@ Replace `DEVICE_ID` with the emulator or simulator ID from `flutter devices`.
 In Android Studio, point the Flutter plugin at the same SDK directory so it uses
 the bundled Dart version.
 
+[Flutter CI](https://github.com/aungkokokhant/J-Donuts-customer-app/actions/workflows/flutter-ci.yml)
+runs analysis and the unit and widget tests on pushes and pull requests using
+the same Flutter version and the checked-in dependency lockfile.
+
 ## Build and check
 
 ```sh

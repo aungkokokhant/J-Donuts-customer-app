@@ -159,7 +159,7 @@ Day 2 ရဲ့ နောက်ဆုံး **၃ နာရီ** ကို clean
 - [ ] Persistent cart။
 - [ ] Burmese locale။
 - [ ] Minimum ထက်ပိုတဲ့ animation။
-- [ ] CI မှာ analyzer နဲ့ tests run ခြင်း။
+- [x] GitHub Actions မှာ Flutter 3.47.9 နဲ့ push / pull request တိုင်း analyzer နဲ့ unit/widget tests run အောင် ထည့်ထားပါတယ်။
 - [ ] Mock server ထည့်ပါက public data အတွက် `/v1/...`၊ `{data, error, meta}` envelope၊ Dio timeouts၊ retry/logging interceptors၊ source နဲ့ README run instructions ပါစေ။ Server က database ကို update လုပ်ပြီး UI က local database ကိုပဲ ဖတ်ပါစေ။
 
 ## PDF အမှတ်ပေးပုံ

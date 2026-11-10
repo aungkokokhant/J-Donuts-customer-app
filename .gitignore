@@ -46,4 +46,5 @@ app.*.map.json
 
 # Private code test reference and design exports
 /Madivizion_Flutter_Code_Test.pdf
+/PROJECT_PLAN.md
 /design-references/
